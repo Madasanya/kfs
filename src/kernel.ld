@@ -2,17 +2,27 @@ ENTRY(_start_multiboot1)
 
 SECTIONS
 {
-    . = 1M;  /* Kernel loaded at 1 MB */
+    . = 1M;  /* Load kernel at 1MB physical address */
 
-    .multiboot1 : {
-        . = ALIGN(8);
-        *(.multiboot1)
+    .text BLOCK(4K) : ALIGN(4K)
+    {
+        *(.multiboot1)  /* For GRUB/Multiboot header if used */
+        *(.text)
     }
 
-    .text : { 
-        . = ALIGN(8);
-        *(.text) }
-    .rodata : { *(.rodata) }
-    .data   : { *(.data) }
-    .bss    : { *(COMMON) *(.bss) }
+    .rodata BLOCK(4K) : ALIGN(4K)
+    {
+        *(.rodata)
+    }
+
+    .data BLOCK(4K) : ALIGN(4K)
+    {
+        *(.data)
+    }
+
+    .bss BLOCK(4K) : ALIGN(4K)
+    {
+        *(COMMON)
+        *(.bss)
+    }
 }
