@@ -9,6 +9,7 @@ TARGET="i386-elf"
 PREFIX="$HOME/opt/cross"
 SRC_DIR="$HOME/src"
 MAX_CORES=$(nproc)
+[ "$MAX_CORES" -gt 8 ] && MAX_CORES=8
 
 # URLs
 GCC_URL="https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz"
@@ -42,21 +43,28 @@ done
 # Export environment variables
 export PATH="$PREFIX/bin:$PATH"
 
+build_component() {
+    local name="$1"
+    local dir="$2"
+    local configure_args="$3"
+    local make_target="${4:-all}"
+    local install_target="${5:-install}"
+
+    echo "=== Building $name ==="
+    mkdir -p "build-$name"
+    cd "build-$name"
+    eval "../$dir/configure $configure_args"
+    make -j"$MAX_CORES" "$make_target"
+    make "$install_target"
+    cd "$SRC_DIR"
+    rm -rf "build-$name"    # Clean up build directory
+}
+
 # Build Binutils
-mkdir -p build-binutils
-cd build-binutils
-../binutils-${BINUTILS_VERSION}/configure --target="$TARGET" --prefix="$PREFIX" --with-sysroot --disable-nls --disable-werror
-make -j"$MAX_CORES"
-make install
-cd "$SRC_DIR"
+build_component "binutils" "binutils-${BINUTILS_VERSION}" "--target=$TARGET --prefix=$PREFIX --with-sysroot --disable-nls --disable-werror"
 
 # Build GDB
-mkdir -p build-gdb
-cd build-gdb
-../gdb-${GDB_VERSION}/configure --target="$TARGET" --prefix="$PREFIX" --disable-werror
-make -j"$MAX_CORES" all-gdb
-make install-gdb
-cd "$SRC_DIR"
+build_component "gdb" "gdb-${GDB_VERSION}" "--target=$TARGET --prefix=$PREFIX --disable-werror" "all-gdb" "install-gdb"
 
 # Verify binutils in PATH
 if ! which "$TARGET-as" >/dev/null 2>&1; then
@@ -64,22 +72,7 @@ if ! which "$TARGET-as" >/dev/null 2>&1; then
 fi
 
 # Build GCC
-mkdir -p build-gcc
-cd build-gcc
-../gcc-${GCC_VERSION}/configure \
-    --target="$TARGET" \
-    --prefix="$PREFIX" \
-    --disable-nls \
-    --enable-languages=c,c++ \
-    --without-headers \
-    --disable-hosted-libstdcxx
-make -j"$MAX_CORES" all-gcc
-make -j"$MAX_CORES" all-target-libgcc
-make -j"$MAX_CORES" all-target-libstdc++-v3
-make install-gcc
-make install-target-libgcc
-make install-target-libstdc++-v3
-cd "$SRC_DIR"
+build_component "gcc" "gcc-${GCC_VERSION}" "--target=$TARGET --prefix=$PREFIX --disable-nls --enable-languages=c,c++ --without-headers --disable-hosted-libstdcxx" "all-gcc all-target-libgcc all-target-libstdc++-v3" "install-gcc install-target-libgcc install-target-libstdc++-v3"
 
 # Verify GCC installation
 "$PREFIX/bin/$TARGET-gcc" --version
