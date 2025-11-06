@@ -1,7 +1,6 @@
 ; Declare constants for the multiboot header.
 MBALIGN  equ  1 << 0            ; align loaded modules on page boundaries
-MEMINFO  equ  1 << 1            ; provide memory map
-MBFLAGS  equ  MBALIGN | MEMINFO ; this is the Multiboot 'flag' field
+MBFLAGS  equ  MBALIGN           ; this is the Multiboot 'flag' field
 MAGIC    equ  0x1BADB002        ; 'magic number' lets bootloader find the header
 CHECKSUM equ -(MAGIC + MBFLAGS) ; checksum of above, to prove we are multiboot
                                 ; CHECKSUM + MAGIC + MBFLAGS should be Zero (0)
@@ -11,7 +10,7 @@ CHECKSUM equ -(MAGIC + MBFLAGS) ; checksum of above, to prove we are multiboot
 ; search for this signature in the first 8 KiB of the kernel file, aligned at a
 ; 32-bit boundary. The signature is in its own section so the header can be
 ; forced to be within the first 8 KiB of the kernel file.
-section .multiboot
+section .multiboot1
 align 4
 	dd MAGIC
 	dd MBFLAGS
@@ -64,7 +63,8 @@ _start:
 	; yet. The GDT should be loaded here. Paging should be enabled here.
 	; C++ features such as global constructors and exceptions will require
 	; runtime support to work as well.
-
+    push eax    ; push magic number
+    push ebx    ; push pointer to grub setting struct 
 	; Enter the high-level kernel. The ABI requires the stack is 16-byte
 	; aligned at the time of the call instruction (which afterwards pushes
 	; the return pointer of size 4 bytes). The stack was originally 16-byte
@@ -72,9 +72,9 @@ _start:
 	; stack since (pushed 0 bytes so far) and the alignment is thus
 	; preserved and the call is well defined.
         ; note, that if you are building on Windows, C functions may have "_" prefix in assembly: _kernel_main
-	extern kernel_main
-	call kernel_main
-
+	extern start_multiboot1
+	call start_multiboot1
+    add esp, 8  ; clean 2 arguments from stack
 	; If the system has nothing more to do, put the computer into an
 	; infinite loop. To do that:
 	; 1) Disable interrupts with cli (clear interrupt enable in eflags).
