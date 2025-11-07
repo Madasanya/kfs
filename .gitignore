@@ -35,6 +35,7 @@
 *.i*86
 *.x86_64
 *.hex
+*.bin
 
 # Debug files
 *.dSYM/
@@ -45,6 +46,8 @@
 # Kernel Module Compile Results
 *.mod*
 *.cmd
+*.img
+*.iso
 .tmp_versions/
 modules.order
 Module.symvers
