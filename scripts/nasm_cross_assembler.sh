@@ -21,6 +21,7 @@ error()   { echo -e "${RED}[ERROR]${RESET} $*" >&2; }
 # ---------------------------
 NASM_VERSION="2.16.01"        # adjust version if needed
 PREFIX="$HOME/opt/cross/nasm"
+SRC_DIR="$HOME/src"
 MAX_CORES=$(nproc)
 [ "$MAX_CORES" -gt 8 ] && MAX_CORES=8
 
