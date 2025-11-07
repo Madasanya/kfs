@@ -175,7 +175,7 @@ build_component "gcc" "gcc-${GCC_VERSION}" \
     "no"   # Keep build directory until all steps complete
 
 # ---------------------------
-# Persist PATH across variable shells
+# Persist PATH across variable shells (replaceable block)
 # ---------------------------
 RC_FILE=""
 if [ -n "${BASH_VERSION:-}" ]; then
@@ -193,11 +193,27 @@ else
     RC_FILE="$HOME/.profile"
 fi
 
-if ! grep -q "$PREFIX/bin" "$RC_FILE" 2>/dev/null; then
-    echo "export PATH=\"$PREFIX/bin:\$PATH\"" >> "$RC_FILE"
-    success "Added $PREFIX/bin to PATH in $(basename "$RC_FILE")"
+# Define block markers
+START_MARKER="# >>> cross-compiler PATH setup >>>"
+END_MARKER="# <<< cross-compiler PATH setup <<<"
+
+# Define content to insert between markers
+BLOCK_CONTENT="$START_MARKER
+export PATH=\"$PREFIX/bin:\$PATH\"
+$END_MARKER"
+
+# Create RC file if missing
+touch "$RC_FILE"
+
+# If the block exists, replace it; otherwise, append it
+if grep -q "$START_MARKER" "$RC_FILE"; then
+    # Replace existing block
+    sed -i "/$START_MARKER/,/$END_MARKER/c\\$BLOCK_CONTENT" "$RC_FILE"
+    info "Updated PATH block in $(basename "$RC_FILE")"
 else
-    echo -e "${YELLOW}PATH already set in $(basename "$RC_FILE")${RESET}"
+    # Append block to end of file
+    printf "\n%s\n" "$BLOCK_CONTENT" >> "$RC_FILE"
+    success "Added PATH block to $(basename "$RC_FILE")"
 fi
 
 # ---------------------------
