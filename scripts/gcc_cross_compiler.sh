@@ -23,7 +23,7 @@ GCC_VERSION="12.1.0"
 BINUTILS_VERSION="2.40"
 GDB_VERSION="13.2"
 TARGET="i386-elf"
-PREFIX="$HOME/opt/cross"
+PREFIX="$HOME/opt/cross/gcc"
 SRC_DIR="$HOME/src"
 MAX_CORES=$(nproc)
 [ "$MAX_CORES" -gt 8 ] && MAX_CORES=8
@@ -215,6 +215,9 @@ else
     printf "\n%s\n" "$BLOCK_CONTENT" >> "$RC_FILE"
     success "Added PATH block to $(basename "$RC_FILE")"
 fi
+
+export PATH="$PREFIX/bin:$PATH"
+success "PATH updated for current session."
 
 # ---------------------------
 # Create i386-gcc symlink
