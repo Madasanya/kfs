@@ -198,7 +198,7 @@ START_MARKER="# >>> cross-compiler PATH setup >>>"
 END_MARKER="# <<< cross-compiler PATH setup <<<"
 
 # Define content to insert between markers
-BLOCK_CONTENT="$START_MARKER
+BLOCK_CONTENT=$"$START_MARKER
 export PATH=\"$PREFIX/bin:\$PATH\"
 $END_MARKER"
 
@@ -215,9 +215,6 @@ else
     printf "\n%s\n" "$BLOCK_CONTENT" >> "$RC_FILE"
     success "Added PATH block to $(basename "$RC_FILE")"
 fi
-
-export PATH="$PREFIX/bin:$PATH"
-success "PATH updated for current session."
 
 # ---------------------------
 # Create i386-gcc symlink
