@@ -100,8 +100,8 @@ else
 fi
 
 # Define block markers
-START_MARKER="# >>> cross-compiler PATH setup >>>"
-END_MARKER="# <<< cross-compiler PATH setup <<<"
+START_MARKER="# >>> cross-assembler PATH setup >>>"
+END_MARKER="# <<< cross-assembler PATH setup <<<"
 
 # Define content to insert between markers
 BLOCK_CONTENT=$"$START_MARKER
