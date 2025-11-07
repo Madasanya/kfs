@@ -1,7 +1,7 @@
 #ifndef _MULTIBOOT_H_
 #define _MULTIBOOT_H_
 
-#define uint32_t long
+#define uint32_t unsigned long
 
 void kernel(void);
 

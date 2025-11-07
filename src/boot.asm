@@ -63,8 +63,9 @@ _start:
 	; yet. The GDT should be loaded here. Paging should be enabled here.
 	; C++ features such as global constructors and exceptions will require
 	; runtime support to work as well.
+	push ebx    ; push pointer to grub setting struct
     push eax    ; push magic number
-    push ebx    ; push pointer to grub setting struct 
+	push eax
 	; Enter the high-level kernel. The ABI requires the stack is 16-byte
 	; aligned at the time of the call instruction (which afterwards pushes
 	; the return pointer of size 4 bytes). The stack was originally 16-byte
