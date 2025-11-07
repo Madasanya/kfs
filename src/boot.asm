@@ -65,14 +65,14 @@ _start:
 	; runtime support to work as well.
 	push ebx    ; push pointer to grub setting struct
     push eax    ; push magic number
-	push eax
+
 	; Enter the high-level kernel. The ABI requires the stack is 16-byte
 	; aligned at the time of the call instruction (which afterwards pushes
 	; the return pointer of size 4 bytes). The stack was originally 16-byte
 	; aligned above and we've since pushed a multiple of 16 bytes to the
 	; stack since (pushed 0 bytes so far) and the alignment is thus
 	; preserved and the call is well defined.
-        ; note, that if you are building on Windows, C functions may have "_" prefix in assembly: _kernel_main
+    ; note, that if you are building on Windows, C functions may have "_" prefix in assembly: _kernel_main
 	extern start_multiboot1
 	call start_multiboot1
     add esp, 8  ; clean 2 arguments from stack
