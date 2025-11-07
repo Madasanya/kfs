@@ -1,4 +1,4 @@
-ENTRY(_start_multiboot1)
+ENTRY(_start)
 
 SECTIONS
 {
