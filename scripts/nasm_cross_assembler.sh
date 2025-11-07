@@ -104,8 +104,8 @@ START_MARKER="# >>> cross-compiler PATH setup >>>"
 END_MARKER="# <<< cross-compiler PATH setup <<<"
 
 # Define content to insert between markers
-BLOCK_CONTENT="$START_MARKER \
-export PATH=\"$PREFIX/bin:\$PATH\" \
+BLOCK_CONTENT=$"$START_MARKER
+export PATH=\"$PREFIX/bin:\$PATH\"
 $END_MARKER"
 
 # Create RC file if missing
