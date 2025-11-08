@@ -1,55 +1,78 @@
 AS			= i386-nasm
+CC			= i386-gcc
+LD			:= $(CC)
+RM			= rm -rf
+
 ASFLAGS		= -felf32
-RM			= rm -f
+CFLAGS		= -std=gnu99 -ffreestanding -Wall -Wextra
+LDFLAGS		= -ffreestanding -O2 -nostdlib -lgcc
+
+ASSRC		= boot.asm
+CSRC		= kernel.c start.c
+LDSRC		= kernel.ld
+
 SRCD		= ./src/
-SRC_AS		= boot.asm
-SRCF_AS		= $(addprefix $(SRCD),$(SRC_AS))
 OBJD		= ./obj/
-#OBJ			= $(SRC:%.s=%.o)
-OBJF_AS 	= $(SRCF_AS:$(SRCD)%.asm=$(OBJD)%.o)
-NAME		= md_kernel.bin
+BUILTD		= ./build/
+
+ASOBJS 		:= $(ASSRC:%.asm=$(OBJD)%.o)
+COBJS  		:= $(CSRC:%.c=$(OBJD)%.o)
+OBJS   		:= $(ASOBJS) $(COBJS)
+
+NAME		:= $(BUILTD)md_kernel.bin
 
 $(OBJD)%.o: $(SRCD)%.asm 
-			@mkdir -p $(OBJD)
+			@mkdir -p $(@D)
 			${AS} ${ASFLAGS} $< -o $@
 
-$(NAME):	${OBJF_AS}
-			${AR} ${ARFLAGS} ${NAME} ${OBJF} #as linker here
+$(OBJD)%.o: $(SRCD)%.c
+			@mkdir -p $(@D)
+			${CC} ${CFLAGS} -c $< -o $@
+
+$(NAME): $(OBJS)
+			@mkdir -p $(@D)
+			$(LD) -T $(SRCD)$(LDSRC) $(OBJS) -o $@ $(LDFLAGS)
 
 all:		${NAME}
 
 clean:		
-			${RM} ${OBJD}*.o
+			$(RM) $(OBJD)
 
 fclean:		clean
-			${RM} ${NAME} test *.txt #add all the things to be deleted
+			$(RM) $(BUILTD)
 
 re:			fclean all
 
 build_gcc:
-			if not sudo
-				echo Needs to be called by sudo
-				exit 1
-			else
+			@if [ "$$(id -u)" -ne 0 ]; then \
+				printf "\033[31mERROR:\033[0m Needs to be called with sudo (run: sudo make $@)\n"; \
+				exit 1; \
+			fi
 				bash ./sripts/build_gcc_cross_compiler.sh
 
 build_as:
-			if not sudo
-				echo Needs to be called by sudo
-				exit 1
-			else
+			@if [ "$$(id -u)" -ne 0 ]; then \
+				printf "\033[31mERROR:\033[0m Needs to be called with sudo (run: sudo make $@)\n"; \
+				exit 1; \
+			fi
 				bash ./sripts/build_nasm_cross_assembler.sh
 
 build_tools:	build_gcc build_as
 
 create_image:
-			if not sudo
-				echo Needs to be called by sudo
-				exit 1
-			else
-				bash ./sripts/create_img.sh
+			@if [ "$$(id -u)" -ne 0 ]; then \
+				printf "\033[31mERROR:\033[0m Needs to be called with sudo (run: sudo make $@)\n"; \
+				exit 1; \
+			fi
+			bash ./scripts/create_img.sh
 			
 run:
+			if grub-file --is-x86-multiboot myos.bin; then
+				echo multiboot confirmed
+			else
+				echo the file is not multiboot
+			fi
 			create_image
-			
+			qemu-system-i386 -drive file=bootdisk.img,format=raw -m 128M 
+
 .PHONY:		all clean fclean re test
