@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Set variables
-PROJ_PATH=".."
+PROJ_PATH="."
 IMAGE_NAME="bootdisk"
 IMAGE_FILE="$PROJ_PATH/boot/$IMAGE_NAME.img"
 IMAGE_SIZE_MB=8
-MOUNT_PATH="../mnt/$IMAGE_NAME"
+MOUNT_PATH="./mnt/$IMAGE_NAME"
 CREATED_NEW="no"
 LOOP_DEV=""
 MOUNTED_NEW="no"
@@ -13,8 +13,8 @@ MOUNTED_NEW="no"
 # Paths for files to copy (adjust these as needed)
 GRUB_CONFIG_SRC="$PROJ_PATH/boot/grub/grub.cfg"  # Source path to your GRUB config file
 GRUB_CONFIG_DEST="$MOUNT_PATH/boot/grub/grub.cfg"  # Destination path
-KERNEL_SRC="$PROJ_PATH/build/kernel.bin"  # Source path to your kernel binary file
-KERNEL_DEST="$MOUNT_PATH/boot/kernel.bin"  # Destination path (adjust name/path if needed)
+KERNEL_SRC="$PROJ_PATH/build/md_kernel.bin" 	 # Source path to your kernel binary file
+KERNEL_DEST="$MOUNT_PATH/boot/md_kernel.bin"  # Destination path (adjust name/path if needed)
 
 # Check for mode argument
 if [ $# -ne 1 ]; then
