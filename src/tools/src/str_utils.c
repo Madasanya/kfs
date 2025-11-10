@@ -1,10 +1,11 @@
-#include "multiboot.h"
+#include "str_utils.h"
 
-short cursor = 0;
+/** @brief Global cursor position for text output. */
+uint8_t cursor = 0;
 
-unsigned int md_strlen(char* str)
+uint16_t md_strlen(char* str)
 {
-    unsigned int ret = 0;
+    uint16_t ret = 0;
     while (*str != '\0')
     {
         ret++;
@@ -13,10 +14,10 @@ unsigned int md_strlen(char* str)
     return(ret);
 }
 
-short md_put_char(char c)
+int8_t md_put_char(char c)
 {
     volatile char *txt_out = (volatile char*)0xB8000;
-    short ret = -1;
+    int8_t ret = -1;
 
     if(cursor < 80)
     {
@@ -28,9 +29,9 @@ short md_put_char(char c)
     return (ret);
 }
 
-int md_write(char *str)
+int16_t md_put_str(char *str)
 {
-    int ret = 0;
+    int16_t ret = 0;
     while (*str != 0)
     {
         if (md_put_char(*str) == -1)
@@ -44,7 +45,7 @@ int md_write(char *str)
     return (ret);
 }
 
-void itoa_hex(uint32_t num, char *output)
+void md_ptoa(uint32_t num, char *output)
 {
     if (num == 0)
     {
@@ -53,12 +54,12 @@ void itoa_hex(uint32_t num, char *output)
         return;
     }
 
-    int i = 0;
+    int16_t i = 0;
     char temp[8];
 
     while (num > 0)
     {
-        int digit = num % 16;
+        int16_t digit = num % 16;
         temp[i] = (digit < 10) ? ('0' + digit) : ('A' + digit - 10);
         i++;
         num /= 16;
@@ -72,21 +73,4 @@ void itoa_hex(uint32_t num, char *output)
     }
     output[j] = '\0';
     return;
-}
-
-
-void start_multiboot1(uint32_t magic, uint32_t mb_info_addr)
-{
-    char str[9];
-    md_write("Magic: ");
-    itoa_hex(magic, str);
-    md_write(str);
-    if (magic == 0x2BADB002)
-    {
-        kernel();
-    }
-    else
-    {
-        return ;
-    }
 }

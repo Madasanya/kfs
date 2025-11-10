@@ -6,14 +6,18 @@ RM			= rm -rf
 ASFLAGS		= -felf32
 CFLAGS		= -std=gnu99 -ffreestanding -Wall -Wextra
 LDFLAGS		= -ffreestanding -O2 -nostdlib -lgcc
+INCFLAG		= -I
 
 ASSRC		= boot.asm
-CSRC		= kernel.c start.c
+CSRC		= main/src/kernel.c main/src/start.c tools/src/str_utils.c
 LDSRC		= kernel.ld
 
 SRCD		= ./src/
 OBJD		= ./obj/
 BUILTD		= ./build/
+INCD		= main/inc tools/inc
+
+INCPATH		:= $(addprefix $(INCFLAG)src/,$(INCD))
 
 ASOBJS 		:= $(ASSRC:%.asm=$(OBJD)%.o)
 COBJS  		:= $(CSRC:%.c=$(OBJD)%.o)
@@ -27,7 +31,7 @@ $(OBJD)%.o: $(SRCD)%.asm
 
 $(OBJD)%.o: $(SRCD)%.c
 			@mkdir -p $(@D)
-			${CC} ${CFLAGS} -c $< -o $@
+			${CC} ${CFLAGS} $(INCPATH) -c $< -o $@
 
 $(NAME): $(OBJS)
 			@mkdir -p $(@D)
