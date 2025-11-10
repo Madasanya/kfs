@@ -7,6 +7,7 @@ SECTIONS
     .text BLOCK(4K) : ALIGN(4K)
     {
         *(.multiboot1)  /* For GRUB/Multiboot header if used */
+        *(.kernel_info) /* kernel information (version etc.) */
         *(.text)
     }
 
