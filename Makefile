@@ -54,6 +54,8 @@ build_as:
 				bash ./scripts/build_nasm_cross_assembler.sh
 
 build_tools:	build_gcc build_as
+				source $HOME/.bashrc
+				sudo apt install qemu-system
 
 check_bin:
 				echo "Checking multiboot header in $(NAME)..."
