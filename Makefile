@@ -44,14 +44,10 @@ fclean:		clean
 re:			fclean all
 
 build_gcc:
-			@if [ "$$(id -u)" -ne 0 ]; then \
-				printf "\033[31mERROR:\033[0m Needs to be called with sudo -E (run: sudo make $@)\n"; \
-				exit 1; \
-			fi
-				bash ./sripts/build_gcc_cross_compiler.sh
+				bash ./scripts/build_gcc_cross_compiler.sh
 
 build_as:
-				bash ./sripts/build_nasm_cross_assembler.sh
+				bash ./scripts/build_nasm_cross_assembler.sh
 
 build_tools:	build_gcc build_as
 
