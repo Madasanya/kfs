@@ -126,10 +126,21 @@ export PATH="$PREFIX/bin:$PATH"
 success "PATH updated for current session."
 
 # ---------------------------
+# Create i386-nasm symlink
+# ---------------------------
+info "Create symbolic link for shorter compile name"
+if [ -f "$PREFIX/bin/nasm" ]; then
+    ln -sf "$PREFIX/bin/nasm" "$PREFIX/bin/i386-nasm"
+    success "Created symbolic link: $PREFIX/bin/i386-nasm → nasm"
+else
+    error "Could not create symlink — nasm not found in $PREFIX/bin!"
+fi
+
+# ---------------------------
 # Verify NASM
 # ---------------------------
 info "Verifying NASM installation..."
-if command -v nasm >/dev/null 2>&1; then
+if command -v i386-nasm >/dev/null 2>&1; then
     nasm -v
     success "NASM cross-assembler verification successful!"
     echo -e "${BOLD}Run 'source $RC_FILE' or open a new terminal to activate it globally.${RESET}"

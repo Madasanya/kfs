@@ -5,7 +5,7 @@ RM			= rm -rf
 
 ASFLAGS		= -felf32
 CFLAGS		= -std=gnu99 -ffreestanding -Wall -Wextra
-LDFLAGS		= -ffreestanding -O2 -nostdlib -lgcc
+LDFLAGS		= -ffreestanding -nostdlib -lgcc
 INCFLAG		= -I
 
 ASSRC		= boot.asm
@@ -48,35 +48,29 @@ fclean:		clean
 re:			fclean all
 
 build_gcc:
-			@if [ "$$(id -u)" -ne 0 ]; then \
-				printf "\033[31mERROR:\033[0m Needs to be called with sudo (run: sudo make $@)\n"; \
-				exit 1; \
-			fi
-				bash ./sripts/build_gcc_cross_compiler.sh
+				bash ./scripts/build_gcc_cross_compiler.sh
 
 build_as:
-			@if [ "$$(id -u)" -ne 0 ]; then \
-				printf "\033[31mERROR:\033[0m Needs to be called with sudo (run: sudo make $@)\n"; \
-				exit 1; \
-			fi
-				bash ./sripts/build_nasm_cross_assembler.sh
+				bash ./scripts/build_nasm_cross_assembler.sh
 
 build_tools:	build_gcc build_as
 
-create_image:
-			@if [ "$$(id -u)" -ne 0 ]; then \
-				printf "\033[31mERROR:\033[0m Needs to be called with sudo (run: sudo make $@)\n"; \
-				exit 1; \
-			fi
-			bash ./scripts/create_img.sh
-			
-run:
-			if grub-file --is-x86-multiboot myos.bin; then
-				echo multiboot confirmed
-			else
-				echo the file is not multiboot
-			fi
-			create_image
-			qemu-system-i386 -drive file=bootdisk.img,format=raw -m 128M 
+check_bin:
+				echo "Checking multiboot header in $(NAME)..."
+				@if grub-file --is-x86-multiboot $(NAME) > /dev/null 2>&1; then \
+					echo "multiboot confirmed"; \
+				else \
+					echo "ERROR: $(NAME) is NOT a valid multiboot kernel"; \
+					exit 1; \
+				fi
 
-.PHONY:		all clean fclean re test
+
+create_image: check_bin
+				sudo bash ./scripts/create_img.sh run
+					
+run: all create_image
+				echo "Launching QEMU..."
+				sudo qemu-system-i386 -drive file=./boot/bootdisk.img,format=raw -m 128M
+				
+
+.PHONY:		all clean fclean re build_gcc build_as build_tools check_bin create_image run
