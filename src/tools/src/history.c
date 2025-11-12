@@ -4,7 +4,7 @@ void md_history_clear(void)
 {
     for (uint32_t i = 0; i < HISTORY_HEIGHT; i++)
     {
-        // Clear each history entry if needed
+        history_buffer.entries[i].command[0] = '\0';
     }
 }
 
@@ -17,12 +17,21 @@ void md_history_init(void)
 
 void md_history_add_entry(char *entry)
 {
-    // Add a new entry to the history buffer
+    history_buffer.index++;
+    if (HISTORY_HEIGHT % history_buffer.index == 0 && history_buffer.index != 0)
+    {
+        history_buffer.index = 0;
+    }
+    for (uint32_t i = 0; i < HISTORY_WIDTH - 1 && entry[i] != '\0'; i++)
+    {
+        history_buffer.entries[history_buffer.index].command[i] = entry[i];
+        history_buffer.entries[history_buffer.index].command[i + 1] = '\0';
+    }
 }  
 
 char* md_history_get_entry(uint32_t index)
 {
-    return history_buffer.entries[index];
+    return history_buffer.entries[index].command;
 }
 
 void md_history_print(void)
