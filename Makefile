@@ -9,7 +9,7 @@ LDFLAGS		= -ffreestanding -nostdlib -lgcc
 INCFLAG		= -I
 
 ASSRC		= boot.asm
-CSRC		= main/src/kernel.c main/src/start.c tools/src/str_utils.c
+CSRC		= main/src/kernel.c main/src/start.c tools/src/str_utils.c  tools/src/errlog
 LDSRC		= kernel.ld
 
 SRCD		= ./src/
