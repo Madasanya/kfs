@@ -3,11 +3,15 @@
 /** @brief Global cursor position for text output. */
 uint8_t cursor = 0;
 
-uint16_t md_strlen(char* str)
+uint16_t md_strlen(const char* str)
 {
     uint16_t ret = 0;
     while (*str != '\0')
     {
+        if (ret == STR_MAX_LEN)
+        {
+            break;
+        }
         ret++;
         str++;
     }
@@ -29,7 +33,7 @@ int8_t md_put_char(char c)
     return (ret);
 }
 
-int16_t md_put_str(char *str)
+int16_t md_put_str(const char *str)
 {
     int16_t ret = 0;
     while (*str != 0)
@@ -73,4 +77,22 @@ void md_ptoa(uint32_t num, char *output)
     }
     output[j] = '\0';
     return;
+}
+
+uint16_t md_strlencpy(char *dest, const char *src, uint16_t len)
+{
+    uint16_t ret = 0;
+    while (*src != '\0')
+    {
+        ret++;
+        if (ret == len)
+        {
+            break;
+        }
+        *dest = *src;
+        src++;
+        dest++;
+    }
+    *dest = '\0';
+    return (ret);
 }

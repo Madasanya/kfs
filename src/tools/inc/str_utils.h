@@ -3,6 +3,8 @@
 
 #include "inttype.h"
 
+#define STR_MAX_LEN 65535u
+
 /**
  * @brief   Calculates the length of a null-terminated string.
  *
@@ -13,7 +15,7 @@
  * 
  * @return The length of the string (excluding the null terminator).
  */
-uint16_t md_strlen(char* str);
+uint16_t md_strlen(const char* str);
 
 /**
  * @brief Outputs a single character to the text screen at the current cursor position.
@@ -38,7 +40,7 @@ int8_t md_put_char(char c);
  * 
  * @return The number of characters written on success, -1 on error.
  */
-int16_t md_put_str(char *str);
+int16_t md_put_str(const char *str);
 
 /**
  * @brief   Converts a 32-bit unsigned integer to a hexadecimal string.
@@ -52,5 +54,35 @@ int16_t md_put_str(char *str);
  *                      The buffer should be large enough (at least 9 bytes for 32-bit hex + null).
  */
 void md_ptoa(uint32_t num, char *output);
+
+/**
+ * @brief Safely copies a string to a fixed-size buffer with truncation.
+ *
+ * @details
+ * Copies at most (len - 1) characters from src to dest, always ensuring dest
+ * is null-terminated. If src is longer than (len - 1), the copy is truncated,
+ * but the full length of src (capped at len) is returned. This allows detecting
+ * truncation by checking if the return value == len.
+ *
+ * If len == 0, does nothing and returns 0 (dest unchanged, but should be valid).
+ * If len == 1, sets dest[0] = '\0' and returns min(1, strlen(src)).
+ *
+ * This is similar to the standard strlcpy() function, providing bounds-checked
+ * string copying to prevent buffer overflows. Note: unlike standard strlcpy,
+ * the return value is min(strlen(src), len), not always strlen(src).
+ *
+ * @param[out] dest Destination buffer to copy into (must be at least len bytes).
+ * @param[in]  src  Null-terminated source string to copy from.
+ * @param[in]  len  Maximum size of dest buffer (including null terminator).
+ *
+ * @return min(strlen(src), len) - the number of iterations performed.
+ *         If return == len, truncation likely occurred (unless strlen(src) exactly == len, but see note).
+ *
+ * @note src must be null-terminated; otherwise, behavior is undefined.
+ * @note dest must be writable and at least len bytes; no overlap with src allowed.
+ * @warning If len is 0 or dest is NULL, may cause undefined behavior.
+ * @note For exact strlen(src) == len, it truncates the last character (does not copy it), so treat == len as truncated.
+ */
+uint16_t md_strlencpy(char *dest, const char *src, uint16_t len);
 
 #endif /* _STR_UTILS_H_ */
