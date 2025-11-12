@@ -1,11 +1,7 @@
-#include "start.h"
-#include "inttype.h"
 #include "history.h"
-#include "str_utils.h"
 
 void md_history_clear(void)
 {
-    // Clear the history buffer
     for (uint32_t i = 0; i < HISTORY_HEIGHT; i++)
     {
         // Clear each history entry if needed
@@ -14,12 +10,9 @@ void md_history_clear(void)
 
 void md_history_init(void)
 {
-    // Initialize history buffer or related structures here
-    //Loop through history buffer and set to zero
-    for (uint32_t i = 0; i < HISTORY_HEIGHT; i++)
-    {
-        // Initialize each history entry if needed
-    }
+    history_buffer_t history_buffer = {0};
+    md_history_clear();
+    history_buffer.index = 0;
 }
 
 void md_history_add_entry(char *entry)
@@ -29,17 +22,30 @@ void md_history_add_entry(char *entry)
 
 char* md_history_get_entry(uint32_t index)
 {
-    // Retrieve an entry from the history buffer by index
-    return (char*)0;
+    return history_buffer.entries[index];
 }
 
 void md_history_print(void)
 {
-    // Print the history buffer to the screen or log
-    for (uint32_t i = 0; i < HISTORY_HEIGHT; i++)
+    uint16_t pos_helper = history_buffer.index - (SCREEN_HEIGHT - 1);
+
+    if (pos_helper < 0)
     {
-        // Print each history entry if needed
-        md_put_str("History entry placeholder\n");
+        for (uint32_t i = HISTORY_HEIGHT + pos_helper; i <= HISTORY_HEIGHT - 1; i++)
+        {
+            md_put_str(md_history_get_entry(i));
+        }
+        for (uint32_t i = 0; i <= history_buffer.index; i++)
+        {
+            md_put_str(md_history_get_entry(i));
+        }
+    }
+    else
+    {
+        for (uint32_t i = pos_helper; i <= history_buffer.index; i++)
+        {
+            md_put_str(md_history_get_entry(i));
+        }
     }
 }
 
