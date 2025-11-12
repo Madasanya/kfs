@@ -1,7 +1,23 @@
 #ifndef _HISTORY_H
 #define _HISTORY_H
 
+#include "start.h"
+#include "inttype.h"
+#include "str_utils.h"
+
+#define HISTORY_WIDTH      SCREEN_WIDTH
 #define HISTORY_HEIGHT     100u
+
+typedef struct history_entry_s
+{
+    char command[HISTORY_WIDTH];
+} history_entry_t;
+
+typedef struct history_buffer_s
+{
+    history_entry_t entries[HISTORY_HEIGHT];
+    uint32_t index;
+} history_buffer_t;
 
 /**
  * @brief   Clears the history buffer.
