@@ -40,7 +40,7 @@ void md_history_init(void);
  *
  * @param[in] entry Pointer to the null-terminated string to add to history.
  */
-void md_history_add_entry(char *entry);
+void md_history_add_entry(const char *entry);
 
 /**
  * @brief   Retrieves an entry from the history buffer by index.
@@ -52,6 +52,15 @@ void md_history_add_entry(char *entry);
  * @return Pointer to the null-terminated string of the history entry.
  */
 char* md_history_get_entry(uint32_t index);
+
+/**
+ * @brief   Retrieves the current index in the history buffer.
+ *
+ * @details This function returns the current index where the next entry will be added.
+ * 
+ * @return The current history index.
+ */ 
+uint32_t md_history_get_last_command_index();
 
 /**
  * @brief   Prints the history buffer to the screen.
