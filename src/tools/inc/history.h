@@ -22,21 +22,24 @@ typedef struct history_buffer_s
 /**
  * @brief   Clears the history buffer.
  *
- * @details This function iterates through the buffer and sets the entries to an initial state.
+ * @details Clears all entries in the history buffer by setting the first character
+ *          of each command to null terminator and resetting the index to 0.
  */
 void md_history_clear(void);
 
 /**
  * @brief   Initializes the history buffer.
  *
- * @details This function sets up the history buffer for use, preparing any necessary structures.
+ * @details Initializes the history buffer by clearing all entries.
  */
 void md_history_init(void);
 
 /**
  * @brief   Adds a new entry to the history buffer.
  *
- * @details This function appends a new entry to the history buffer.
+ * @details Adds a new command entry to the history buffer. Copies the entry string 
+ *          character by character up to HISTORY_WIDTH - 1 characters. The buffer 
+ *          operates as a circular buffer, wrapping around when full.
  *
  * @param[in] entry Pointer to the null-terminated string to add to history.
  */
@@ -45,7 +48,8 @@ void md_history_add_entry(const char *entry);
 /**
  * @brief   Retrieves an entry from the history buffer by index.
  *
- * @details This function returns a pointer to the history entry at the specified index.
+ * @details Retrieves a history entry by index. Returns a pointer to the command 
+ *          string at the specified index.
  *
  * @param[in] index The index of the history entry to retrieve.
  * 
@@ -54,18 +58,23 @@ void md_history_add_entry(const char *entry);
 char* md_history_get_entry(uint32_t index);
 
 /**
- * @brief   Retrieves the current index in the history buffer.
+ * @brief   Retrieves the index of the most recently added command.
  *
- * @details This function returns the current index where the next entry will be added.
+ * @details Gets the index of the most recently added command. Handles wrap-around 
+ *          case when index is at 0 by returning HISTORY_HEIGHT - 1.
  * 
- * @return The current history index.
+ * @return The index of the last command in the history buffer.
  */ 
 uint32_t md_history_get_last_command_index();
 
 /**
  * @brief   Prints the history buffer to the screen.
  *
- * @details This function iterates through the history buffer and outputs each entry taking into consideration the SCREEN_HEIGHT.
+ * @details Prints the history buffer to screen, displaying up to SCREEN_HEIGHT entries.
+ *          Handles circular buffer wrap-around to show the most recent commands.
+ *          Calculates starting position for printing based on screen height. If 
+ *          wrap-around is needed, prints from the end of the buffer first, then 
+ *          from the beginning up to the last command.
  */
 void md_history_print(void);
 
