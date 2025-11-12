@@ -19,6 +19,7 @@ void md_history_init(void)
 void md_history_add_entry(const char *entry)
 {
     uint32_t i;
+    
     if(entry == NULL)
     {
         return;
@@ -35,9 +36,6 @@ void md_history_add_entry(const char *entry)
     {
         history_buffer.index = 0;
     }
-
-
-
 }  
 
 char* md_history_get_entry(uint32_t index)
