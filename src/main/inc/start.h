@@ -3,6 +3,9 @@
 
 #include "inttype.h"
 
+#define SCREEN_WIDTH 80u
+#define SCREEN_HEIGHT 25u
+
 /** @brief Structur for holding informations about kernel. */
 typedef struct __attribute__((packed)) kernel_ver_s
 {
