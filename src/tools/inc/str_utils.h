@@ -2,6 +2,7 @@
 #define _STR_UTILS_H_
 
 #include "inttype.h"
+#include "va_arg.h"
 
 #define STR_MAX_LEN 65535u
 
@@ -84,5 +85,106 @@ void md_ptoa(uint32_t num, char *output);
  * @note For exact strlen(src) == len, it truncates the last character (does not copy it), so treat == len as truncated.
  */
 uint16_t md_strlencpy(char *dest, const char *src, uint16_t len);
+
+/**
+ * @brief Converts a signed 32-bit integer to a string representation in a specified base.
+ *
+ * @details
+ * This function handles signed integers by adding a '-' sign if `num` is negative,
+ * taking the absolute value, and then delegating the conversion to `uitoa_base`.
+ * For non-negative numbers, it directly calls `uitoa_base`. The `output` buffer
+ * must be large enough to hold the resulting string, including the sign if present,
+ * plus a null terminator.
+ *
+ * @param [out] output Pointer to the buffer where the resulting string will be stored.
+ * @param [in] num The signed 32-bit integer to convert.
+ * @param [in] base String containing the digits for the base (e.g., "0123456789" for decimal).
+ */
+void itoa_base(char *output, int32_t num, const char* base);
+
+/**
+ * @brief Converts an unsigned 32-bit integer to a string representation in a specified base.
+ *
+ * @details
+ * This function converts the given unsigned integer `num` into its string representation
+ * using the characters provided in `base` as digits. The base length is determined by
+ * the length of the `base` string (e.g., "0123456789" for decimal, length 10).
+ * The result is stored in the `output` buffer, which must be large enough to hold
+ * the resulting string plus a null terminator. The string is built in reverse and then
+ * reversed in place for correctness.
+ *
+ * @param [out] output Pointer to the buffer where the resulting string will be stored.
+ * @param [in] num The unsigned 32-bit integer to convert.
+ * @param [in] base String containing the digits for the base (e.g., "0123456789ABCDEF" for hex).
+ */
+void uitoa_base(char *output, uint32_t num, const char* base);
+
+/**
+ * @brief Converts a signed 64-bit integer to a string representation in a specified base.
+ *
+ * @details
+ * This function handles signed long long integers by adding a '-' sign if `num` is
+ * negative, taking the absolute value, and then delegating the conversion to `ulltoa_base`.
+ * For non-negative numbers, it directly calls `ulltoa_base`. The `output` buffer
+ * must be large enough to hold the resulting string, including the sign if present,
+ * plus a null terminator.
+ *
+ * @param [out] output Pointer to the buffer where the resulting string will be stored.
+ * @param [in] num The signed 64-bit integer to convert.
+ * @param [in] base String containing the digits for the base (e.g., "0123456789" for decimal).
+ */
+void lltoa_base(char *output, int64_t num, const char* base);
+
+/**
+ * @brief Converts an unsigned 64-bit integer to a string representation in a specified base.
+ *
+ * @details
+ * This function converts the given unsigned long long integer `num` into its string
+ * representation using the characters provided in `base` as digits. The base length
+ * is determined by the length of the `base` string. The result is stored in the
+ * `output` buffer, which must be large enough to hold the resulting string plus
+ * a null terminator. The string is built in reverse and then reversed in place.
+ *
+ * @param [out] output Pointer to the buffer where the resulting string will be stored.
+ * @param [in] num The unsigned 64-bit integer to convert.
+ * @param [in] base String containing the digits for the base (e.g., "0123456789ABCDEF" for hex).
+ */
+void ulltoa_base(char *output, uint64_t num, const char* base);
+
+/**
+ * @brief Formats a string into a buffer using a format string and variable arguments.
+ *
+ * @details This is a wrapper around vsnprintf_args that initializes and cleans up
+ * the va_list from the variable arguments. It formats the string according to `fmt`
+ * and writes up to `size - 1` characters to `buf`, null-terminating it.
+ *
+ * @param [out] buf Buffer to write the formatted string to.
+ * @param [in] size Maximum size of the buffer (including null terminator).
+ * @param [in] fmt Format string.
+ * @param ... Variable arguments.
+ * @return The number of characters written (excluding null terminator).
+ */
+int vsnprintf(char *buf, uint16_t size, const char *fmt, ...)
+    __attribute__((format(printf, 3, 4)));
+/* This attribute enables GCC to perform format string and argument type checking
+ * on vsnprintf calls, similar to how it checks snprintf or printf. It treats the
+ * format string as parameter 3 and the variable arguments starting at parameter 4. */
+
+/**
+ * @brief Formats a string into a buffer using a format string and va_list arguments.
+ *
+ * @details This function implements a subset of snprintf functionality, parsing
+ * the format string `fmt` and using the variable arguments from `args` to build
+ * the output string in `buf` up to `size - 1` characters, null-terminating it.
+ * Supports specifiers: %d, %i, %u, %ld, %lu, %lld, %llu, %x, %X, %s, %c, %p, %ph, %pH, %%.
+ * Handles buffer overflow by stopping early.
+ *
+ * @param [out] buf Buffer to write the formatted string to.
+ * @param [in] size Maximum size of the buffer (including null terminator).
+ * @param [in] fmt Format string.
+ * @param [inout] args Variable arguments list.
+ * @return The number of characters written (excluding null terminator).
+ */
+int vsnprintf_args(char *buf, uint16_t size, const char *fmt, va_list args);
 
 #endif /* _STR_UTILS_H_ */

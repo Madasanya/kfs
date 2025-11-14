@@ -1,4 +1,6 @@
 #include "str_utils.h"
+#include "errlog.h"
+#include "start.h"
 
 void kernel(void)
 {

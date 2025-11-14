@@ -11,6 +11,8 @@
 #define int32_t     long
 #define int64_t     long long
 
+#define uintptr_t unsigned int
+
 #define NULL (void *)0u
 
 #endif /* _INTTYPE_H_ */
