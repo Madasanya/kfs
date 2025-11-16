@@ -86,8 +86,8 @@ typedef enum
 /** @brief Maximum number of entries stored in the circular log buffer. */
 #define ERRLOG_LOG_LEN 100
 
-/** @brief Maximum length of a log message, including null terminator. */
-#define ERRLOG_MSG_LEN 80
+/** @brief Maximum length of a log message, excluding null terminator. */
+#define ERRLOG_MSG_LEN 77
 
 /** @brief Default logging level used when ERRLOG_LVL_DEFAULT is not in init specified. */
 #define ERRLOG_DEFAULT_ERR_LVL ERRLOG_LVL_WARNING
