@@ -4,6 +4,7 @@
 #include "start.h"
 #include "inttype.h"
 #include "str_utils.h"
+#include "screen.h"
 
 #define HISTORY_WIDTH      SCREEN_WIDTH
 #define HISTORY_HEIGHT     100u

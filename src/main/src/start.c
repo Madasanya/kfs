@@ -1,5 +1,4 @@
 #include "multiboot.h"
-#include "inttype.h"
 #include "start.h"
 
 kernel_ver_t version __attribute__((section(".kernel_info"))) = \
