@@ -1,9 +1,7 @@
 #ifndef _HISTORY_H
 #define _HISTORY_H
 
-#include "start.h"
 #include "inttype.h"
-#include "str_utils.h"
 #include "kernel.h"
 
 #define HISTORY_WIDTH      SCREEN_WIDTH
@@ -28,7 +26,7 @@ typedef struct history_buffer_s
  *
  * @param[in,out] history_buffer Pointer to the history buffer to clear.
  */
-void md_history_clear(history_buffer_t *history_buffer);
+void history_clear(history_buffer_t *history_buffer);
 
 /**
  * @brief   Initializes the history buffer.
@@ -37,7 +35,7 @@ void md_history_clear(history_buffer_t *history_buffer);
  *
  * @param[in,out] history_buffer Pointer to the history buffer to initialize.
  */
-void md_history_init(history_buffer_t *history_buffer);
+void history_init(history_buffer_t *history_buffer);
 
 /**
  * @brief   Adds a new entry to the history buffer.
@@ -49,7 +47,7 @@ void md_history_init(history_buffer_t *history_buffer);
  * @param[in,out] history_buffer Pointer to the history buffer.
  * @param[in]     entry          Pointer to the null-terminated string to add to history.
  */
-void md_history_add_entry(history_buffer_t *history_buffer, const char *entry);
+void history_add_entry(history_buffer_t *history_buffer, const char *entry);
 
 /**
  * @brief   Retrieves an entry from the history buffer by index.
@@ -62,7 +60,7 @@ void md_history_add_entry(history_buffer_t *history_buffer, const char *entry);
  * 
  * @return Pointer to the null-terminated string of the history entry.
  */
-char* md_history_get_entry(history_buffer_t *history_buffer, uint32_t index);
+char* history_get_entry(history_buffer_t *history_buffer, uint32_t index);
 
 /**
  * @brief   Retrieves the index of the most recently added command.
@@ -74,19 +72,6 @@ char* md_history_get_entry(history_buffer_t *history_buffer, uint32_t index);
  * 
  * @return The index of the last command in the history buffer.
  */ 
-uint32_t md_history_get_last_command_index(history_buffer_t *history_buffer);
-
-/**
- * @brief   Prints the history buffer to the screen.
- *
- * @details Prints the history buffer to screen, displaying up to SCREEN_HEIGHT entries.
- *          Handles circular buffer wrap-around to show the most recent commands.
- *          Calculates starting position for printing based on screen height. If 
- *          wrap-around is needed, prints from the end of the buffer first, then 
- *          from the beginning up to the last command.
- *
- * @param[in] history_buffer Pointer to the history buffer to print.
- */
-void md_history_print(history_buffer_t *history_buffer);
+uint32_t history_get_last_command_index(history_buffer_t *history_buffer);
 
 #endif /* _HISTORY_H */

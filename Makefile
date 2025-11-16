@@ -14,7 +14,8 @@ CSRC		= main/src/kernel.c \
 			  tools/src/str_utils.c \
 			  tools/src/errlog.c \
 			  tools/src/history.c \
-			  tools/src/screen.c
+			  tools/src/screen.c \
+			  tools/src/colors.c
 LDSRC		= kernel.ld
 
 SRCD		= ./src/
