@@ -23,7 +23,7 @@ int8_t md_put_char(char c)
     volatile char *txt_out = (volatile char*)0xB8000;
     int8_t ret = -1;
 
-    if(cursor < 80)
+    if(cursor < 160)
     {
         txt_out[cursor] = c;
         txt_out[cursor + 1] = 0x20;
