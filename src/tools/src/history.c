@@ -1,4 +1,5 @@
 #include "history.h"
+#include "screen.h"
 
 void md_history_clear(history_buffer_t *history_buffer)
 {
