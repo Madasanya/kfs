@@ -2,6 +2,7 @@
 #define _START_H_
 
 #include "inttype.h"
+#include "errlog.h"
 
 #define SCREEN_WIDTH 80u
 #define SCREEN_HEIGHT 25u
@@ -18,5 +19,6 @@ typedef struct __attribute__((packed)) kernel_ver_s
 #define MINOR_VER 0x00
 
 extern kernel_ver_t version;
+extern errlog_t errlog;
 
 #endif /* _START_H_ */

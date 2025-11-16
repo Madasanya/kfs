@@ -96,3 +96,91 @@ uint16_t md_strlencpy(char *dest, const char *src, uint16_t len)
     *dest = '\0';
     return (ret);
 }
+
+void md_uitoa_base(char *output, uint32_t num, const char* base)
+{
+    char *iter = output;
+    uint16_t remainder, divisor = md_strlen(base);
+    char tmp;
+
+    do
+    {
+        remainder = num % divisor;
+        *iter = base[remainder];
+        iter++;
+        num /= divisor;
+    }
+    while (num != 0u);
+
+    *iter = '\0';
+    iter--;
+    
+    // Reverse string
+    while (output < iter)
+    {
+        tmp = *output;
+        *output = *iter;
+        *iter = tmp;
+        output++;
+        iter--;
+    }
+}
+
+void md_itoa_base(char *output, int32_t num, const char* base)
+{
+    if (num < 0)
+    {
+        output[0] = '-';
+        output++;
+        num *= -1;
+        md_uitoa_base(output, (uint32_t)num, base);
+    }
+    else
+    {
+        md_uitoa_base(output, (uint32_t)num, base);
+    }
+}
+
+void md_ulltoa_base(char *output, uint64_t num, const char* base)
+{
+    char *iter = output;
+    uint16_t remainder, divisor = md_strlen(base);
+    char tmp;
+
+    do
+    {
+        remainder = num % divisor;
+        *iter = base[remainder];
+        iter++;
+        num /= divisor;
+    }
+    while (num != 0u);
+
+    *iter = '\0';
+    iter--;
+    
+    // Reverse string
+    while (output < iter)
+    {
+        tmp = *output;
+        *output = *iter;
+        *iter = tmp;
+        output++;
+        iter--;
+    }
+}
+
+void md_lltoa_base(char *output, int64_t num, const char* base)
+{
+    if (num < 0)
+    {
+        output[0] = '-';
+        output++;
+        num *= -1;
+        md_ulltoa_base(output, (uint64_t)num, base);
+    }
+    else
+    {
+        md_ulltoa_base(output, (uint64_t)num, base);
+    }
+}
