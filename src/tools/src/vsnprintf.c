@@ -4,6 +4,7 @@
 #define DEC_BASE "0123456789"
 #define HEX_BASE_UPPER "0123456789ABCDEF"
 #define HEX_BASE_LOWER "0123456789abcdef"
+#define HEX_DUMP_LEN sizeof(unsigned long)
 
 /**
  * @brief Appends a single character to the buffer if space is available.
@@ -69,7 +70,7 @@ static inline void append_number(char **buf_ptr, char *end, const char *numbuf)
  */
 static inline void handle_signed(char **buf_ptr, char *end, int32_t val, char numbuf[32])
 {
-    itoa_base(numbuf, val, DEC_BASE);
+    md_itoa_base(numbuf, val, DEC_BASE);
     append_number(buf_ptr, end, numbuf);
 }
 
@@ -86,7 +87,7 @@ static inline void handle_signed(char **buf_ptr, char *end, int32_t val, char nu
  */
 static inline void handle_unsigned(char **buf_ptr, char *end, uint32_t val, char numbuf[32])
 {
-    uitoa_base(numbuf, val, DEC_BASE);
+    md_uitoa_base(numbuf, val, DEC_BASE);
     append_number(buf_ptr, end, numbuf);
 }
 
@@ -103,7 +104,7 @@ static inline void handle_unsigned(char **buf_ptr, char *end, uint32_t val, char
  */
 static inline void handle_signedll(char **buf_ptr, char *end, int64_t val, char numbuf[32])
 {
-    lltoa_base(numbuf, val, DEC_BASE);
+    md_lltoa_base(numbuf, val, DEC_BASE);
     append_number(buf_ptr, end, numbuf);
 }
 
@@ -120,7 +121,7 @@ static inline void handle_signedll(char **buf_ptr, char *end, int64_t val, char 
  */
 static inline void handle_unsignedll(char **buf_ptr, char *end, uint64_t val, char numbuf[32])
 {
-    ulltoa_base(numbuf, val, DEC_BASE);
+    md_ulltoa_base(numbuf, val, DEC_BASE);
     append_number(buf_ptr, end, numbuf);
 }
 
@@ -137,7 +138,7 @@ static inline void handle_unsignedll(char **buf_ptr, char *end, uint64_t val, ch
  */
 static inline void handle_lower_hex(char **buf_ptr, char *end, int32_t val, char numbuf[32])
 {
-    itoa_base(numbuf, val, HEX_BASE_LOWER);
+    md_itoa_base(numbuf, val, HEX_BASE_LOWER);
     append_number(buf_ptr, end, numbuf);
 }
 
@@ -154,7 +155,7 @@ static inline void handle_lower_hex(char **buf_ptr, char *end, int32_t val, char
  */
 static inline void handle_upper_hex(char **buf_ptr, char *end, int32_t val, char numbuf[32])
 {
-    itoa_base(numbuf, val, HEX_BASE_UPPER);
+    md_itoa_base(numbuf, val, HEX_BASE_UPPER);
     append_number(buf_ptr, end, numbuf);
 }
 
@@ -197,27 +198,28 @@ static void handle_string(char **buf_ptr, char *end, const char *str) {
 static const char *handle_pointer(char **buf_ptr, char *end, uintptr_t ptr, char numbuf[32], const char *fmt)
 {
     char subtype = *fmt; // Peek for extension
+
     if ((subtype == 'h' || subtype == 'H') && (ptr != 0u))
     { // %ph or %pH: hex dump (lowercase/uppercase)
         fmt++; /* Consume h or H */
         append_char(buf_ptr, end, '[');
-        for (int i = 0; i < 4 && *buf_ptr < end; i++) // Dump 8 bytes
+        for (uint8_t i = 0; i < HEX_DUMP_LEN && *buf_ptr < end; i++) // Dump 8 bytes
         {
-            unsigned char byte = ((uint8_t *)ptr)[i];
+            uint8_t byte = ((uint8_t *)ptr)[i];
             if (subtype == 'h')
             {
-                uitoa_base(numbuf, byte, HEX_BASE_LOWER);
+                md_uitoa_base(numbuf, byte, HEX_BASE_LOWER);
             }
             else
             {
-                uitoa_base(numbuf, byte, HEX_BASE_UPPER);
+                md_uitoa_base(numbuf, byte, HEX_BASE_UPPER);
             }
             if (md_strlen(numbuf) == 1)
             {
                 append_char(buf_ptr, end, '0'); // Pad to 2 digits
             }
             append_number(buf_ptr, end, numbuf);
-            if (i < 7) {
+            if (i < (HEX_DUMP_LEN - 1)) {
                 append_char(buf_ptr, end, ' ');
             }
         }
@@ -227,13 +229,13 @@ static const char *handle_pointer(char **buf_ptr, char *end, uintptr_t ptr, char
     {
         append_char(buf_ptr, end, '0');
         append_char(buf_ptr, end, 'x');
-        uitoa_base(numbuf, ptr, HEX_BASE_LOWER);
+        md_uitoa_base(numbuf, ptr, HEX_BASE_LOWER);
         append_number(buf_ptr, end, numbuf);
     }
     return fmt;
 }
 
-int vsnprintf_args(char *buf, uint16_t size, const char *fmt, va_list args)
+int md_vsnprintf_args(char *buf, uint16_t size, const char *fmt, va_list args)
 {
     char *start = buf;
     char *end = buf + size - 1;
@@ -245,13 +247,20 @@ int vsnprintf_args(char *buf, uint16_t size, const char *fmt, va_list args)
     char temp_c;
     char *temp_str;
     uintptr_t temp_ptr;
+
     while (*fmt && buf < end) {
         if (*fmt != '%') {
-            *buf++ = *fmt++;
+            *buf = *fmt;
+            buf++;
+            fmt++;
             continue;
         }
         fmt++;
-        char spec = *fmt++;
+        char spec = *fmt;
+        if (spec != '\0')
+        {
+            fmt++;
+        }
         switch (spec) {
         case 'd':
         case 'i':
@@ -335,12 +344,12 @@ int vsnprintf_args(char *buf, uint16_t size, const char *fmt, va_list args)
     return buf - start;
 }
 
-int vsnprintf(char *buf, uint16_t size, const char *fmt, ...)
+int md_vsnprintf(char *buf, uint16_t size, const char *fmt, ...)
 {
     va_list args;
     int ret;
     va_start(args, fmt);
-    ret = vsnprintf_args(buf, size, fmt, args);
+    ret = md_vsnprintf_args(buf, size, fmt, args);
     va_end(args);
     return (ret);
 }

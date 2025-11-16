@@ -80,7 +80,7 @@ static errlog_err_lvl_t printk_lvl_get(const char **fmt)
 }
 
 
-void printk(const char *fmt, ...)
+void md_printk(const char *fmt, ...)
 {
     errlog_err_lvl_t lvl;
     char buff[PRINTK_BUFF_SIZE];
@@ -92,7 +92,7 @@ void printk(const char *fmt, ...)
     }
     lvl = printk_lvl_get(&fmt);
     va_start(args, fmt);
-    (void)vsnprintf_args(buff, PRINTK_BUFF_SIZE, fmt, args);
+    (void)md_vsnprintf_args(buff, PRINTK_BUFF_SIZE, fmt, args);
     va_end(args);
     errlog_write(&errlog, lvl, buff);
 }

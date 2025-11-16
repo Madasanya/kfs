@@ -97,7 +97,7 @@ uint16_t md_strlencpy(char *dest, const char *src, uint16_t len)
     return (ret);
 }
 
-void uitoa_base(char *output, uint32_t num, const char* base)
+void md_uitoa_base(char *output, uint32_t num, const char* base)
 {
     char *iter = output;
     uint16_t remainder, divisor = md_strlen(base);
@@ -126,22 +126,22 @@ void uitoa_base(char *output, uint32_t num, const char* base)
     }
 }
 
-void itoa_base(char *output, int32_t num, const char* base)
+void md_itoa_base(char *output, int32_t num, const char* base)
 {
     if (num < 0)
     {
         output[0] = '-';
         output++;
         num *= -1;
-        uitoa_base(output, (uint32_t)num, base);
+        md_uitoa_base(output, (uint32_t)num, base);
     }
     else
     {
-        uitoa_base(output, (uint32_t)num, base);
+        md_uitoa_base(output, (uint32_t)num, base);
     }
 }
 
-void ulltoa_base(char *output, uint64_t num, const char* base)
+void md_ulltoa_base(char *output, uint64_t num, const char* base)
 {
     char *iter = output;
     uint16_t remainder, divisor = md_strlen(base);
@@ -170,17 +170,17 @@ void ulltoa_base(char *output, uint64_t num, const char* base)
     }
 }
 
-void lltoa_base(char *output, int64_t num, const char* base)
+void md_lltoa_base(char *output, int64_t num, const char* base)
 {
     if (num < 0)
     {
         output[0] = '-';
         output++;
         num *= -1;
-        ulltoa_base(output, (uint64_t)num, base);
+        md_ulltoa_base(output, (uint64_t)num, base);
     }
     else
     {
-        ulltoa_base(output, (uint64_t)num, base);
+        md_ulltoa_base(output, (uint64_t)num, base);
     }
 }

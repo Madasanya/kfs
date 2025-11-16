@@ -28,7 +28,7 @@
  * @param [in] fmt The format string, potentially prefixed with a log level.
  * @param ... Variable arguments for the format string.
  */
-void printk(const char *fmt, ...)
+void md_printk(const char *fmt, ...)
     __attribute__((format(printf, 1, 2)));
 /* This attribute enables GCC to perform format string and argument type checking
  * on printk calls, similar to how it checks printf. It treats the format string

@@ -100,7 +100,7 @@ uint16_t md_strlencpy(char *dest, const char *src, uint16_t len);
  * @param [in] num The signed 32-bit integer to convert.
  * @param [in] base String containing the digits for the base (e.g., "0123456789" for decimal).
  */
-void itoa_base(char *output, int32_t num, const char* base);
+void md_itoa_base(char *output, int32_t num, const char* base);
 
 /**
  * @brief Converts an unsigned 32-bit integer to a string representation in a specified base.
@@ -117,7 +117,7 @@ void itoa_base(char *output, int32_t num, const char* base);
  * @param [in] num The unsigned 32-bit integer to convert.
  * @param [in] base String containing the digits for the base (e.g., "0123456789ABCDEF" for hex).
  */
-void uitoa_base(char *output, uint32_t num, const char* base);
+void md_uitoa_base(char *output, uint32_t num, const char* base);
 
 /**
  * @brief Converts a signed 64-bit integer to a string representation in a specified base.
@@ -133,7 +133,7 @@ void uitoa_base(char *output, uint32_t num, const char* base);
  * @param [in] num The signed 64-bit integer to convert.
  * @param [in] base String containing the digits for the base (e.g., "0123456789" for decimal).
  */
-void lltoa_base(char *output, int64_t num, const char* base);
+void md_lltoa_base(char *output, int64_t num, const char* base);
 
 /**
  * @brief Converts an unsigned 64-bit integer to a string representation in a specified base.
@@ -149,7 +149,7 @@ void lltoa_base(char *output, int64_t num, const char* base);
  * @param [in] num The unsigned 64-bit integer to convert.
  * @param [in] base String containing the digits for the base (e.g., "0123456789ABCDEF" for hex).
  */
-void ulltoa_base(char *output, uint64_t num, const char* base);
+void md_ulltoa_base(char *output, uint64_t num, const char* base);
 
 /**
  * @brief Formats a string into a buffer using a format string and variable arguments.
@@ -164,7 +164,7 @@ void ulltoa_base(char *output, uint64_t num, const char* base);
  * @param ... Variable arguments.
  * @return The number of characters written (excluding null terminator).
  */
-int vsnprintf(char *buf, uint16_t size, const char *fmt, ...)
+int md_vsnprintf(char *buf, uint16_t size, const char *fmt, ...)
     __attribute__((format(printf, 3, 4)));
 /* This attribute enables GCC to perform format string and argument type checking
  * on vsnprintf calls, similar to how it checks snprintf or printf. It treats the
@@ -185,6 +185,6 @@ int vsnprintf(char *buf, uint16_t size, const char *fmt, ...)
  * @param [inout] args Variable arguments list.
  * @return The number of characters written (excluding null terminator).
  */
-int vsnprintf_args(char *buf, uint16_t size, const char *fmt, va_list args);
+int md_vsnprintf_args(char *buf, uint16_t size, const char *fmt, va_list args);
 
 #endif /* _STR_UTILS_H_ */
