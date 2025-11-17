@@ -9,7 +9,7 @@
 
 typedef struct history_entry_s
 {
-    char command[HISTORY_WIDTH];
+    uint16_t command[HISTORY_WIDTH];
 } history_entry_t;
 
 typedef struct history_buffer_s
@@ -21,8 +21,8 @@ typedef struct history_buffer_s
 /**
  * @brief   Clears the history buffer.
  *
- * @details Clears all entries in the history buffer by setting the first character
- *          of each command to null terminator and resetting the index to 0.
+ * @details Clears all entries in the history buffer by zeroing out the first
+ *          colored character value and resetting the index to 0.
  *
  * @param[in,out] history_buffer Pointer to the history buffer to clear.
  */
@@ -40,27 +40,27 @@ void history_init(history_buffer_t *history_buffer);
 /**
  * @brief   Adds a new entry to the history buffer.
  *
- * @details Adds a new command entry to the history buffer. Copies the entry string 
- *          character by character up to HISTORY_WIDTH - 1 characters. The buffer 
+ * @details Adds a new screen line to the history buffer. Copies the pre-computed 
+ *          colored character values for the entire screen width. The buffer 
  *          operates as a circular buffer, wrapping around when full.
  *
  * @param[in,out] history_buffer Pointer to the history buffer.
- * @param[in]     entry          Pointer to the null-terminated string to add to history.
+ * @param[in]     entry          Pointer to the colored character buffer (uint16_t array).
  */
-void history_add_entry(history_buffer_t *history_buffer, const char *entry);
+void history_add_entry(history_buffer_t *history_buffer, const uint16_t *entry);
 
 /**
  * @brief   Retrieves an entry from the history buffer by index.
  *
- * @details Retrieves a history entry by index. Returns a pointer to the command 
- *          string at the specified index.
+ * @details Retrieves a history entry by index. Returns a pointer to the colored 
+ *          character buffer at the specified index.
  *
  * @param[in] history_buffer Pointer to the history buffer.
  * @param[in] index          The index of the history entry to retrieve.
  * 
- * @return Pointer to the null-terminated string of the history entry.
+ * @return Pointer to the colored character buffer (uint16_t array).
  */
-char* history_get_entry(history_buffer_t *history_buffer, uint32_t index);
+uint16_t* history_get_entry(history_buffer_t *history_buffer, uint32_t index);
 
 /**
  * @brief   Retrieves the index of the most recently added command.
