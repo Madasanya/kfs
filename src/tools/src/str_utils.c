@@ -3,11 +3,15 @@
 /** @brief Global cursor position for text output. */
 uint8_t cursor = 0;
 
-uint16_t md_strlen(char* str)
+uint16_t md_strlen(const char* str)
 {
     uint16_t ret = 0;
     while (*str != '\0')
     {
+        if (ret == STR_MAX_LEN)
+        {
+            break;
+        }
         ret++;
         str++;
     }
@@ -19,7 +23,7 @@ int8_t md_put_char(char c)
     volatile char *txt_out = (volatile char*)0xB8000;
     int8_t ret = -1;
 
-    if(cursor < 80)
+    if(cursor < 160)
     {
         txt_out[cursor] = c;
         txt_out[cursor + 1] = 0x20;
@@ -29,7 +33,7 @@ int8_t md_put_char(char c)
     return (ret);
 }
 
-int16_t md_put_str(char *str)
+int16_t md_put_str(const char *str)
 {
     int16_t ret = 0;
     while (*str != 0)
@@ -73,4 +77,110 @@ void md_ptoa(uint32_t num, char *output)
     }
     output[j] = '\0';
     return;
+}
+
+uint16_t md_strlencpy(char *dest, const char *src, uint16_t len)
+{
+    uint16_t ret = 0;
+    while (*src != '\0')
+    {
+        ret++;
+        if (ret == len)
+        {
+            break;
+        }
+        *dest = *src;
+        src++;
+        dest++;
+    }
+    *dest = '\0';
+    return (ret);
+}
+
+void md_uitoa_base(char *output, uint32_t num, const char* base)
+{
+    char *iter = output;
+    uint16_t remainder, divisor = md_strlen(base);
+    char tmp;
+
+    do
+    {
+        remainder = num % divisor;
+        *iter = base[remainder];
+        iter++;
+        num /= divisor;
+    }
+    while (num != 0u);
+
+    *iter = '\0';
+    iter--;
+    
+    // Reverse string
+    while (output < iter)
+    {
+        tmp = *output;
+        *output = *iter;
+        *iter = tmp;
+        output++;
+        iter--;
+    }
+}
+
+void md_itoa_base(char *output, int32_t num, const char* base)
+{
+    if (num < 0)
+    {
+        output[0] = '-';
+        output++;
+        num *= -1;
+        md_uitoa_base(output, (uint32_t)num, base);
+    }
+    else
+    {
+        md_uitoa_base(output, (uint32_t)num, base);
+    }
+}
+
+void md_ulltoa_base(char *output, uint64_t num, const char* base)
+{
+    char *iter = output;
+    uint16_t remainder, divisor = md_strlen(base);
+    char tmp;
+
+    do
+    {
+        remainder = num % divisor;
+        *iter = base[remainder];
+        iter++;
+        num /= divisor;
+    }
+    while (num != 0u);
+
+    *iter = '\0';
+    iter--;
+    
+    // Reverse string
+    while (output < iter)
+    {
+        tmp = *output;
+        *output = *iter;
+        *iter = tmp;
+        output++;
+        iter--;
+    }
+}
+
+void md_lltoa_base(char *output, int64_t num, const char* base)
+{
+    if (num < 0)
+    {
+        output[0] = '-';
+        output++;
+        num *= -1;
+        md_ulltoa_base(output, (uint64_t)num, base);
+    }
+    else
+    {
+        md_ulltoa_base(output, (uint64_t)num, base);
+    }
 }

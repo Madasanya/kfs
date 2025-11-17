@@ -57,3 +57,9 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# Testing environment
+testing/
+
+# Mount points
+mnt/
