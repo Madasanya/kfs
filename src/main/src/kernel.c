@@ -1,7 +1,9 @@
 #include "str_utils.h"
+#include "screen.h"
 #include "history.h"
 #include "errlog.h"
 #include "start.h"
+#include "colors.h"
 
 /**
  * @brief Assembles an error log screen display from the kernel error log, filtered by severity level.
@@ -46,8 +48,14 @@ static void errlog_screen_assamble (history_buffer_t *screen, errlog_err_lvl_t l
 
 void kernel(void)
 {
+    screen_t screen;
     history_buffer_t history_buffer;
     
-    md_history_init(&history_buffer);
-    md_put_str("42");
+    screen_init(&screen, &history_buffer, SCREEN_COLOR_PROFILES[4]);
+    
+    screen_put_char(&screen, '4');
+    screen_put_char(&screen, '2');
+    screen_set_color(&screen, SCREEN_COLOR_PROFILES[3]);
+    screen_put_str(&screen, " Welcome to KFS!\n");
+    
 }
