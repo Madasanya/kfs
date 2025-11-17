@@ -36,13 +36,13 @@ static void errlog_screen_assamble (history_buffer_t *screen, errlog_err_lvl_t l
     char err_tag;
     const char *err_tags = " Eacewnid";
 
-    md_history_init(screen);
+    history_init(screen);
     errlog_read_init(&errlog, lvl);
     while (errlog_read(&errlog, &err) == ERRLOG_RET_OK)
     {
         err_tag = err_tags[err.lvl];
         md_vsnprintf(entry_str, HISTORY_WIDTH, "%c: %s", err_tag, err.message_str);
-        md_history_add_entry(screen, entry_str);
+        history_add_entry(screen, entry_str);
     }
 }
 
