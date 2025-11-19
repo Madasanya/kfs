@@ -3,6 +3,8 @@
 #include "kernel.h"
 #include "colors.h"
 #include "str_utils.h"
+#include "screen_settings.h"
+#include "cursor.h"
 
 static inline uint16_t screen_put_colored_char(unsigned char uc, uint8_t color)
 {
@@ -34,6 +36,7 @@ static void screen_advance_cursor(screen_t *screen, uint16_t count)
 			screen_clear(screen, screen->screen_row * SCREEN_WIDTH, screen->screen_color_default);
 		}
 	}
+	cursor_update(screen->screen_column, screen->screen_row);
 }
 
 static void screen_newline(screen_t *screen)
@@ -49,6 +52,7 @@ static void screen_newline(screen_t *screen)
 		screen_print_history(screen, SCREEN_HEIGHT - 1);
 		screen_clear(screen, screen->screen_row * SCREEN_WIDTH, screen->screen_color_default);
 	}
+	cursor_update(screen->screen_column, screen->screen_row);
 }
 
 void screen_put_char(screen_t *screen, char c)
@@ -109,6 +113,8 @@ void screen_init(screen_t *screen, history_buffer_t *history_buffer, uint8_t def
 	history_init(history_buffer);
 	
 	screen_clear(screen, 0, screen->screen_color_default);
+	cursor_enable(14, 15);
+
 }
 
 void screen_clear(screen_t *screen, uint16_t start_index, uint8_t color)

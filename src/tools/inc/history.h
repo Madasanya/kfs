@@ -2,7 +2,7 @@
 #define _HISTORY_H
 
 #include "inttype.h"
-#include "kernel.h"
+#include "screen_settings.h"
 
 #define HISTORY_WIDTH      SCREEN_WIDTH + 1
 #define HISTORY_HEIGHT     100u
