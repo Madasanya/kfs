@@ -8,20 +8,26 @@ CFLAGS		= -std=gnu99 -ffreestanding -Wall -Wextra
 LDFLAGS		= -ffreestanding -nostdlib -lgcc
 INCFLAG		= -I
 
-ASSRC		= boot.asm
+ASSRC		= boot.asm \
+			  drivers/src/io.asm
+
 CSRC		= main/src/kernel.c \
 			  main/src/start.c \
 			  tools/src/str_utils.c \
+			  drivers/src/keyboard.c \
 			  tools/src/errlog.c \
 			  tools/src/history.c \
 			  tools/src/screen.c \
-			  tools/src/colors.c
+			  tools/src/colors.c \
+			  tools/src/printk.c \
+			  tools/src/vsnprintf.c
+
 LDSRC		= kernel.ld
 
 SRCD		= ./src/
 OBJD		= ./obj/
 BUILTD		= ./build/
-INCD		= main/inc tools/inc
+INCD		= main/inc tools/inc drivers/inc
 
 INCPATH		:= $(addprefix $(INCFLAG)src/,$(INCD))
 

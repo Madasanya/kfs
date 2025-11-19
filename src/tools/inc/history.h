@@ -4,7 +4,7 @@
 #include "inttype.h"
 #include "kernel.h"
 
-#define HISTORY_WIDTH      SCREEN_WIDTH
+#define HISTORY_WIDTH      SCREEN_WIDTH + 1
 #define HISTORY_HEIGHT     100u
 
 typedef struct history_entry_s
