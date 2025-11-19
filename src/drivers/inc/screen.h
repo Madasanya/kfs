@@ -2,6 +2,7 @@
 #define _SCREEN_H
 
 #include "inttype.h"
+#include "kernel.h"
 
 #define VGA_MEMORY  0xB8000
 
@@ -10,13 +11,15 @@ typedef struct history_buffer_s history_buffer_t;
 
 typedef struct screen_s{
     uint16_t *screen_buffer;
+    uint16_t start_screen_row;
+    uint16_t start_screen_column;
     uint16_t screen_row;
     uint16_t screen_column;
-    char *screen_header;
+    char    screen_header[SCREEN_WIDTH];
     uint16_t screen_color_default;
     uint16_t screen_color_current;
     history_buffer_t *history_buffer;
-
+    uint32_t history_offset;
 } screen_t;
 
 /**
@@ -63,7 +66,7 @@ void screen_put_str(screen_t *screen, const char *str);
  * @param[in]     history_buffer Pointer to the history buffer to associate.
  * @param[in]     default_color  The default color attribute for the screen.
  */
-void screen_init(screen_t *screen, history_buffer_t *history_buffer, uint8_t default_color);
+void screen_init(screen_t *screen, history_buffer_t *history_buffer, uint8_t default_color, char *header_str);
 
 /**
  * @brief   Clears the screen from a starting position to the end.
@@ -88,7 +91,7 @@ void screen_clear(screen_t *screen, uint16_t start_index, uint8_t color);
  *
  * @param[in,out] screen Pointer to the screen structure.
  */
-void screen_print_history(screen_t *screen, uint16_t number_of_lines);
+void screen_print_history(screen_t *screen, uint16_t number_of_lines, uint32_t histoty_offset);
 
 /**
  * @brief   Saves the current screen row to the history buffer.
@@ -100,5 +103,13 @@ void screen_print_history(screen_t *screen, uint16_t number_of_lines);
  * @param[in]     row    The row number to save (0-based).
  */
 void screen_save_row_to_history(screen_t *screen, uint16_t row);
+
+void screen_open(screen_t *screen);
+
+void screen_close(screen_t *screen);
+
+void screen_scroll_up(screen_t *screen);
+
+void screen_scroll_down(screen_t *screen);
 
 #endif /* _SCREEN_H */
