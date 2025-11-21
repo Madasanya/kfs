@@ -5,6 +5,7 @@
 #include "colors.h"
 #include "io.h"
 #include "keyboard.h"
+#include "printk.h"
 
 /**
  * @brief Assembles an error log screen display from the kernel error log, filtered by severity level.
@@ -30,20 +31,19 @@
  * @note @c err_tags string maps @c err.lvl indices to display tag: " Eacewnid"
  *   (index 0: space (none), 1: 'E', 2: 'a', 3: 'c', 4: 'e', 5: 'w', 6: 'n', 7: 'i', 8: 'd')
  */
-static void errlog_screen_assamble (history_buffer_t *screen, errlog_err_lvl_t lvl)
+static void errlog_screen_assemble (screen_t *screen, errlog_err_lvl_t lvl)
 {
     char* entry_str[HISTORY_WIDTH];
     errlog_entry_t err;
     char err_tag;
     const char *err_tags = " Eacewnid";
 
-    history_init(screen);
     errlog_read_init(&errlog, lvl);
     while (errlog_read(&errlog, &err) == ERRLOG_RET_OK)
     {
         err_tag = err_tags[err.lvl];
         md_vsnprintf(entry_str, HISTORY_WIDTH, "%c: %s", err_tag, err.message_str);
-        //history_add_entry(screen, entry_str);
+        screen_put_str(screen, entry_str);
     }
 }
 
@@ -60,6 +60,8 @@ void kernel(void)
     uint8_t ret;
     keyboard_t keyboard = {0};
     
+    md_printk(KERN_INFO "Kernel starting up...\n");
+
     for (int i = 0; i < NUM_SCREENS; i++)
     {
         screen_init(&screens[i], &history_buffers[i], SCREEN_COLOR_PROFILES[4 - i]);
@@ -86,6 +88,10 @@ void kernel(void)
             {
                 current_screen_index = (current_screen_index + 1) % NUM_SCREENS;
                 active_screen = &screens[current_screen_index];
+            }
+            else if (temp_comm == KEYBOARD_COMM_START_LOG_LVL7)
+            {
+                errlog_screen_assemble(active_screen, ERRLOG_LVL_DEBUG);
             }
             continue;
         }
