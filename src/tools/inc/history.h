@@ -7,15 +7,14 @@
 #define HISTORY_WIDTH      SCREEN_WIDTH + 1
 #define HISTORY_HEIGHT     100u
 
-typedef struct history_entry_s
-{
-    uint16_t command[HISTORY_WIDTH];
-} history_entry_t;
+
+typedef uint16_t history_entry_t[HISTORY_WIDTH];
 
 typedef struct history_buffer_s
 {
     history_entry_t entries[HISTORY_HEIGHT];
     uint32_t index;
+    uint32_t first_index;
 } history_buffer_t;
 
 /**
@@ -72,6 +71,11 @@ uint16_t* history_get_entry(history_buffer_t *history_buffer, uint32_t index);
  * 
  * @return The index of the last command in the history buffer.
  */ 
-uint32_t history_get_last_command_index(history_buffer_t *history_buffer);
+uint32_t history_get_last_entry_index(history_buffer_t *history_buffer);
+
+uint32_t history_get_first_entry_index(history_buffer_t *history_buffer);
+uint32_t history_get_num_of_entrys(history_buffer_t *history_buffer);
+void history_last_entry_remove(history_buffer_t *history_buffer);
+
 
 #endif /* _HISTORY_H */

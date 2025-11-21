@@ -17,7 +17,7 @@ CSRC		= main/src/kernel.c \
 			  drivers/src/keyboard.c \
 			  tools/src/errlog.c \
 			  tools/src/history.c \
-			  tools/src/screen.c \
+			  drivers/src/screen.c \
 			  tools/src/colors.c \
 			  tools/src/printk.c \
 			  tools/src/vsnprintf.c \

@@ -42,7 +42,7 @@ static void errlog_screen_assamble (history_buffer_t *screen, errlog_err_lvl_t l
     while (errlog_read(&errlog, &err) == ERRLOG_RET_OK)
     {
         err_tag = err_tags[err.lvl];
-        md_vsnprintf(entry_str, HISTORY_WIDTH, "%c: %s", err_tag, err.message_str);
+        //md_vsnprintf(entry_str, HISTORY_WIDTH, "%c: %s", err_tag, err.message_str);
         //history_add_entry(screen, entry_str);
     }
 }
@@ -52,25 +52,49 @@ void kernel(void)
     screen_t screen;
     history_buffer_t history_buffer;
 
-        char temp_c;
+    char temp_c;
+    uint8_t temp_u;
     uint8_t ret;
+    uint16_t tesr_cnt = 0;
+    uint16_t u = 0;
     keyboard_t keyboard = {0};
    
-    screen_init(&screen, &history_buffer, SCREEN_COLOR_PROFILES[4]);
+    screen_init(&screen, &history_buffer, SCREEN_COLOR_PROFILES[4], "42: Screen 1");
     
-    screen_put_char(&screen, '4');
-    screen_put_char(&screen, '2');
+    screen_open(&screen);
+
     screen_set_color(&screen, SCREEN_COLOR_PROFILES[3]);
-    screen_put_str(&screen, " Welcome to KFS!\n");
+    
+
 
     while (1)
     {
         keyboard_run(&keyboard);
         ret = keyboard_char_get(&keyboard, &temp_c);
+        if (ret == 1)
+        {
+            if (temp_c == 'P')
+            {
+                screen_put_str(&screen, "I am printing this veeeeeeeeeeeery long motherfucking string just to test if history and screen print ass theeeeey should. But mybe i need even loooooooooooonger string to be comoletly sure anything else thean four line is not good enough. -So this is why I am typing this long mother fucking string");
+            }
+            else
+            {
+                screen_put_char(&screen, temp_c);
+            }
+            
+        }
+        ret = keyboard_comm_get(&keyboard, &temp_u);
         if (ret == 0)
         {
             continue;
         }
-        screen_put_char(&screen, temp_c);
+        if (temp_u == KEYBOARD_COMM_SCROLL_UP)
+        {
+            screen_scroll_up(&screen);
+        }
+        else if (temp_u == KEYBOARD_COMM_SCROLL_DOWN)
+        {
+            screen_scroll_down(&screen);
+        }
     }
 }
