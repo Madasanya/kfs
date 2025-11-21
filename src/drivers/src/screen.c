@@ -64,7 +64,16 @@ void screen_put_char(screen_t *screen, char c)
 {
 	if (screen->history_offset != 0u)
 	{
-		return;
+		screen->history_offset = 0U;
+		cursor_enable(SCREEN_CURSOR_SETTING_WRITE);
+		screen_print_history(screen, SCREEN_HEIGHT - screen->start_row, 0);
+		history_last_entry_remove(screen->history_buffer);
+	}
+	if (screen->cursor_row != screen->screen_row)
+	{
+		cursor_enable(SCREEN_CURSOR_SETTING_WRITE);
+		screen->cursor_row = screen->screen_row;
+		screen->cursor_column = screen->screen_column;
 	}
 	if (c == '\n')
 	{
@@ -85,7 +94,16 @@ void screen_put_str(screen_t *screen, const char *str)
 	
 	if (screen->history_offset != 0u)
 	{
-		return;
+		screen->history_offset = 0U;
+		cursor_enable(SCREEN_CURSOR_SETTING_WRITE);
+		screen_print_history(screen, SCREEN_HEIGHT - screen->start_row, 0);
+		history_last_entry_remove(screen->history_buffer);
+	}
+	if (screen->cursor_row != screen->screen_row)
+	{
+		cursor_enable(SCREEN_CURSOR_SETTING_WRITE);
+		screen->cursor_row = screen->screen_row;
+		screen->cursor_column = screen->screen_column;
 	}
 	for (uint16_t i = 0; i < size; i++)
 	{
@@ -148,7 +166,7 @@ void screen_open(screen_t *screen)
 	screen_clear(screen, 0, screen->screen_color_default);
 	print_header(screen);
 	screen_print_history(&screen, SCREEN_HEIGHT - screen->start_row, screen->history_offset);
-	cursor_update(screen->screen_column, screen->screen_row);
+	cursor_update(screen->cursor_column, screen->cursor_row);
 	if (screen->history_offset == 0u)
 	{
 		history_last_entry_remove(screen->history_buffer);
@@ -264,13 +282,21 @@ void screen_scroll_up(screen_t *screen)
 {
 	uint32_t max_his_off = screen_get_max_history_offset(screen);
 
-	if (max_his_off > screen->history_offset)
+	if (screen->cursor_row > screen->start_row)
+	{
+		if (screen->cursor_row == screen->screen_row)
+		{
+			cursor_enable(SCREEN_CURSOR_SETTING_READ);
+		}
+		screen->cursor_row--;
+		cursor_update(screen->cursor_column, screen->cursor_row);
+	}
+	else if (max_his_off > screen->history_offset)
 	{
 		if (screen->history_offset == 0u)
 		{
 			screen_save_row_to_history(screen, screen->screen_row);
-			cursor_disable(); 
-		} 
+		}
 		screen->history_offset++;
 		screen_print_history(screen, SCREEN_HEIGHT - screen->start_row, screen->history_offset);
 	}
@@ -278,15 +304,24 @@ void screen_scroll_up(screen_t *screen)
 
 void screen_scroll_down(screen_t *screen)
 {
-	if (screen->history_offset > 0)
-	{
-		screen->history_offset--;
-		screen_print_history(screen, SCREEN_HEIGHT - screen->start_row, screen->history_offset);
-		if (screen->history_offset == 0u)
+		if (screen->cursor_row < screen->screen_row)
 		{
-			history_last_entry_remove(screen->history_buffer);
-			cursor_enable(SCREEN_CURSOR_SETTING_WRITE); 
+			screen->cursor_row++;
+			cursor_update(screen->cursor_column, screen->cursor_row);
+			if ((screen->history_offset == 0u) && (screen->cursor_row == screen->screen_row))
+			{
+				cursor_enable(SCREEN_CURSOR_SETTING_WRITE); 
+			}
 		}
-		
-	}
+		else if (screen->history_offset > 0)
+		{
+			screen->history_offset--;
+			screen_print_history(screen, SCREEN_HEIGHT - screen->start_row, screen->history_offset);
+			if (screen->history_offset == 0u)
+			{
+				history_last_entry_remove(screen->history_buffer);
+				cursor_enable(SCREEN_CURSOR_SETTING_WRITE); 
+			}
+		}
+
 }
