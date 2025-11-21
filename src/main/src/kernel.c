@@ -49,19 +49,27 @@ static void errlog_screen_assamble (history_buffer_t *screen, errlog_err_lvl_t l
 
 void kernel(void)
 {
-    screen_t screen;
-    history_buffer_t history_buffer;
+    #define NUM_SCREENS 5
+    screen_t screens[NUM_SCREENS];
+    history_buffer_t history_buffers[NUM_SCREENS];
+    screen_t *active_screen = NULL;
+    int current_screen_index = 0;
 
-        char temp_c;
+    char temp_c;
+    uint8_t temp_comm;
     uint8_t ret;
     keyboard_t keyboard = {0};
-   
-    screen_init(&screen, &history_buffer, SCREEN_COLOR_PROFILES[4]);
     
-    screen_put_char(&screen, '4');
-    screen_put_char(&screen, '2');
-    screen_set_color(&screen, SCREEN_COLOR_PROFILES[3]);
-    screen_put_str(&screen, " Welcome to KFS!\n");
+    for (int i = 0; i < NUM_SCREENS; i++)
+    {
+        screen_init(&screens[i], &history_buffers[i], SCREEN_COLOR_PROFILES[4 - i]);
+        screen_put_char(&screens[i], '4');
+        screen_put_char(&screens[i], '2');
+        screen_set_color(&screens[i], SCREEN_COLOR_PROFILES[i]);
+        screen_put_str(&screens[i], " Welcome to KFS!\n");
+    }
+
+    active_screen = &screens[current_screen_index];
 
     while (1)
     {
@@ -69,8 +77,18 @@ void kernel(void)
         ret = keyboard_char_get(&keyboard, &temp_c);
         if (ret == 0)
         {
+            ret = keyboard_comm_get(&keyboard, &temp_comm);
+            if (ret == 0)
+            {
+                continue;
+            }
+            if (temp_comm == KEYBOARD_COMM_CHANGE_SCREEN)
+            {
+                current_screen_index = (current_screen_index + 1) % NUM_SCREENS;
+                active_screen = &screens[current_screen_index];
+            }
             continue;
         }
-        screen_put_char(&screen, temp_c);
+        screen_put_char(active_screen, temp_c);
     }
 }
