@@ -1,7 +1,10 @@
-#include "str_utils.h"
+#include "screen.h"
 #include "history.h"
 #include "errlog.h"
 #include "start.h"
+#include "colors.h"
+#include "io.h"
+#include "keyboard.h"
 
 /**
  * @brief Assembles an error log screen display from the kernel error log, filtered by severity level.
@@ -34,20 +37,58 @@ static void errlog_screen_assamble (history_buffer_t *screen, errlog_err_lvl_t l
     char err_tag;
     const char *err_tags = " Eacewnid";
 
-    md_history_init(screen);
+    history_init(screen);
     errlog_read_init(&errlog, lvl);
     while (errlog_read(&errlog, &err) == ERRLOG_RET_OK)
     {
         err_tag = err_tags[err.lvl];
         md_vsnprintf(entry_str, HISTORY_WIDTH, "%c: %s", err_tag, err.message_str);
-        md_history_add_entry(screen, entry_str);
+        //history_add_entry(screen, entry_str);
     }
 }
 
 void kernel(void)
 {
-    history_buffer_t history_buffer;
+    #define NUM_SCREENS 5
+    screen_t screens[NUM_SCREENS];
+    history_buffer_t history_buffers[NUM_SCREENS];
+    screen_t *active_screen = NULL;
+    int current_screen_index = 0;
+
+    char temp_c;
+    uint8_t temp_comm;
+    uint8_t ret;
+    keyboard_t keyboard = {0};
     
-    md_history_init(&history_buffer);
-    md_put_str("42");
+    for (int i = 0; i < NUM_SCREENS; i++)
+    {
+        screen_init(&screens[i], &history_buffers[i], SCREEN_COLOR_PROFILES[4 - i]);
+        screen_put_char(&screens[i], '4');
+        screen_put_char(&screens[i], '2');
+        screen_set_color(&screens[i], SCREEN_COLOR_PROFILES[i]);
+        screen_put_str(&screens[i], " Welcome to KFS!\n");
+    }
+
+    active_screen = &screens[current_screen_index];
+
+    while (1)
+    {
+        keyboard_run(&keyboard);
+        ret = keyboard_char_get(&keyboard, &temp_c);
+        if (ret == 0)
+        {
+            ret = keyboard_comm_get(&keyboard, &temp_comm);
+            if (ret == 0)
+            {
+                continue;
+            }
+            if (temp_comm == KEYBOARD_COMM_CHANGE_SCREEN)
+            {
+                current_screen_index = (current_screen_index + 1) % NUM_SCREENS;
+                active_screen = &screens[current_screen_index];
+            }
+            continue;
+        }
+        screen_put_char(active_screen, temp_c);
+    }
 }
