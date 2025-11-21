@@ -12,8 +12,8 @@ typedef struct history_buffer_s history_buffer_t;
 
 typedef struct screen_s{
     uint16_t *screen_buffer;
-    uint16_t start_screen_row;
-    uint16_t start_screen_column;
+    uint16_t start_row;
+    uint16_t start_column;
     uint16_t screen_row;
     uint16_t screen_column;
     char    screen_header[SCREEN_WIDTH];
@@ -92,7 +92,7 @@ void screen_clear(screen_t *screen, uint16_t start_index, uint8_t color);
  *
  * @param[in,out] screen Pointer to the screen structure.
  */
-void screen_print_history(screen_t *screen, uint16_t number_of_lines, uint32_t histoty_offset);
+void screen_print_history(screen_t *screen, uint16_t number_of_lines, uint32_t history_offset);
 
 /**
  * @brief   Saves the current screen row to the history buffer.
@@ -105,12 +105,48 @@ void screen_print_history(screen_t *screen, uint16_t number_of_lines, uint32_t h
  */
 void screen_save_row_to_history(screen_t *screen, uint16_t row);
 
+/**
+ * @brief   Opens and refreshes the screen display.
+ *
+ * @details Clears the entire screen, prints the header, and displays the history
+ *          buffer. If not in history browsing mode (history_offset == 0), removes
+ *          the last history entry to prepare for new input.
+ *
+ * @param[in,out] screen Pointer to the screen structure.
+ */
 void screen_open(screen_t *screen);
 
+/**
+ * @brief   Closes the screen and saves current state.
+ *
+ * @details Saves the current screen row to the history buffer if not currently
+ *          browsing history (history_offset == 0). Should be called before
+ *          switching away from the screen.
+ *
+ * @param[in,out] screen Pointer to the screen structure.
+ */
 void screen_close(screen_t *screen);
 
+/**
+ * @brief   Scrolls the screen view up through history.
+ *
+ * @details Increases the history offset to show older entries, effectively scrolling
+ *          up through command history. Saves the current row to history on first
+ *          scroll up. Does nothing if already at the maximum history offset.
+ *
+ * @param[in,out] screen Pointer to the screen structure.
+ */
 void screen_scroll_up(screen_t *screen);
 
+/**
+ * @brief   Scrolls the screen view down through history.
+ *
+ * @details Decreases the history offset to show more recent entries, effectively
+ *          scrolling down through command history. Removes the last history entry
+ *          when returning to normal mode (history_offset == 0).
+ *
+ * @param[in,out] screen Pointer to the screen structure.
+ */
 void screen_scroll_down(screen_t *screen);
 
 #endif /* _SCREEN_H */
