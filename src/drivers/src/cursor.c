@@ -3,19 +3,25 @@
 #include "cursor.h"
 #include "screen_settings.h"
 
-void cursor_enable (cursor_setting_t settings)
+void cursor_set_style(cursor_setting_t settings)
 {
 	md_outb(0x3D4, 0x0A);
-	md_outb(0x3D5, (md_inb(0x3D5) & 0xC0) | settings.cursor_start);
+	md_outb(0x3D5, (md_inb(0x3D5) & 0xE0) | settings.cursor_start);
 
 	md_outb(0x3D4, 0x0B);
 	md_outb(0x3D5, (md_inb(0x3D5) & 0xE0) | settings.cursor_end);
 }
 
+void cursor_enable()
+{
+	md_outb(0x3D4, 0x0A);
+	md_outb(0x3D5, (md_inb(0x3D5) & ~0x20));
+}
+
 void cursor_disable()
 {
 	md_outb(0x3D4, 0x0A);
-	md_outb(0x3D5, 0x20);
+	md_outb(0x3D5, (md_inb(0x3D5) | 0x20));
 }
 
 void cursor_update(uint16_t x, uint16_t y)

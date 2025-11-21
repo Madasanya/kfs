@@ -3,8 +3,6 @@
 
 #include "inttype.h"
 
-
-
 typedef struct
 {
     uint8_t cursor_start;
@@ -16,18 +14,9 @@ typedef struct
 #define CURSOR_SETTING_THICK    (cursor_setting_t){6, 15}
 #define CURSOR_SETTING_FULL     (cursor_setting_t){0, 15}
 
-/**
- * @brief   Enables the hardware cursor with specified scan lines.
- *
- * @details Configures the VGA hardware cursor by setting the cursor start 
- *          and end scan lines in the VGA CRT Controller registers at 0x0A 
- *          through the ports 0x3D4/0x3D5.
- *          The cursor will be visible between the start and end scan lines.
- *
- * @param[in] cursor_start The starting scan line for the cursor (0-15).
- * @param[in] cursor_end   The ending scan line for the cursor (0-15).
- */
-void cursor_enable(cursor_setting_t settings);
+void cursor_enable();
+
+void cursor_set_style(cursor_setting_t settings);
 
 /**
  * @brief   Disables the hardware cursor.
