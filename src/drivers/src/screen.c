@@ -184,7 +184,6 @@ void screen_print_history(screen_t *screen, uint16_t number_of_lines, uint32_t h
 		pos_helper -= history_offset;
 	}
 
-
 	number_of_lines += screen->start_screen_row; //Adding header offset
 	number_of_lines--;
 	if (number_of_lines >= SCREEN_HEIGHT)
@@ -209,6 +208,7 @@ void screen_print_history(screen_t *screen, uint16_t number_of_lines, uint32_t h
 		}
 		pos_helper--;
 	}
+	
 	if ((number_of_lines + 1u) < SCREEN_HEIGHT)
 	{
 		screen_clear(screen, (number_of_lines + 1) * SCREEN_WIDTH, screen->screen_color_default);
@@ -224,15 +224,15 @@ void screen_save_row_to_history(screen_t *screen, uint16_t row)
     history_add_entry(screen->history_buffer, row_buffer);
 }
 
-static uint32_t screen_max_histoty_offset_get(screen_t *screen)
+static uint32_t screen_get_max_history_offset(screen_t *screen)
 {
 	uint32_t ret = 0u;
 	uint32_t his_size = history_get_num_of_entrys(screen->history_buffer);
-	uint16_t writtable = SCREEN_HEIGHT - screen->start_screen_row ;
+	uint16_t writable = SCREEN_HEIGHT - screen->start_screen_row ;
 
-	if (his_size > writtable)
+	if (his_size > writable)
 	{
-		ret = his_size - (uint32_t)writtable;
+		ret = his_size - (uint32_t)writable;
 	}
 	
 	return ret;
@@ -240,7 +240,7 @@ static uint32_t screen_max_histoty_offset_get(screen_t *screen)
 
 void screen_scroll_up(screen_t *screen)
 {
-	uint32_t max_his_off = screen_max_histoty_offset_get(screen);
+	uint32_t max_his_off = screen_get_max_history_offset(screen);
 
 	if (max_his_off > screen->history_offset)
 	{
