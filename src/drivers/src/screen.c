@@ -24,13 +24,13 @@ static void screen_advance_cursor(screen_t *screen, uint16_t count)
 	screen->screen_column += count;
 	while (screen->screen_column >= SCREEN_WIDTH)
 	{
-		screen->screen_column -= (SCREEN_WIDTH - screen->start_screen_column);
+		screen->screen_column -= (SCREEN_WIDTH - screen->start_column);
 		screen_save_row_to_history(screen, screen->screen_row);
 		screen->screen_row++; 
 		if (screen->screen_row >= SCREEN_HEIGHT)
 		{
 			screen->screen_row = SCREEN_HEIGHT - 1;
-			screen_print_history(screen, SCREEN_HEIGHT - 1 - screen->start_screen_row, 0);
+			screen_print_history(screen, SCREEN_HEIGHT - 1 - screen->start_row, 0);
 		}
 	}
 }
@@ -40,12 +40,12 @@ static void screen_newline(screen_t *screen)
 	screen_save_row_to_history(screen, screen->screen_row);
 	
 	screen->screen_row++;
-	screen->screen_column = screen->start_screen_column;
+	screen->screen_column = screen->start_column;
 	
 	if (screen->screen_row >= SCREEN_HEIGHT)
 	{
 		screen->screen_row = SCREEN_HEIGHT - 1;
-		screen_print_history(screen, SCREEN_HEIGHT- 1 - screen->start_screen_row, 0);
+		screen_print_history(screen, SCREEN_HEIGHT- 1 - screen->start_row, 0);
 	}
 }
 
@@ -107,8 +107,8 @@ void screen_init(screen_t *screen, history_buffer_t *history_buffer, uint8_t def
 	screen->screen_buffer = (uint16_t*)VGA_MEMORY;
     screen->screen_row = 1;
 	screen->screen_column = 0;
-	screen->start_screen_column = 0;
-	screen->start_screen_row = 1;
+	screen->start_column = 0;
+	screen->start_row = 1;
 	screen->screen_color_default = default_color;
 	screen->screen_color_current = screen->screen_color_default;
 	screen->history_buffer = history_buffer;
@@ -132,7 +132,7 @@ void screen_open(screen_t *screen)
 {
 	screen_clear(screen, 0, screen->screen_color_default);
 	print_header(screen);
-	screen_print_history(&screen, SCREEN_HEIGHT - screen->start_screen_row, screen->history_offset);
+	screen_print_history(&screen, SCREEN_HEIGHT - screen->start_row, screen->history_offset);
 	if (screen->history_offset == 0u)
 	{
 		history_last_entry_remove(screen->history_buffer);
@@ -184,19 +184,19 @@ void screen_print_history(screen_t *screen, uint16_t number_of_lines, uint32_t h
 		pos_helper -= history_offset;
 	}
 
-	number_of_lines += screen->start_screen_row; //Adding header offset
+	number_of_lines += screen->start_row; //Adding header offset
 	number_of_lines--;
 	if (number_of_lines >= SCREEN_HEIGHT)
 	{
 		number_of_lines = SCREEN_HEIGHT - 1;
 	}
 	
-	for (row_cnt = number_of_lines; row_cnt >= screen->start_screen_row; row_cnt--)
+	for (row_cnt = number_of_lines; row_cnt >= screen->start_row; row_cnt--)
 	{
 		uint16_t *entry = history_get_entry(screen->history_buffer, pos_helper);
-		for (uint16_t x = screen->start_screen_column; x < SCREEN_WIDTH; x++)
+		for (uint16_t x = screen->start_column; x < SCREEN_WIDTH; x++)
 		{
-			screen->screen_buffer[row_cnt * SCREEN_WIDTH + x] = entry[x - screen->start_screen_column];
+			screen->screen_buffer[row_cnt * SCREEN_WIDTH + x] = entry[x - screen->start_column];
 		}
 		if (pos_helper == pos_end)
 		{
@@ -228,7 +228,7 @@ static uint32_t screen_get_max_history_offset(screen_t *screen)
 {
 	uint32_t ret = 0u;
 	uint32_t his_size = history_get_num_of_entrys(screen->history_buffer);
-	uint16_t writable = SCREEN_HEIGHT - screen->start_screen_row ;
+	uint16_t writable = SCREEN_HEIGHT - screen->start_row ;
 
 	if (his_size > writable)
 	{
@@ -249,7 +249,7 @@ void screen_scroll_up(screen_t *screen)
 			screen_save_row_to_history(screen, screen->screen_row);
 		} 
 		screen->history_offset++;
-		screen_print_history(screen, SCREEN_HEIGHT - screen->start_screen_row, screen->history_offset);
+		screen_print_history(screen, SCREEN_HEIGHT - screen->start_row, screen->history_offset);
 	}
 }
 
@@ -258,7 +258,7 @@ void screen_scroll_down(screen_t *screen)
 	if (screen->history_offset > 0)
 	{
 		screen->history_offset--;
-		screen_print_history(screen, SCREEN_HEIGHT - screen->start_screen_row, screen->history_offset);
+		screen_print_history(screen, SCREEN_HEIGHT - screen->start_row, screen->history_offset);
 		if (screen->history_offset == 0u)
 		{
 			history_last_entry_remove(screen->history_buffer);

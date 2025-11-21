@@ -11,8 +11,8 @@ typedef struct history_buffer_s history_buffer_t;
 
 typedef struct screen_s{
     uint16_t *screen_buffer;
-    uint16_t start_screen_row;
-    uint16_t start_screen_column;
+    uint16_t start_row;
+    uint16_t start_column;
     uint16_t screen_row;
     uint16_t screen_column;
     char    screen_header[SCREEN_WIDTH];
