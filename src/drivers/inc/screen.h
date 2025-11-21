@@ -21,6 +21,8 @@ typedef struct screen_s{
     uint16_t screen_color_current;
     history_buffer_t *history_buffer;
     uint32_t history_offset;
+    uint16_t cursor_row;
+    uint16_t cursor_column;
 } screen_t;
 
 /**

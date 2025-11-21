@@ -3,6 +3,19 @@
 
 #include "inttype.h"
 
+
+
+typedef struct
+{
+    uint8_t cursor_start;
+    uint8_t cursor_end;
+} cursor_setting_t;
+
+#define CURSOR_SETTING_THIN     (cursor_setting_t){14, 15}
+#define CURSOR_SETTING_MEDIUM   (cursor_setting_t){10, 15}
+#define CURSOR_SETTING_THICK    (cursor_setting_t){6, 15}
+#define CURSOR_SETTING_FULL     (cursor_setting_t){0, 15}
+
 /**
  * @brief   Enables the hardware cursor with specified scan lines.
  *
@@ -14,7 +27,7 @@
  * @param[in] cursor_start The starting scan line for the cursor (0-15).
  * @param[in] cursor_end   The ending scan line for the cursor (0-15).
  */
-void cursor_enable(uint8_t cursor_start, uint8_t cursor_end);
+void cursor_enable(cursor_setting_t settings);
 
 /**
  * @brief   Disables the hardware cursor.

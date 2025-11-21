@@ -3,13 +3,13 @@
 #include "cursor.h"
 #include "screen_settings.h"
 
-void cursor_enable(uint8_t cursor_start, uint8_t cursor_end)
+void cursor_enable (cursor_setting_t settings)
 {
 	md_outb(0x3D4, 0x0A);
-	md_outb(0x3D5, (md_inb(0x3D5) & 0xC0) | cursor_start);
+	md_outb(0x3D5, (md_inb(0x3D5) & 0xC0) | settings.cursor_start);
 
 	md_outb(0x3D4, 0x0B);
-	md_outb(0x3D5, (md_inb(0x3D5) & 0xE0) | cursor_end);
+	md_outb(0x3D5, (md_inb(0x3D5) & 0xE0) | settings.cursor_end);
 }
 
 void cursor_disable()

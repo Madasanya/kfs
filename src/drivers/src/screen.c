@@ -6,6 +6,9 @@
 #include "screen_settings.h"
 #include "cursor.h"
 
+#define SCREEN_CURSOR_SETTING_WRITE CURSOR_SETTING_THIN
+#define SCREEN_CURSOR_SETTING_READ CURSOR_SETTING_THICK
+
 static inline uint16_t screen_put_colored_char(unsigned char uc, uint8_t color)
 {
 	return (uint16_t) uc | (uint16_t) color << 8;
@@ -35,7 +38,9 @@ static void screen_advance_cursor(screen_t *screen, uint16_t count)
 			screen_print_history(screen, SCREEN_HEIGHT - 1 - screen->start_row, 0);
 		}
 	}
-	cursor_update(screen->screen_column, screen->screen_row);
+	screen->cursor_column = screen->screen_column;
+	screen->cursor_row = screen->screen_row;
+	cursor_update(screen->cursor_column, screen->cursor_row);
 }
 
 static void screen_newline(screen_t *screen)
@@ -50,8 +55,9 @@ static void screen_newline(screen_t *screen)
 		screen->screen_row = SCREEN_HEIGHT - 1;
 		screen_print_history(screen, SCREEN_HEIGHT- 1 - screen->start_row, 0);
 	}
-	cursor_update(screen->screen_column, screen->screen_row);
-
+	screen->cursor_column = screen->screen_column;
+	screen->cursor_row = screen->screen_row;
+	cursor_update(screen->cursor_column, screen->cursor_row);
 }
 
 void screen_put_char(screen_t *screen, char c)
@@ -120,6 +126,10 @@ void screen_init(screen_t *screen, history_buffer_t *history_buffer, uint8_t def
 	(void)md_strlencpy(screen->screen_header, header_str, SCREEN_WIDTH);
 	screen->history_offset = 0;
 	history_init(history_buffer);
+
+	screen->cursor_column = screen->start_column;
+	screen->cursor_row = screen->start_row;
+
 }
 
 static void print_header(screen_t *screen)
@@ -142,7 +152,11 @@ void screen_open(screen_t *screen)
 	if (screen->history_offset == 0u)
 	{
 		history_last_entry_remove(screen->history_buffer);
-		cursor_enable(14, 15);
+		cursor_enable(SCREEN_CURSOR_SETTING_WRITE);
+	}
+	else
+	{
+		cursor_enable(SCREEN_CURSOR_SETTING_READ);
 	}
 }
 
@@ -271,7 +285,7 @@ void screen_scroll_down(screen_t *screen)
 		if (screen->history_offset == 0u)
 		{
 			history_last_entry_remove(screen->history_buffer);
-			cursor_enable(14, 15); 
+			cursor_enable(SCREEN_CURSOR_SETTING_WRITE); 
 		}
 		
 	}
