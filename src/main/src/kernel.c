@@ -5,6 +5,7 @@
 #include "colors.h"
 #include "io.h"
 #include "keyboard.h"
+#include "printk.h"
 
 /**
  * @brief Assembles an error log screen display from the kernel error log, filtered by severity level.
@@ -30,20 +31,60 @@
  * @note @c err_tags string maps @c err.lvl indices to display tag: " Eacewnid"
  *   (index 0: space (none), 1: 'E', 2: 'a', 3: 'c', 4: 'e', 5: 'w', 6: 'n', 7: 'i', 8: 'd')
  */
-static void errlog_screen_assamble (history_buffer_t *screen, errlog_err_lvl_t lvl)
+static void errlog_screen_assemble (screen_t *screen, errlog_err_lvl_t lvl)
 {
     char* entry_str[HISTORY_WIDTH];
     errlog_entry_t err;
     char err_tag;
     const char *err_tags = " Eacewnid";
 
-    history_init(screen);
     errlog_read_init(&errlog, lvl);
     while (errlog_read(&errlog, &err) == ERRLOG_RET_OK)
     {
         err_tag = err_tags[err.lvl];
-        //md_vsnprintf(entry_str, HISTORY_WIDTH, "%c: %s", err_tag, err.message_str);
-        //history_add_entry(screen, entry_str);
+        md_vsnprintf(entry_str, HISTORY_WIDTH, "%c: %s", err_tag, err.message_str);
+        screen_put_str(screen, entry_str);
+    }
+}
+
+static void errorlog_key_handler(screen_t *screen, uint8_t command)
+{
+    switch (command)
+    {
+        case KEYBOARD_COMM_START_LOG_LVL1:
+            screen_put_str(screen, "ERROR LOG - LEVEL EMERGENCY:\n");
+            errlog_screen_assemble(screen, ERRLOG_LVL_EMERG);
+            break;
+        case KEYBOARD_COMM_START_LOG_LVL2:
+            screen_put_str(screen, "ERROR LOG - LEVEL ALERT:\n");
+            errlog_screen_assemble(screen, ERRLOG_LVL_ALERT);
+            break;
+        case KEYBOARD_COMM_START_LOG_LVL3:
+            screen_put_str(screen, "ERROR LOG - LEVEL CRITICAL:\n");
+            errlog_screen_assemble(screen, ERRLOG_LVL_CRIT);
+            break;
+        case KEYBOARD_COMM_START_LOG_LVL4:
+            screen_put_str(screen, "ERROR LOG - LEVEL ERROR:\n");
+            errlog_screen_assemble(screen, ERRLOG_LVL_ERR);
+            break;
+        case KEYBOARD_COMM_START_LOG_LVL5:
+            screen_put_str(screen, "ERROR LOG - LEVEL WARNING:\n");
+            errlog_screen_assemble(screen, ERRLOG_LVL_WARNING);
+            break;
+        case KEYBOARD_COMM_START_LOG_LVL6:
+            screen_put_str(screen, "ERROR LOG - LEVEL NOTICE:\n");
+            errlog_screen_assemble(screen, ERRLOG_LVL_NOTICE);
+            break;
+        case KEYBOARD_COMM_START_LOG_LVL7:
+            screen_put_str(screen, "ERROR LOG - LEVEL INFO:\n");
+            errlog_screen_assemble(screen, ERRLOG_LVL_INFO);
+            break;
+        case KEYBOARD_COMM_START_LOG_LVL8:
+            screen_put_str(screen, "ERROR LOG - LEVEL DEBUG:\n");
+            errlog_screen_assemble(screen, ERRLOG_LVL_DEBUG);
+            break;
+        default:
+            break;
     }
 }
 
@@ -58,20 +99,25 @@ void kernel(void)
     char temp_c;
     uint8_t temp_comm;
     uint8_t ret;
-    uint16_t tesr_cnt = 0;
-    uint16_t u = 0;
     keyboard_t keyboard = {0};
     
+    md_printk("Kernel starting up...DEFAULT\n");
+    md_printk(KERN_EMERG "Kernel starting up...EMERG\n");
+    md_printk(KERN_ALERT "Kernel starting up...ALERT\n");
+    md_printk(KERN_CRIT "Kernel starting up...CRIT\n");
+    md_printk(KERN_ERR "Kernel starting up...ERR\n");
+    md_printk(KERN_WARNING "Kernel starting up...WARNING\n");
+    md_printk(KERN_NOTICE "Kernel starting up...NOTICE\n");
+    md_printk(KERN_INFO "Kernel starting up...INFO\n");
+    md_printk(KERN_DEBUG "Kernel starting up...DEBUG\n");
+
     for (int i = 0; i < NUM_SCREENS; i++)
     {
-        screen_init(&screens[i], &history_buffers[i], SCREEN_COLOR_PROFILES[4 - i]);
-        screen_put_char(&screens[i], '4');
-        screen_put_char(&screens[i], '2');
-        screen_set_color(&screens[i], SCREEN_COLOR_PROFILES[i]);
-        screen_put_str(&screens[i], " Welcome to KFS!\n");
+        screen_init(&(screens[i]), &(history_buffers[i]), SCREEN_COLOR_PROFILES[4 - i], "42 screen");
     }
 
     active_screen = &screens[current_screen_index];
+    screen_open(active_screen);
 
     while (1)
     {
@@ -81,36 +127,38 @@ void kernel(void)
         {
             if (temp_c == 'P')
             {
-                screen_put_str(&screen, "I am printing this veeeeeeeeeeeery long motherfucking string just to test if history and screen print ass theeeeey should. But mybe i need even loooooooooooonger string to be comoletly sure anything else thean four line is not good enough. -So this is why I am typing this long mother fucking string");
+                screen_put_str(active_screen, "I am printing this veeeeeeeeeeeery long motherfucking string just to test if history and screen print ass theeeeey should. But mybe i need even loooooooooooonger string to be comoletly sure anything else thean four line is not good enough. -So this is why I am typing this long mother fucking string");
             }
             else
             {
-                screen_put_char(&screen, temp_c);
+                screen_put_char(active_screen, temp_c);
             }
             
         }
-        ret = keyboard_comm_get(&keyboard, &temp_u);
+        ret = keyboard_comm_get(&keyboard, &temp_comm);
         if (ret == 0)
         {
-            ret = keyboard_comm_get(&keyboard, &temp_comm);
-            if (ret == 0)
-            {
-                continue;
-            }
-            if (temp_comm == KEYBOARD_COMM_CHANGE_SCREEN)
-            {
-                current_screen_index = (current_screen_index + 1) % NUM_SCREENS;
-                active_screen = &screens[current_screen_index];
-            }
             continue;
         }
-        if (temp_u == KEYBOARD_COMM_SCROLL_UP)
+
+        if (temp_comm == KEYBOARD_COMM_CHANGE_SCREEN)
         {
-            screen_scroll_up(&screen);
+            screen_close(active_screen);
+            current_screen_index = (current_screen_index + 1) % NUM_SCREENS;
+            active_screen = &screens[current_screen_index];
+            screen_open(active_screen);
         }
-        else if (temp_u == KEYBOARD_COMM_SCROLL_DOWN)
+        else if (temp_comm >= KEYBOARD_COMM_START_LOG_LVL1 && temp_comm <= KEYBOARD_COMM_START_LOG_LVL8)
         {
-            screen_scroll_down(&screen);
+            errorlog_key_handler(active_screen, temp_comm);
+        }
+        else if (temp_comm == KEYBOARD_COMM_SCROLL_UP)
+        {
+            screen_scroll_up(active_screen);
+        }
+        else if (temp_comm == KEYBOARD_COMM_SCROLL_DOWN)
+        {
+            screen_scroll_down(active_screen);
         }
     }
 }
