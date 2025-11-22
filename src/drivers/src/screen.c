@@ -6,14 +6,39 @@
 #include "screen_settings.h"
 #include "cursor.h"
 
+/**
+ * @brief Cursor style used during normal input vs history viewing.
+ *
+ * SCREEN_CURSOR_SETTING_WRITE  → thin blinking underscore (active typing)
+ * SCREEN_CURSOR_SETTING_READ   → full block (indicates viewing history)
+ */
 #define SCREEN_CURSOR_SETTING_WRITE CURSOR_SETTING_THIN
-#define SCREEN_CURSOR_SETTING_READ CURSOR_SETTING_THICK
+#define SCREEN_CURSOR_SETTING_READ  CURSOR_SETTING_FULL
 
+/**
+ * @brief Combines an ASCII character and color attribute into a single 16-bit VGA entry.
+ *
+ * Low byte  = character, high byte = color/attribute (as used by VGA text mode).
+ *
+ * @param uc    ASCII character to display
+ * @param color Foreground/background color byte (e.g. COLOR_WHITE | BG_BLACK)
+ * @return      16-bit value ready to be written to VGA memory
+ */
 static inline uint16_t screen_put_colored_char(unsigned char uc, uint8_t color)
 {
 	return (uint16_t) uc | (uint16_t) color << 8;
 }
 
+/**
+ * @brief Writes a colored character directly to a specific position in the screen buffer.
+ *
+ * Bypasses cursor logic — useful for headers, history rendering, and clearing.
+ *
+ * @param screen   Pointer to screen state structure
+ * @param c        Character to write
+ * @param color    Color attribute
+ * @param position Linear index in VGA buffer (0 to SCREEN_WIDTH*SCREEN_HEIGHT-1)
+ */
 static inline void screen_put_char_at_position(screen_t *screen, char c, uint8_t color, uint16_t position)
 {
 	screen->screen_buffer[position] = screen_put_colored_char(c, color);
@@ -24,6 +49,14 @@ void screen_set_color(screen_t *screen, uint8_t color)
 	screen->screen_color_current = color;
 }
 
+/**
+ * @brief Advances the logical cursor by a number of columns, handling wrap and scroll.
+ *
+ * Automatically saves the current row to history when wrapping and scrolls screen if needed.
+ *
+ * @param screen Pointer to screen state
+ * @param count  Number of columns to advance (usually 1)
+ */
 static void screen_advance_cursor(screen_t *screen, uint16_t count)
 {
 	screen->screen_column += count;
@@ -43,6 +76,13 @@ static void screen_advance_cursor(screen_t *screen, uint16_t count)
 	cursor_update(screen->cursor_column, screen->cursor_row);
 }
 
+/**
+ * @brief Performs a newline: saves current row and moves to next line.
+ *
+ * Resets column to start_column and handles scrolling if at bottom.
+ *
+ * @param screen Pointer to screen state
+ */
 static void screen_newline(screen_t *screen)
 {
 	screen_save_row_to_history(screen, screen->screen_row);
@@ -60,6 +100,14 @@ static void screen_newline(screen_t *screen)
 	cursor_update(screen->cursor_column, screen->cursor_row);
 }
 
+/**
+ * @brief Resets state when starting to write new input.
+ *
+ * If user was viewing history (history_offset > 0), clears it and switches to write cursor.
+ * Also removes incomplete last history entry from previous input.
+ *
+ * Called at the start of aby kinf of user print such as screen_put_char() and screen_put_str().
+ */
 static void cursor_at_put_reset(screen_t *screen)
 {
 if (screen->history_offset != 0u)
@@ -143,6 +191,11 @@ void screen_init(screen_t *screen, history_buffer_t *history_buffer, uint8_t def
 
 }
 
+/**
+ * @brief Renders the centered header string at the top of the screen.
+ *
+ * Only the visible portion (up to SCREEN_WIDTH) is shown.
+ */
 static void print_header(screen_t *screen)
 {
 	uint16_t len = md_strlen(screen->screen_header);
@@ -258,6 +311,11 @@ void screen_save_row_to_history(screen_t *screen, uint16_t row)
     history_add_entry(screen->history_buffer, row_buffer);
 }
 
+/**
+ * @brief Computes maximum allowed history offset (how far back user can scroll).
+ *
+ * @return Number of history entries beyond visible area (0 if all fit)
+ */
 static uint32_t screen_get_max_history_offset(screen_t *screen)
 {
 	uint32_t ret = 0u;
