@@ -1,5 +1,6 @@
 #include "errlog.h"
 #include "str_utils.h"
+#include "printk.h"
 
 errlog_ret_t errlog_init(errlog_t *err_log, errlog_err_lvl_t default_lvl)
 {
@@ -21,6 +22,7 @@ errlog_ret_t errlog_init(errlog_t *err_log, errlog_err_lvl_t default_lvl)
     err_log->first_idx = 0u;
     err_log->write_idx = 0u;
     err_log->read_lvl = ERRLOG_LVL_DEFAULT;
+    md_printk(KERN_INFO "Error log initialized with default level %d\n", err_log->default_lvl);
     return (ERRLOG_RET_OK);
 }
 

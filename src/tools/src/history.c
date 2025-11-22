@@ -1,5 +1,6 @@
 #include "history.h"
 #include "screen.h"
+#include "printk.h"
 
 void history_clear(history_buffer_t *history_buffer)
 {
@@ -13,6 +14,7 @@ void history_clear(history_buffer_t *history_buffer)
 
 void history_init(history_buffer_t *history_buffer)
 {
+    md_printk(KERN_INFO "Initializing history buffer at %ph\n", history_buffer);
     history_clear(history_buffer);
 }
 

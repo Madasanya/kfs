@@ -4,8 +4,8 @@ LD			:= $(CC)
 RM			= rm -rf
 
 ASFLAGS		= -felf32
-CFLAGS		= -std=gnu99 -ffreestanding -Wall -Wextra
-LDFLAGS		= -ffreestanding -nostdlib -lgcc
+CFLAGS		= -std=gnu99 -ffreestanding -fno-builtin -fno-stack-protector -nostdlib -nodefaultlibs -Wall -Wextra -Werror
+LDFLAGS		= -ffreestanding -nostdlib -nodefaultlibs -static -lgcc
 INCFLAG		= -I
 
 ASSRC		= boot.asm \
@@ -67,8 +67,7 @@ build_as:
 				bash ./scripts/build_nasm_cross_assembler.sh
 
 build_tools:	build_gcc build_as
-				source $HOME/.bashrc
-				sudo apt install qemu-system
+				sudo apt install qemu-system -y
 
 check_bin:
 				echo "Checking multiboot header in $(NAME)..."

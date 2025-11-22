@@ -3,9 +3,11 @@
 #include "errlog.h"
 #include "start.h"
 #include "colors.h"
-#include "io.h"
 #include "keyboard.h"
 #include "printk.h"
+#include "str_utils.h"
+
+#define NUM_SCREENS 5
 
 /**
  * @brief Assembles an error log screen display from the kernel error log, filtered by severity level.
@@ -33,7 +35,7 @@
  */
 static void errlog_screen_assemble (screen_t *screen, errlog_err_lvl_t lvl)
 {
-    char* entry_str[HISTORY_WIDTH];
+    char entry_str[HISTORY_WIDTH];
     errlog_entry_t err;
     char err_tag;
     const char *err_tags = " Eacewnid";
@@ -88,77 +90,79 @@ static void errorlog_key_handler(screen_t *screen, uint8_t command)
     }
 }
 
+void ascii_handler(keyboard_t *keyboard, screen_t *screen)
+{
+    char c;
+    if (keyboard_char_get(keyboard, &c) == 1)
+    {
+        screen_put_char(screen, c);
+    }
+}
+
+void command_handler(keyboard_t *keyboard, screen_t *screen, uint8_t *current_screen_index, screen_t *screens, uint8_t *current_color_index)
+{
+    uint8_t comm;
+    if (keyboard_comm_get(keyboard, &comm) == 1)
+    {
+        if (comm == KEYBOARD_COMM_CHANGE_SCREEN)
+        {
+            screen_close(screen);
+            *current_screen_index = (*current_screen_index + 1) % NUM_SCREENS;
+            screen = &(screens[*current_screen_index]);
+            screen_open(screen);
+        }
+        else if (comm >= KEYBOARD_COMM_START_LOG_LVL1 && comm <= KEYBOARD_COMM_START_LOG_LVL8)
+        {
+            errorlog_key_handler(screen, comm);
+        }
+        else if (comm == KEYBOARD_COMM_SCROLL_UP)
+        {
+            screen_scroll_up(screen);
+        }
+        else if (comm == KEYBOARD_COMM_SCROLL_DOWN)
+        {
+            screen_scroll_down(screen);
+        }
+        else if (comm == KEYBOARD_COMM_CHANGE_COLOR)
+        {
+            *current_color_index = (*current_color_index + 1) % NUM_SCREEN_COLOR_PROFILES;
+            screen->screen_color_current = SCREEN_COLOR_PROFILES[*current_color_index];
+        }
+    }
+}
+
+    
+
 void kernel(void)
 {
-    #define NUM_SCREENS 5
     screen_t screens[NUM_SCREENS];
     history_buffer_t history_buffers[NUM_SCREENS];
     screen_t *active_screen = NULL;
-    int current_screen_index = 0;
+    uint8_t current_screen_index = 0;
+    uint8_t current_color_index[NUM_SCREENS] = {0};
+    char header_buf[15];
 
-    char temp_c;
-    uint8_t temp_comm;
-    uint8_t ret;
     keyboard_t keyboard = {0};
     
-    md_printk("Kernel starting up...DEFAULT\n");
-    md_printk(KERN_EMERG "Kernel starting up...EMERG\n");
-    md_printk(KERN_ALERT "Kernel starting up...ALERT\n");
-    md_printk(KERN_CRIT "Kernel starting up...CRIT\n");
-    md_printk(KERN_ERR "Kernel starting up...ERR\n");
-    md_printk(KERN_WARNING "Kernel starting up...WARNING\n");
-    md_printk(KERN_NOTICE "Kernel starting up...NOTICE\n");
-    md_printk(KERN_INFO "Kernel starting up...INFO\n");
-    md_printk(KERN_DEBUG "Kernel starting up...DEBUG\n");
-
-    for (int i = 0; i < NUM_SCREENS; i++)
+    /* KERNEL INITIALIZATION */
+    md_printk("Kernel inititalization\n");
+    for (uint8_t i = 0; i < NUM_SCREENS; i++)
     {
-        screen_init(&(screens[i]), &(history_buffers[i]), SCREEN_COLOR_PROFILES[4 - i], "42 screen");
+        md_vsnprintf(header_buf, sizeof(header_buf), "42 - Screen %d", i + 1);
+        screen_init(&(screens[i]), &(history_buffers[i]), SCREEN_COLOR_PROFILES[4 - i], header_buf);
+        current_color_index[i] = 4 - i;
     }
 
-    active_screen = &screens[current_screen_index];
+    active_screen = &(screens[current_screen_index]);
     screen_open(active_screen);
 
+    /* KERNEL RUN */
+    md_printk("Kernel running...\n");
     while (1)
     {
         keyboard_run(&keyboard);
-        ret = keyboard_char_get(&keyboard, &temp_c);
-        if (ret == 1)
-        {
-            if (temp_c == 'P')
-            {
-                screen_put_str(active_screen, "I am printing this veeeeeeeeeeeery long motherfucking string just to test if history and screen print ass theeeeey should. But mybe i need even loooooooooooonger string to be comoletly sure anything else thean four line is not good enough. -So this is why I am typing this long mother fucking string");
-            }
-            else
-            {
-                screen_put_char(active_screen, temp_c);
-            }
-            
-        }
-        ret = keyboard_comm_get(&keyboard, &temp_comm);
-        if (ret == 0)
-        {
-            continue;
-        }
-
-        if (temp_comm == KEYBOARD_COMM_CHANGE_SCREEN)
-        {
-            screen_close(active_screen);
-            current_screen_index = (current_screen_index + 1) % NUM_SCREENS;
-            active_screen = &screens[current_screen_index];
-            screen_open(active_screen);
-        }
-        else if (temp_comm >= KEYBOARD_COMM_START_LOG_LVL1 && temp_comm <= KEYBOARD_COMM_START_LOG_LVL8)
-        {
-            errorlog_key_handler(active_screen, temp_comm);
-        }
-        else if (temp_comm == KEYBOARD_COMM_SCROLL_UP)
-        {
-            screen_scroll_up(active_screen);
-        }
-        else if (temp_comm == KEYBOARD_COMM_SCROLL_DOWN)
-        {
-            screen_scroll_down(active_screen);
-        }
+        ascii_handler(&keyboard, active_screen);
+        command_handler(&keyboard, active_screen, &current_screen_index, screens, &(current_color_index[current_screen_index]));
+        active_screen = &(screens[current_screen_index]);
     }
 }

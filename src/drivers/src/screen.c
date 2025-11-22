@@ -5,6 +5,7 @@
 #include "str_utils.h"
 #include "screen_settings.h"
 #include "cursor.h"
+#include "printk.h"
 
 /**
  * @brief Cursor style used during normal input vs history viewing.
@@ -174,6 +175,7 @@ void screen_put_str(screen_t *screen, const char *str)
 
 void screen_init(screen_t *screen, history_buffer_t *history_buffer, uint8_t default_color, char *header_str)
 { 
+	md_printk(KERN_INFO "Initializing screen with header: %s\n", header_str);
 	screen->screen_buffer = (uint16_t*)VGA_MEMORY;
     screen->screen_row = 1;
 	screen->screen_column = 0;
@@ -209,24 +211,31 @@ static void print_header(screen_t *screen)
 
 void screen_open(screen_t *screen)
 {
+	md_printk(KERN_NOTICE "Opening screen with header: %s\n", screen->screen_header);
+
 	screen_clear(screen, 0, screen->screen_color_default);
 	print_header(screen);
-	screen_print_history(&screen, SCREEN_HEIGHT - screen->start_row, screen->history_offset);
-	cursor_enable();
-	cursor_update(screen->cursor_column, screen->cursor_row);
+	screen_print_history(screen, SCREEN_HEIGHT - screen->start_row, screen->history_offset);
 	if (screen->history_offset == 0u)
 	{
 		history_last_entry_remove(screen->history_buffer);
+	}
+
+	cursor_update(screen->cursor_column, screen->cursor_row);
+	if (screen->history_offset == 0u && screen->cursor_row == screen->screen_row)
+	{
 		cursor_set_style(SCREEN_CURSOR_SETTING_WRITE);
 	}
 	else
 	{
 		cursor_set_style(SCREEN_CURSOR_SETTING_READ);
 	}
+	cursor_enable();
 }
 
 void screen_close(screen_t *screen)
 {
+	md_printk(KERN_NOTICE "Closing screen with header: %s\n", screen->screen_header);
 	if (screen->history_offset == 0u)
 	{
 		screen_save_row_to_history(screen, screen->screen_row);
@@ -352,27 +361,35 @@ void screen_scroll_up(screen_t *screen)
 		screen->history_offset++;
 		screen_print_history(screen, SCREEN_HEIGHT - screen->start_row, screen->history_offset);
 	}
+	else
+	{
+		md_printk(KERN_DEBUG "SCREEN_SCROLL_UP: Reached top of history!\n");
+	}
 }
 
 void screen_scroll_down(screen_t *screen)
 {
-		if (screen->cursor_row < screen->screen_row)
+	if (screen->cursor_row < screen->screen_row)
+	{
+		screen->cursor_row++;
+		cursor_update(screen->cursor_column, screen->cursor_row);
+		if ((screen->history_offset == 0u) && (screen->cursor_row == screen->screen_row))
 		{
-			screen->cursor_row++;
-			cursor_update(screen->cursor_column, screen->cursor_row);
-			if ((screen->history_offset == 0u) && (screen->cursor_row == screen->screen_row))
-			{
-				cursor_set_style(SCREEN_CURSOR_SETTING_WRITE); 
-			}
+			cursor_set_style(SCREEN_CURSOR_SETTING_WRITE); 
 		}
-		else if (screen->history_offset > 0)
+	}
+	else if (screen->history_offset > 0)
+	{
+		screen->history_offset--;
+		screen_print_history(screen, SCREEN_HEIGHT - screen->start_row, screen->history_offset);
+		if (screen->history_offset == 0u)
 		{
-			screen->history_offset--;
-			screen_print_history(screen, SCREEN_HEIGHT - screen->start_row, screen->history_offset);
-			if (screen->history_offset == 0u)
-			{
-				history_last_entry_remove(screen->history_buffer);
-				cursor_set_style(SCREEN_CURSOR_SETTING_WRITE); 
-			}
+			history_last_entry_remove(screen->history_buffer);
+			cursor_set_style(SCREEN_CURSOR_SETTING_WRITE); 
 		}
+	}
+	else
+	{
+		md_printk(KERN_DEBUG "SCREEN_SCROLL_DOWN: Reached bottom of history!\n");
+	}
 }

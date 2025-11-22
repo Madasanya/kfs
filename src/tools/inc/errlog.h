@@ -84,7 +84,7 @@ typedef enum
 } errlog_err_lvl_t;
 
 /** @brief Maximum number of entries stored in the circular log buffer. */
-#define ERRLOG_LOG_LEN 100
+#define ERRLOG_LOG_LEN 90
 
 /** @brief Maximum length of a log message, excluding null terminator. */
 #define ERRLOG_MSG_LEN 77

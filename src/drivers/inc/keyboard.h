@@ -100,7 +100,7 @@
 #define KEYBOARD_COMM_SCROLL_UP 0x01u         /** < Command to scroll up on arrow up key. */
 #define KEYBOARD_COMM_SCROLL_DOWN 0x02u       /** < Command to scroll down on arrow down key. */
 #define KEYBOARD_COMM_CHANGE_SCREEN 0x03u     /** < Command to change screen on tab key. */
-#define KEYBOARD_COMM_CHANGE_COLOR 0x04u      /** < Command to change color on right ctrl key. */
+#define KEYBOARD_COMM_CHANGE_COLOR 0x04u      /** < Command to change color on right alt key. */
 #define KEYBOARD_COMM_START_LOG_LVL1 0x10u    /** < Start logging at level 1 on F1 key. */
 #define KEYBOARD_COMM_START_LOG_LVL2 0x11u    /** < Start logging at level 2 on F2 key. */
 #define KEYBOARD_COMM_START_LOG_LVL3 0x12u    /** < Start logging at level 3 on F3 key. */
