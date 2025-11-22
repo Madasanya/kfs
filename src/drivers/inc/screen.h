@@ -37,7 +37,7 @@ typedef struct screen_s{
 void screen_set_color(screen_t *screen, uint8_t color);
 
 /**
- * @brief   Puts a single character on the screen.
+ * @brief   Writes a single character to the screen.
  *
  * @details Writes a character at the current cursor position with the current color.
  *          Automatically advances the cursor position and wraps around if needed.
@@ -48,7 +48,7 @@ void screen_set_color(screen_t *screen, uint8_t color);
 void screen_put_char(screen_t *screen, char c);
 
 /**
- * @brief   Puts a string on the screen.
+ * @brief   Writes a string to the screen.
  *
  * @details Writes a null-terminated string at the current cursor position with 
  *          the current color. Advances cursor position and wraps around if needed.

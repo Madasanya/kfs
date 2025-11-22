@@ -36,7 +36,7 @@
  * @brief Array mapping special keyboard scancodes to their corresponding commands.
  * 
  * @details This constant array associates predefined scancodes with special keyboard commands,
- * such as scrolling, changing screens, or starting/stopping logging at various levels.
+ * such as scrolling, changing screens, or displaying error logs at various levels.
  */
 const keyboard_special_comm_t keyboard_comm_arr[] = { {KEYBOARD_SCANCODE_SCROLL_UP, KEYBOARD_COMM_SCROLL_UP},
                                                         {KEYBOARD_SCANCODE_SCROLL_DOWN, KEYBOARD_COMM_SCROLL_DOWN},

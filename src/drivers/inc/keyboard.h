@@ -19,6 +19,7 @@
  * - Provides functions to poll for new input and retrieve queued data.
  * - Special commands are mapped via a configurable array (keyboard_comm_arr).
  * - Assumes Num Lock is on for numeric keypad mappings.
+ * - Commands like START_LOG_LVL* display error logs at specified levels.
  * 
  * Limitations:
  * - Does not handle Caps Lock, Num Lock, or Scroll Lock toggles (mappings assume Num Lock on, no Caps Lock support).
@@ -41,7 +42,7 @@
  *      - Commands are uint8_t values from KEYBOARD_COMM_* defines.
  * 5. Special commands:
  *    - Defined in keyboard_comm_arr (can be customized if needed).
- *    - Examples: F1-F8 for log levels, Esc for stop logging, Tab for screen change, etc.
+ *    - Examples: F1-F8 for displaying error log levels, Tab for screen change, Right Alt for color change, Arrow keys for scrolling.
  * 6. Flags:
  *    - Accessed via kb.flags.
  *    - Bits: SHIFT_LEFT (0x01), SHIFT_RIGHT (0x02), E0 (0x04 for extended code handling).
@@ -97,18 +98,18 @@
  * 
  * @brief Define the command codes for special keyboard actions.
  */
-#define KEYBOARD_COMM_SCROLL_UP 0x01u         /** < Command to scroll up on arrow up key. */
-#define KEYBOARD_COMM_SCROLL_DOWN 0x02u       /** < Command to scroll down on arrow down key. */
-#define KEYBOARD_COMM_CHANGE_SCREEN 0x03u     /** < Command to change screen on tab key. */
-#define KEYBOARD_COMM_CHANGE_COLOR 0x04u      /** < Command to change color on right alt key. */
-#define KEYBOARD_COMM_START_LOG_LVL1 0x10u    /** < Start logging at level 1 on F1 key. */
-#define KEYBOARD_COMM_START_LOG_LVL2 0x11u    /** < Start logging at level 2 on F2 key. */
-#define KEYBOARD_COMM_START_LOG_LVL3 0x12u    /** < Start logging at level 3 on F3 key. */
-#define KEYBOARD_COMM_START_LOG_LVL4 0x13u    /** < Start logging at level 4 on F4 key. */
-#define KEYBOARD_COMM_START_LOG_LVL5 0x14u    /** < Start logging at level 5 on F5 key. */
-#define KEYBOARD_COMM_START_LOG_LVL6 0x15u    /** < Start logging at level 6 on F6 key. */
-#define KEYBOARD_COMM_START_LOG_LVL7 0x16u    /** < Start logging at level 7 on F7 key. */
-#define KEYBOARD_COMM_START_LOG_LVL8 0x17u    /** < Start logging at level 8 on F8 key. */
+#define KEYBOARD_COMM_SCROLL_UP 0x01u         /** < Command to scroll up (triggered by Up Arrow key). */
+#define KEYBOARD_COMM_SCROLL_DOWN 0x02u       /** < Command to scroll down (triggered by Down Arrow key). */
+#define KEYBOARD_COMM_CHANGE_SCREEN 0x03u     /** < Command to change screen (triggered by Tab key). */
+#define KEYBOARD_COMM_CHANGE_COLOR 0x04u      /** < Command to change color (triggered by Right Alt key). */
+#define KEYBOARD_COMM_START_LOG_LVL1 0x10u    /** < Display error log at level 1 (triggered by F1 key). */
+#define KEYBOARD_COMM_START_LOG_LVL2 0x11u    /** < Display error log at level 2 (triggered by F2 key). */
+#define KEYBOARD_COMM_START_LOG_LVL3 0x12u    /** < Display error log at level 3 (triggered by F3 key). */
+#define KEYBOARD_COMM_START_LOG_LVL4 0x13u    /** < Display error log at level 4 (triggered by F4 key). */
+#define KEYBOARD_COMM_START_LOG_LVL5 0x14u    /** < Display error log at level 5 (triggered by F5 key). */
+#define KEYBOARD_COMM_START_LOG_LVL6 0x15u    /** < Display error log at level 6 (triggered by F6 key). */
+#define KEYBOARD_COMM_START_LOG_LVL7 0x16u    /** < Display error log at level 7 (triggered by F7 key). */
+#define KEYBOARD_COMM_START_LOG_LVL8 0x17u    /** < Display error log at level 8 (triggered by F8 key). */
 
 #if KEYBOARD_CHAR_ARR_LEN >= 0xff
 #error "Invalid KEYBOARD_CHAR_ARR_LEN"  // Ensure buffer length fits in uint8_t
@@ -154,7 +155,7 @@ typedef struct
  * it reads the scancode, handles extended codes if necessary, and delegates to
  * special, ASCII, or command handlers in sequence.
  * 
- * @note This function shell be called often.
+ * @note This function shall be called frequently (e.g., in a main loop) to avoid missing input.
  * 
  * @param[in,out] keyboard Pointer to the keyboard structure.
  */

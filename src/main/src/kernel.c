@@ -58,6 +58,22 @@ static void errlog_screen_assemble (screen_t *screen, errlog_err_lvl_t lvl)
     }
 }
 
+/**
+ * @brief Handles error log display commands triggered by keyboard input.
+ *
+ * @details
+ * This function processes keyboard commands related to error log display requests.
+ * When a valid log level command is received, it displays an appropriate header
+ * and calls @c errlog_screen_assemble to populate the screen with error log entries
+ * filtered by the corresponding severity level.
+ *
+ * The function maps keyboard commands (KEYBOARD_COMM_START_LOG_LVL1 through
+ * KEYBOARD_COMM_START_LOG_LVL8) to error log levels (Emergency through Debug).
+ *
+ * @param[in,out] screen   Pointer to the screen where error log will be displayed.
+ * @param[in]     command  Keyboard command code indicating which error log level to display.
+ *                         Expected range: KEYBOARD_COMM_START_LOG_LVL1 to KEYBOARD_COMM_START_LOG_LVL8.
+ */
 static void errorlog_key_handler(screen_t *screen, uint8_t command)
 {
     switch (command)
@@ -99,6 +115,17 @@ static void errorlog_key_handler(screen_t *screen, uint8_t command)
     }
 }
 
+/**
+ * @brief Processes and displays ASCII character input from the keyboard.
+ *
+ * @details
+ * This function retrieves a single ASCII character from the keyboard buffer
+ * and displays it on the active screen. If a character is successfully retrieved,
+ * it is immediately rendered to the screen output.
+ *
+ * @param[in,out] keyboard  Pointer to the keyboard state structure from which to retrieve input.
+ * @param[in,out] screen    Pointer to the screen where the character will be displayed.
+ */
 static void ascii_handler(keyboard_t *keyboard, screen_t *screen)
 {
     char c;
@@ -108,6 +135,27 @@ static void ascii_handler(keyboard_t *keyboard, screen_t *screen)
     }
 }
 
+/**
+ * @brief Processes special keyboard commands for screen management and error log display.
+ *
+ * @details
+ * This function retrieves and executes special keyboard commands that control screen behavior.
+ * Supported commands include:
+ * - Screen switching: Cycles through available screens (KEYBOARD_COMM_CHANGE_SCREEN)
+ * - Error log display: Displays error logs at various severity levels (KEYBOARD_COMM_START_LOG_LVL1-8)
+ * - Scrolling: Moves screen viewport up or down (KEYBOARD_COMM_SCROLL_UP/DOWN)
+ * - Color change: Cycles through available color profiles (KEYBOARD_COMM_CHANGE_COLOR)
+ *
+ * When switching screens, the function properly closes the current screen before opening the new one.
+ *
+ * @param[in,out] keyboard               Pointer to the keyboard state structure.
+ * @param[in,out] screen                 Pointer to the currently active screen.
+ * @param[in,out] current_screen_index   Pointer to the index of the currently active screen.
+ *                                       Updated when switching screens.
+ * @param[in,out] screens                Array of all available screens.
+ * @param[in,out] current_color_index    Pointer to the current color profile index for the active screen.
+ *                                       Updated when changing colors.
+ */
 static void command_handler(keyboard_t *keyboard, screen_t *screen, uint8_t *current_screen_index, screen_t *screens, uint8_t *current_color_index)
 {
     uint8_t comm;
@@ -140,6 +188,20 @@ static void command_handler(keyboard_t *keyboard, screen_t *screen, uint8_t *cur
     }
 }
 
+/**
+ * @brief Main kernel entry point and execution loop.
+ *
+ * @details
+ * This function initializes the kernel subsystems and enters the main kernel loop.
+ * It sets up multiple virtual screens with history buffers, initializes the keyboard
+ * driver, and continuously processes keyboard input to handle both ASCII character
+ * display and special commands (screen switching, scrolling, color changes, error logs).
+ *
+ * The kernel manages NUM_SCREENS virtual screens, each with its own history buffer
+ * and color profile, allowing users to switch between different terminal views.
+ *
+ * @note This function never returns - it runs in an infinite loop processing keyboard events.
+ */
 void kernel(void)
 {
     screen_t screens[NUM_SCREENS];

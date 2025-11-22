@@ -259,7 +259,7 @@ void screen_print_history(screen_t *screen, uint16_t number_of_lines, uint32_t h
     uint32_t pos_helper = history_get_last_entry_index(screen->history_buffer);
 	const uint32_t pos_end = history_get_first_entry_index(screen->history_buffer);
 	uint16_t row_cnt;
-	uint32_t his_size = history_get_num_of_entrys(screen->history_buffer);
+	uint32_t his_size = history_get_num_of_entries(screen->history_buffer);
 
 	if (number_of_lines > his_size)
 	{
@@ -328,7 +328,7 @@ void screen_save_row_to_history(screen_t *screen, uint16_t row)
 static uint32_t screen_get_max_history_offset(screen_t *screen)
 {
 	uint32_t ret = 0u;
-	uint32_t his_size = history_get_num_of_entrys(screen->history_buffer);
+	uint32_t his_size = history_get_num_of_entries(screen->history_buffer);
 	uint16_t writable = SCREEN_HEIGHT - screen->start_row ;
 
 	if (his_size > writable)

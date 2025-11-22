@@ -96,7 +96,7 @@ uint32_t history_get_first_entry_index(history_buffer_t *history_buffer);
  * 
  * @return The number of entries currently in the history buffer.
  */
-uint32_t history_get_num_of_entrys(history_buffer_t *history_buffer);
+uint32_t history_get_num_of_entries(history_buffer_t *history_buffer);
 
 /**
  * @brief   Removes the most recently added entry from the history buffer.

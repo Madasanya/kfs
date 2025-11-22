@@ -41,7 +41,7 @@ typedef struct
  *
  * @details This function configures the starting and ending scan lines of the cursor
  *          using the provided settings. It interacts with VGA CRT Controller register 0x0A
- *          through ports 0x3D4/0x3D5 to definethe cursors size.
+ *          through ports 0x3D4/0x3D5 to define the cursor's size.
  *
  * @param settings A structure containing cursor_start and cursor_end values,
  *                 which specify the scan line positions for the cursor.
@@ -51,7 +51,7 @@ void cursor_set_style(cursor_setting_t settings);
 /**
  * @brief Enables the cursor.
  *
- * @details Enables the VGA hardware cursor by vlearing the cursor disable bit
+ * @details Enables the VGA hardware cursor by clearing the cursor disable bit
  *          in the VGA CRT Controller register 0x0A through ports 0x3D4/0x3D5.
  *          Other flags are not affected.
  */

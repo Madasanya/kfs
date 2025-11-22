@@ -4,7 +4,7 @@
 #include "inttype.h"
 #include "errlog.h"
 
-/** @brief Structur for holding informations about kernel. */
+/** @brief Structure for holding information about kernel. */
 typedef struct __attribute__((packed)) kernel_ver_s
 {
     uint8_t major_ver;

@@ -5,7 +5,7 @@
  * @details
  * This header provides low-level functions for interacting with I/O ports,
  * used for device drivers, or hardware programming on architectures like x86. The functions 
- * allow intercting with ports.
+ * allow interacting with ports.
  */
 
  #ifndef _IO_H_
