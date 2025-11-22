@@ -47,6 +47,47 @@ static void errlog_screen_assemble (screen_t *screen, errlog_err_lvl_t lvl)
     }
 }
 
+static void errorlog_key_handler(screen_t *screen, uint8_t command)
+{
+    switch (command)
+    {
+        case KEYBOARD_COMM_START_LOG_LVL1:
+            screen_put_str(screen, "ERROR LOG - LEVEL EMERGENCY:\n");
+            errlog_screen_assemble(screen, ERRLOG_LVL_EMERG);
+            break;
+        case KEYBOARD_COMM_START_LOG_LVL2:
+            screen_put_str(screen, "ERROR LOG - LEVEL ALERT:\n");
+            errlog_screen_assemble(screen, ERRLOG_LVL_ALERT);
+            break;
+        case KEYBOARD_COMM_START_LOG_LVL3:
+            screen_put_str(screen, "ERROR LOG - LEVEL CRITICAL:\n");
+            errlog_screen_assemble(screen, ERRLOG_LVL_CRIT);
+            break;
+        case KEYBOARD_COMM_START_LOG_LVL4:
+            screen_put_str(screen, "ERROR LOG - LEVEL ERROR:\n");
+            errlog_screen_assemble(screen, ERRLOG_LVL_ERR);
+            break;
+        case KEYBOARD_COMM_START_LOG_LVL5:
+            screen_put_str(screen, "ERROR LOG - LEVEL WARNING:\n");
+            errlog_screen_assemble(screen, ERRLOG_LVL_WARNING);
+            break;
+        case KEYBOARD_COMM_START_LOG_LVL6:
+            screen_put_str(screen, "ERROR LOG - LEVEL NOTICE:\n");
+            errlog_screen_assemble(screen, ERRLOG_LVL_NOTICE);
+            break;
+        case KEYBOARD_COMM_START_LOG_LVL7:
+            screen_put_str(screen, "ERROR LOG - LEVEL INFO:\n");
+            errlog_screen_assemble(screen, ERRLOG_LVL_INFO);
+            break;
+        case KEYBOARD_COMM_START_LOG_LVL8:
+            screen_put_str(screen, "ERROR LOG - LEVEL DEBUG:\n");
+            errlog_screen_assemble(screen, ERRLOG_LVL_DEBUG);
+            break;
+        default:
+            break;
+    }
+}
+
 void kernel(void)
 {
     #define NUM_SCREENS 5
@@ -60,7 +101,15 @@ void kernel(void)
     uint8_t ret;
     keyboard_t keyboard = {0};
     
-    md_printk(KERN_INFO "Kernel starting up...\n");
+    md_printk("Kernel starting up...DEFAULT\n");
+    md_printk(KERN_EMERG "Kernel starting up...EMERG\n");
+    md_printk(KERN_ALERT "Kernel starting up...ALERT\n");
+    md_printk(KERN_CRIT "Kernel starting up...CRIT\n");
+    md_printk(KERN_ERR "Kernel starting up...ERR\n");
+    md_printk(KERN_WARNING "Kernel starting up...WARNING\n");
+    md_printk(KERN_NOTICE "Kernel starting up...NOTICE\n");
+    md_printk(KERN_INFO "Kernel starting up...INFO\n");
+    md_printk(KERN_DEBUG "Kernel starting up...DEBUG\n");
 
     for (int i = 0; i < NUM_SCREENS; i++)
     {
@@ -89,9 +138,9 @@ void kernel(void)
                 current_screen_index = (current_screen_index + 1) % NUM_SCREENS;
                 active_screen = &screens[current_screen_index];
             }
-            else if (temp_comm == KEYBOARD_COMM_START_LOG_LVL7)
+            else if (temp_comm >= KEYBOARD_COMM_START_LOG_LVL1 && temp_comm <= KEYBOARD_COMM_START_LOG_LVL8)
             {
-                errlog_screen_assemble(active_screen, ERRLOG_LVL_DEBUG);
+                errorlog_key_handler(active_screen, temp_comm);
             }
             continue;
         }

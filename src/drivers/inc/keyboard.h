@@ -109,7 +109,6 @@
 #define KEYBOARD_COMM_START_LOG_LVL6 0x15u    /** < Start logging at level 6 on F6 key. */
 #define KEYBOARD_COMM_START_LOG_LVL7 0x16u    /** < Start logging at level 7 on F7 key. */
 #define KEYBOARD_COMM_START_LOG_LVL8 0x17u    /** < Start logging at level 8 on F8 key. */
-#define KEYBOARD_COMM_STOP_LOG_ALLLVL 0x18u   /** < Stop logging at all levels on Esc key. */
 
 #if KEYBOARD_CHAR_ARR_LEN >= 0xff
 #error "Invalid KEYBOARD_CHAR_ARR_LEN"  // Ensure buffer length fits in uint8_t

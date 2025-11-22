@@ -49,8 +49,8 @@ const keyboard_special_comm_t keyboard_comm_arr[] = { {KEYBOARD_SCANCODE_SCROLL_
                                                         {KEYBOARD_SCANCODE_START_LOG_LVL5, KEYBOARD_COMM_START_LOG_LVL5},
                                                         {KEYBOARD_SCANCODE_START_LOG_LVL6, KEYBOARD_COMM_START_LOG_LVL6},
                                                         {KEYBOARD_SCANCODE_START_LOG_LVL7, KEYBOARD_COMM_START_LOG_LVL7},
-                                                        {KEYBOARD_SCANCODE_START_LOG_LVL8, KEYBOARD_COMM_START_LOG_LVL8},
-                                                        {KEYBOARD_SCANCODE_STOP_LOG_ALLLVL, KEYBOARD_COMM_STOP_LOG_ALLLVL}};
+                                                        {KEYBOARD_SCANCODE_START_LOG_LVL8, KEYBOARD_COMM_START_LOG_LVL8}
+                                                    };
 
 
 /**
