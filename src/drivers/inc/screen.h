@@ -2,6 +2,8 @@
 #define _SCREEN_H
 
 #include "inttype.h"
+#include "kernel.h"
+#include "screen_settings.h"
 
 #define VGA_MEMORY  0xB8000
 
@@ -10,13 +12,17 @@ typedef struct history_buffer_s history_buffer_t;
 
 typedef struct screen_s{
     uint16_t *screen_buffer;
+    uint16_t start_row;
+    uint16_t start_column;
     uint16_t screen_row;
     uint16_t screen_column;
-    char *screen_header;
+    char    screen_header[SCREEN_WIDTH];
     uint16_t screen_color_default;
     uint16_t screen_color_current;
     history_buffer_t *history_buffer;
-
+    uint32_t history_offset;
+    uint16_t cursor_row;
+    uint16_t cursor_column;
 } screen_t;
 
 /**
@@ -63,7 +69,7 @@ void screen_put_str(screen_t *screen, const char *str);
  * @param[in]     history_buffer Pointer to the history buffer to associate.
  * @param[in]     default_color  The default color attribute for the screen.
  */
-void screen_init(screen_t *screen, history_buffer_t *history_buffer, uint8_t default_color);
+void screen_init(screen_t *screen, history_buffer_t *history_buffer, uint8_t default_color, char *header_str);
 
 /**
  * @brief   Clears the screen from a starting position to the end.
@@ -88,7 +94,7 @@ void screen_clear(screen_t *screen, uint16_t start_index, uint8_t color);
  *
  * @param[in,out] screen Pointer to the screen structure.
  */
-void screen_print_history(screen_t *screen, uint16_t number_of_lines);
+void screen_print_history(screen_t *screen, uint16_t number_of_lines, uint32_t history_offset);
 
 /**
  * @brief   Saves the current screen row to the history buffer.
@@ -100,5 +106,49 @@ void screen_print_history(screen_t *screen, uint16_t number_of_lines);
  * @param[in]     row    The row number to save (0-based).
  */
 void screen_save_row_to_history(screen_t *screen, uint16_t row);
+
+/**
+ * @brief   Opens and refreshes the screen display.
+ *
+ * @details Clears the entire screen, prints the header, and displays the history
+ *          buffer. If not in history browsing mode (history_offset == 0), removes
+ *          the last history entry to prepare for new input.
+ *
+ * @param[in,out] screen Pointer to the screen structure.
+ */
+void screen_open(screen_t *screen);
+
+/**
+ * @brief   Closes the screen and saves current state.
+ *
+ * @details Saves the current screen row to the history buffer if not currently
+ *          browsing history (history_offset == 0). Should be called before
+ *          switching away from the screen.
+ *
+ * @param[in,out] screen Pointer to the screen structure.
+ */
+void screen_close(screen_t *screen);
+
+/**
+ * @brief   Scrolls the screen view up through history.
+ *
+ * @details Increases the history offset to show older entries, effectively scrolling
+ *          up through command history. Saves the current row to history on first
+ *          scroll up. Does nothing if already at the maximum history offset.
+ *
+ * @param[in,out] screen Pointer to the screen structure.
+ */
+void screen_scroll_up(screen_t *screen);
+
+/**
+ * @brief   Scrolls the screen view down through history.
+ *
+ * @details Decreases the history offset to show more recent entries, effectively
+ *          scrolling down through command history. Removes the last history entry
+ *          when returning to normal mode (history_offset == 0).
+ *
+ * @param[in,out] screen Pointer to the screen structure.
+ */
+void screen_scroll_down(screen_t *screen);
 
 #endif /* _SCREEN_H */

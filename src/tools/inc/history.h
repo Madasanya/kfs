@@ -2,20 +2,19 @@
 #define _HISTORY_H
 
 #include "inttype.h"
-#include "kernel.h"
+#include "screen_settings.h"
 
 #define HISTORY_WIDTH      SCREEN_WIDTH + 1
 #define HISTORY_HEIGHT     100u
 
-typedef struct history_entry_s
-{
-    uint16_t command[HISTORY_WIDTH];
-} history_entry_t;
+
+typedef uint16_t history_entry_t[HISTORY_WIDTH];
 
 typedef struct history_buffer_s
 {
     history_entry_t entries[HISTORY_HEIGHT];
     uint32_t index;
+    uint32_t first_index;
 } history_buffer_t;
 
 /**
@@ -72,6 +71,43 @@ uint16_t* history_get_entry(history_buffer_t *history_buffer, uint32_t index);
  * 
  * @return The index of the last command in the history buffer.
  */ 
-uint32_t history_get_last_command_index(history_buffer_t *history_buffer);
+uint32_t history_get_last_entry_index(history_buffer_t *history_buffer);
+
+/**
+ * @brief   Retrieves the index of the first (oldest) entry in the history buffer.
+ *
+ * @details Gets the index of the first entry in the circular buffer. This represents
+ *          the oldest entry that hasn't been overwritten yet.
+ *
+ * @param[in] history_buffer Pointer to the history buffer.
+ * 
+ * @return The index of the first entry in the history buffer.
+ */
+uint32_t history_get_first_entry_index(history_buffer_t *history_buffer);
+
+/**
+ * @brief   Gets the number of entries currently stored in the history buffer.
+ *
+ * @details Calculates the total number of valid entries in the circular buffer
+ *          by computing the difference between the current index and the first
+ *          index, accounting for wrap-around.
+ *
+ * @param[in] history_buffer Pointer to the history buffer.
+ * 
+ * @return The number of entries currently in the history buffer.
+ */
+uint32_t history_get_num_of_entrys(history_buffer_t *history_buffer);
+
+/**
+ * @brief   Removes the most recently added entry from the history buffer.
+ *
+ * @details Decrements the current index to effectively remove the last entry.
+ *          Handles wrap-around when the index is at 0. Does nothing if the
+ *          buffer is empty (first_index == index).
+ *
+ * @param[in,out] history_buffer Pointer to the history buffer.
+ */
+void history_last_entry_remove(history_buffer_t *history_buffer);
+
 
 #endif /* _HISTORY_H */

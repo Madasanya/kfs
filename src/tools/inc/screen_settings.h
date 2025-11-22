@@ -1,0 +1,7 @@
+#ifndef _SCREEN_SETTINGS_H
+#define _SCREEN_SETTINGS_H
+
+#define SCREEN_WIDTH 80u
+#define SCREEN_HEIGHT 25u
+
+#endif /* _SCREEN_SETTINGS_H */
