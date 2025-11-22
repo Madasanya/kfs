@@ -47,6 +47,7 @@ static inline void screen_put_char_at_position(screen_t *screen, char c, uint8_t
 
 void screen_set_color(screen_t *screen, uint8_t color)
 {
+	md_printk(KERN_NOTICE "Color change screen with header: %s to color %u\n", screen->screen_header, color);
 	screen->screen_color_current = color;
 }
 
@@ -190,7 +191,6 @@ void screen_init(screen_t *screen, history_buffer_t *history_buffer, uint8_t def
 
 	screen->cursor_column = screen->start_column;
 	screen->cursor_row = screen->start_row;
-
 }
 
 /**

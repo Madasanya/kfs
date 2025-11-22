@@ -46,6 +46,15 @@ static void errlog_screen_assemble (screen_t *screen, errlog_err_lvl_t lvl)
         err_tag = err_tags[err.lvl];
         md_vsnprintf(entry_str, HISTORY_WIDTH, "%c: %s", err_tag, err.message_str);
         screen_put_str(screen, entry_str);
+        uint16_t len = md_strlen(entry_str);
+        if (len != 0u)
+        {
+            if (entry_str[len - 1] != '\n')
+            {
+                screen_put_char(screen, '\n');
+            }
+        }
+        
     }
 }
 
@@ -90,7 +99,7 @@ static void errorlog_key_handler(screen_t *screen, uint8_t command)
     }
 }
 
-void ascii_handler(keyboard_t *keyboard, screen_t *screen)
+static void ascii_handler(keyboard_t *keyboard, screen_t *screen)
 {
     char c;
     if (keyboard_char_get(keyboard, &c) == 1)
@@ -99,7 +108,7 @@ void ascii_handler(keyboard_t *keyboard, screen_t *screen)
     }
 }
 
-void command_handler(keyboard_t *keyboard, screen_t *screen, uint8_t *current_screen_index, screen_t *screens, uint8_t *current_color_index)
+static void command_handler(keyboard_t *keyboard, screen_t *screen, uint8_t *current_screen_index, screen_t *screens, uint8_t *current_color_index)
 {
     uint8_t comm;
     if (keyboard_comm_get(keyboard, &comm) == 1)
@@ -126,12 +135,10 @@ void command_handler(keyboard_t *keyboard, screen_t *screen, uint8_t *current_sc
         else if (comm == KEYBOARD_COMM_CHANGE_COLOR)
         {
             *current_color_index = (*current_color_index + 1) % NUM_SCREEN_COLOR_PROFILES;
-            screen->screen_color_current = SCREEN_COLOR_PROFILES[*current_color_index];
+            screen_set_color(screen, SCREEN_COLOR_PROFILES[*current_color_index]);
         }
     }
 }
-
-    
 
 void kernel(void)
 {
