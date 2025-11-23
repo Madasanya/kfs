@@ -18,7 +18,7 @@ A minimal x86 kernel implementation featuring a custom VGA text mode driver, PS/
                               │
          ┌────────────────────┼────────────────────┐
          │                    │                    │
-┌────────▼────────┐  ┌────────▼────────┐  ┌───────▼────────┐
+┌────────▼────────┐  ┌────────▼────────┐  ┌────────▼───────┐
 │  Driver Layer   │  │      Tools      │  │  Hardware I/O  │
 ├─────────────────┤  ├─────────────────┤  ├────────────────┤
 │ • Screen        │  │ • String Utils  │  │ • Port I/O     │
