@@ -3,6 +3,9 @@ CC			= i386-gcc
 LD			:= $(CC)
 RM			= rm -rf
 
+# Memory configuration
+QEMU_MEMORY	= 128M
+
 ASFLAGS		= -felf32
 CFLAGS		= -std=gnu99 -ffreestanding -fno-builtin -fno-stack-protector -nostdlib -nodefaultlibs -Wall -Wextra -Werror
 LDFLAGS		= -ffreestanding -nostdlib -nodefaultlibs -static -lgcc
@@ -15,6 +18,7 @@ CSRC		= main/src/kernel.c \
 			  main/src/start.c \
 			  tools/src/str_utils.c \
 			  drivers/src/keyboard.c \
+			  drivers/src/keyboard_settings.c \
 			  tools/src/errlog.c \
 			  tools/src/history.c \
 			  drivers/src/screen.c \
@@ -84,7 +88,7 @@ create_image: check_bin
 					
 run: all create_image
 				echo "Launching QEMU..."
-				sudo qemu-system-i386 -drive file=./boot/bootdisk.img,format=raw -m 128M
+				sudo qemu-system-i386 -drive file=./boot/bootdisk.img,format=raw -m $(QEMU_MEMORY)
 				
 
 .PHONY:		all clean fclean re build_gcc build_as build_tools check_bin create_image run

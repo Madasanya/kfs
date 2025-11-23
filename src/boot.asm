@@ -26,10 +26,13 @@ align 4
 ; System V ABI standard and de-facto extensions. The compiler will assume the
 ; stack is properly aligned and failure to align the stack will result in
 ; undefined behavior.
+; Stack size configuration
+STACK_SIZE equ 131072  ; 128 KiB reserved for stack
+
 section .bss
 align 16
 stack_bottom:
-resb 131072 ; 128 KiB is reserved for stack
+resb STACK_SIZE
 stack_top:
 
 ; The linker script specifies _start as the entry point to the kernel and the

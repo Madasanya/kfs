@@ -1,6 +1,8 @@
 #include "str_utils.h"
 #include "errlog.h"
 #include "start.h"
+#include "printk.h"
+
 #define KERN_SOH_ASCII '\001'
 #define KERN_EMERG_ASCII '0' /* system is unusable */
 #define KERN_ALERT_ASCII '1' /* action must be taken immediately */
@@ -10,7 +12,6 @@
 #define KERN_NOTICE_ASCII '5' /* normal but significant condition */
 #define KERN_INFO_ASCII '6' /* informational */
 #define KERN_DEBUG_ASCII '7' /* debug-level messages */
-#define PRINTK_BUFF_SIZE 82
 
 /**
  * @brief Determines the error log level from a kernel-style format string prefix and advances the format pointer.

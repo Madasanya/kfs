@@ -1,5 +1,5 @@
-#ifndef _HISTORY_H
-#define _HISTORY_H
+#ifndef _HISTORY_H_
+#define _HISTORY_H_
 
 #include "inttype.h"
 #include "screen_settings.h"
@@ -110,4 +110,4 @@ uint32_t history_get_num_of_entries(history_buffer_t *history_buffer);
 void history_last_entry_remove(history_buffer_t *history_buffer);
 
 
-#endif /* _HISTORY_H */
+#endif /* _HISTORY_H_ */

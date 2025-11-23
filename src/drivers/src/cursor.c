@@ -1,4 +1,3 @@
-#include "inttype.h"
 #include "io.h"
 #include "cursor.h"
 #include "screen_settings.h"

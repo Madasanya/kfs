@@ -51,6 +51,11 @@ int16_t md_put_str(const char *str)
 
 void md_ptoa(uint32_t num, char *output)
 {
+    if (output == NULL)
+    {
+        return;
+    }
+    
     if (num == 0)
     {
         output[0] = '0';
@@ -99,8 +104,14 @@ uint16_t md_strlencpy(char *dest, const char *src, uint16_t len)
 
 void md_uitoa_base(char *output, uint32_t num, const char* base)
 {
+    if (output == NULL || base == NULL)
+    {
+        return;
+    }
+    
     char *iter = output;
-    uint16_t remainder, divisor = md_strlen(base);
+    uint16_t divisor = md_strlen(base);
+    uint16_t remainder;
     char tmp;
 
     do
@@ -128,6 +139,11 @@ void md_uitoa_base(char *output, uint32_t num, const char* base)
 
 void md_itoa_base(char *output, int32_t num, const char* base)
 {
+    if (output == NULL || base == NULL)
+    {
+        return;
+    }
+    
     if (num < 0)
     {
         output[0] = '-';
@@ -143,8 +159,14 @@ void md_itoa_base(char *output, int32_t num, const char* base)
 
 void md_ulltoa_base(char *output, uint64_t num, const char* base)
 {
+    if (output == NULL || base == NULL)
+    {
+        return;
+    }
+    
     char *iter = output;
-    uint16_t remainder, divisor = md_strlen(base);
+    uint16_t divisor = md_strlen(base);
+    uint16_t remainder;
     char tmp;
 
     do
@@ -172,6 +194,11 @@ void md_ulltoa_base(char *output, uint64_t num, const char* base)
 
 void md_lltoa_base(char *output, int64_t num, const char* base)
 {
+    if (output == NULL || base == NULL)
+    {
+        return;
+    }
+    
     if (num < 0)
     {
         output[0] = '-';

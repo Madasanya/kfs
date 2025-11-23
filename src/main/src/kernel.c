@@ -8,6 +8,7 @@
 #include "str_utils.h"
 
 #define NUM_SCREENS 5
+#define SCREEN_HEADER_BUF_LEN 15u
 
 /**
  * @brief Assembles an error log screen display from the kernel error log, filtered by severity level.
@@ -19,11 +20,6 @@
  *
  * The function reads entries sequentially starting from the last saved  one. Displays only messages specified
  * by @p lvl or more important and continues until no more entries are available.
- *
- * @todo The current implementation uses @c history_buffer_t as the screen representation.This should
- *       be replaced with a dedicated @c screen_t type in the future.
- * 
- * @todo Add colors to error screen.
  *
  * @param[out] screen  Pointer to the history buffer that will hold the formatted error log lines.
  *                     Must be pre-allocated and will be initialized by this function.
@@ -44,10 +40,9 @@ static void errlog_screen_assemble (screen_t *screen, errlog_err_lvl_t lvl)
     while (errlog_read(&errlog, &err) == ERRLOG_RET_OK)
     {
         err_tag = err_tags[err.lvl];
-        md_vsnprintf(entry_str, HISTORY_WIDTH, "%c: %s", err_tag, err.message_str);
+        int len = md_vsnprintf(entry_str, HISTORY_WIDTH, "%c: %s", err_tag, err.message_str);
         screen_put_str(screen, entry_str);
-        uint16_t len = md_strlen(entry_str);
-        if (len != 0u)
+        if (len > 0)
         {
             if (entry_str[len - 1] != '\n')
             {
@@ -209,7 +204,7 @@ void kernel(void)
     screen_t *active_screen = NULL;
     uint8_t current_screen_index = 0;
     uint8_t current_color_index[NUM_SCREENS] = {0};
-    char header_buf[15];
+    char header_buf[SCREEN_HEADER_BUF_LEN];
 
     keyboard_t keyboard = {0};
     

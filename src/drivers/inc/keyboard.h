@@ -148,6 +148,16 @@ typedef struct
 } keyboard_special_comm_t;
 
 /**
+ * @brief External declarations for keyboard configuration data.
+ * 
+ * @details These arrays are defined in keyboard_settings.c and contain the
+ *          scancode-to-ASCII mappings and special command bindings.
+ */
+extern const keyboard_special_comm_t keyboard_comm_arr[KEYBOARD_SPECIAL_COMM_ARR_LEN];
+extern const char keyboard_unshifted_map[0x100];
+extern const char keyboard_shifted_map[0x100];
+
+/**
  * @brief Processes incoming keyboard data from the PS/2 port.
  * 
  * @details

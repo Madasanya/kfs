@@ -1,5 +1,5 @@
-#ifndef _COLORS_H
-#define _COLORS_H
+#ifndef _COLORS_H_
+#define _COLORS_H_
 
 #include "inttype.h"
 
@@ -88,4 +88,4 @@ uint8_t get_fg_color(uint8_t color);
  */
 uint8_t get_bg_color(uint8_t color);
 
-#endif /* _COLORS_H */
+#endif /* _COLORS_H_ */

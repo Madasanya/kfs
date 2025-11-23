@@ -1,6 +1,9 @@
 #ifndef _PRINTK_H_
 #define _PRINTK_H_
 
+/** @brief Maximum size of printk buffer, including null terminator. */
+#define PRINTK_BUFF_SIZE 82
+
 #define KERN_SOH	"\001"
 
 #define KERN_EMERG	KERN_SOH "0"	/* system is unusable */

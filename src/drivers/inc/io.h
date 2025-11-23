@@ -8,8 +8,8 @@
  * allow interacting with ports.
  */
 
- #ifndef _IO_H_
- #define _IO_H_
+#ifndef _IO_H_
+#define _IO_H_
  
  #include "inttype.h"
  
@@ -48,4 +48,4 @@
   */
  void md_io_wait(void);
  
- #endif /* _IO_H_ */
+#endif /* _IO_H_ */

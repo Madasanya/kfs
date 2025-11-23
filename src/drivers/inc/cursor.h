@@ -1,5 +1,5 @@
-#ifndef CURSOR_H
-# define CURSOR_H
+#ifndef _CURSOR_H_
+#define _CURSOR_H_
 
 #include "inttype.h"
 
@@ -78,4 +78,4 @@ void cursor_disable();
  */
 void cursor_update(uint16_t x, uint16_t y);
 
-#endif /* _CURSOR_H */
+#endif /* _CURSOR_H_ */

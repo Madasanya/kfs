@@ -4,6 +4,11 @@
 
 errlog_ret_t errlog_init(errlog_t *err_log, errlog_err_lvl_t default_lvl)
 {
+    if (err_log == NULL)
+    {
+        return ERRLOG_RET_ERR;
+    }
+    
     if ((default_lvl <= ERRLOG_LVL_DEFAULT) || (default_lvl >= ERRLOG_LVL_LEN))
     {
         if ((ERRLOG_DEFAULT_ERR_LVL <= ERRLOG_LVL_DEFAULT) || (ERRLOG_DEFAULT_ERR_LVL >= ERRLOG_LVL_LEN))
@@ -28,6 +33,11 @@ errlog_ret_t errlog_init(errlog_t *err_log, errlog_err_lvl_t default_lvl)
 
 errlog_ret_t errlog_default_lvl_set(errlog_t *err_log, errlog_err_lvl_t default_lvl)
 {
+    if (err_log == NULL)
+    {
+        return ERRLOG_RET_ERR;
+    }
+    
     if ((default_lvl <= ERRLOG_LVL_DEFAULT) || (default_lvl >= ERRLOG_LVL_LEN))
     {
         return ERRLOG_RET_ERR;
@@ -38,6 +48,11 @@ errlog_ret_t errlog_default_lvl_set(errlog_t *err_log, errlog_err_lvl_t default_
 
 errlog_ret_t errlog_read_init(errlog_t *err_log, errlog_err_lvl_t lvl)
 {
+    if (err_log == NULL)
+    {
+        return ERRLOG_RET_ERR;
+    }
+    
     if ((lvl < ERRLOG_LVL_DEFAULT) || (lvl >= ERRLOG_LVL_LEN))
     {
         return ERRLOG_RET_ERR;
@@ -58,6 +73,11 @@ errlog_ret_t errlog_read_init(errlog_t *err_log, errlog_err_lvl_t lvl)
 
 errlog_ret_t errlog_read(errlog_t *err_log, errlog_entry_t *entry)
 {
+    if (err_log == NULL || entry == NULL)
+    {
+        return ERRLOG_RET_ERR;
+    }
+    
     errlog_ret_t ret = ERRLOG_RET_OK;
     entry->message_str[0] = '\0';
     entry->lvl = ERRLOG_LVL_DEFAULT;
@@ -102,11 +122,21 @@ errlog_ret_t errlog_read(errlog_t *err_log, errlog_entry_t *entry)
 
 void errlog_read_done(errlog_t *err_log)
 {
+    if (err_log == NULL)
+    {
+        return;
+    }
+    
     err_log->read_lvl = ERRLOG_LVL_DEFAULT;
 }
 
 errlog_ret_t errlog_write(errlog_t *err_log, errlog_err_lvl_t lvl, const char *message)
 {
+    if (err_log == NULL || message == NULL)
+    {
+        return ERRLOG_RET_ERR;
+    }
+    
     errlog_ret_t ret = ERRLOG_RET_OK;
     uint16_t len;
     if ((lvl < ERRLOG_LVL_DEFAULT) || (lvl >= ERRLOG_LVL_LEN))

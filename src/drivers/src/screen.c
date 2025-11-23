@@ -1,9 +1,7 @@
 #include "history.h"
 #include "screen.h"
-#include "kernel.h"
 #include "colors.h"
 #include "str_utils.h"
-#include "screen_settings.h"
 #include "cursor.h"
 #include "printk.h"
 
@@ -47,6 +45,11 @@ static inline void screen_put_char_at_position(screen_t *screen, char c, uint8_t
 
 void screen_set_color(screen_t *screen, uint8_t color)
 {
+	if (screen == NULL)
+	{
+		return;
+	}
+	
 	md_printk(KERN_NOTICE "Color change screen with header: %s to color %u\n", screen->screen_header, color);
 	screen->screen_color_current = color;
 }
@@ -129,6 +132,11 @@ if (screen->history_offset != 0u)
 
 void screen_put_char(screen_t *screen, char c)
 {
+	if (screen == NULL)
+	{
+		return;
+	}
+	
 	cursor_at_put_reset(screen);
 	if (c == '\n')
 	{
@@ -137,12 +145,22 @@ void screen_put_char(screen_t *screen, char c)
 	}
 	
 	uint16_t position = screen->screen_row * SCREEN_WIDTH + screen->screen_column;
+	if (position >= SCREEN_WIDTH * SCREEN_HEIGHT)
+	{
+		return;
+	}
+	
 	screen_put_char_at_position(screen, c, screen->screen_color_current, position);
 	screen_advance_cursor(screen, 1);
 }
 
 void screen_put_str(screen_t *screen, const char *str)
 {
+	if (screen == NULL || str == NULL)
+	{
+		return;
+	}
+	
 	uint16_t size = md_strlen(str);
 	uint8_t color = screen->screen_color_current;
 	uint16_t chars_written = 0;
@@ -167,6 +185,11 @@ void screen_put_str(screen_t *screen, const char *str)
 			position = screen->screen_row * SCREEN_WIDTH + screen->screen_column;
 		}
 		
+		if (position >= SCREEN_WIDTH * SCREEN_HEIGHT)
+		{
+			break;
+		}
+		
 		screen_put_char_at_position(screen, str[i], color, position);
 		chars_written++;
 	}
@@ -175,7 +198,12 @@ void screen_put_str(screen_t *screen, const char *str)
 }
 
 void screen_init(screen_t *screen, history_buffer_t *history_buffer, uint8_t default_color, char *header_str)
-{ 
+{
+	if (screen == NULL || history_buffer == NULL || header_str == NULL)
+	{
+		return;
+	}
+	
 	md_printk(KERN_INFO "Initializing screen with header: %s\n", header_str);
 	screen->screen_buffer = (uint16_t*)VGA_MEMORY;
     screen->screen_row = 1;
@@ -185,7 +213,7 @@ void screen_init(screen_t *screen, history_buffer_t *history_buffer, uint8_t def
 	screen->screen_color_default = default_color;
 	screen->screen_color_current = screen->screen_color_default;
 	screen->history_buffer = history_buffer;
-	(void)md_strlencpy(screen->screen_header, header_str, SCREEN_WIDTH);
+	(void)md_strlencpy(screen->screen_header, header_str, SCREEN_HEADER_LEN);
 	screen->history_offset = 0;
 	history_init(history_buffer);
 
@@ -201,7 +229,7 @@ void screen_init(screen_t *screen, history_buffer_t *history_buffer, uint8_t def
 static void print_header(screen_t *screen)
 {
 	uint16_t len = md_strlen(screen->screen_header);
-	uint16_t padding = (SCREEN_WIDTH - len) / 2;
+	uint16_t padding = (SCREEN_HEADER_LEN - len) / 2;
 
 	for (uint16_t x = 0; x < len; x++)
 	{
@@ -211,6 +239,11 @@ static void print_header(screen_t *screen)
 
 void screen_open(screen_t *screen)
 {
+	if (screen == NULL)
+	{
+		return;
+	}
+	
 	md_printk(KERN_NOTICE "Opening screen with header: %s\n", screen->screen_header);
 
 	screen_clear(screen, 0, screen->screen_color_default);
@@ -235,6 +268,11 @@ void screen_open(screen_t *screen)
 
 void screen_close(screen_t *screen)
 {
+	if (screen == NULL)
+	{
+		return;
+	}
+	
 	md_printk(KERN_NOTICE "Closing screen with header: %s\n", screen->screen_header);
 	if (screen->history_offset == 0u)
 	{
@@ -245,6 +283,11 @@ void screen_close(screen_t *screen)
 
 void screen_clear(screen_t *screen, uint16_t start_index, uint8_t color)
 {
+	if (screen == NULL)
+	{
+		return;
+	}
+	
 	uint16_t colored_space = screen_put_colored_char(' ', color);
 	uint16_t total_size = SCREEN_WIDTH * SCREEN_HEIGHT;
 	
@@ -256,6 +299,11 @@ void screen_clear(screen_t *screen, uint16_t start_index, uint8_t color)
 
 void screen_print_history(screen_t *screen, uint16_t number_of_lines, uint32_t history_offset)
 {
+	if (screen == NULL || screen->history_buffer == NULL)
+	{
+		return;
+	}
+	
     uint32_t pos_helper = history_get_last_entry_index(screen->history_buffer);
 	const uint32_t pos_end = history_get_first_entry_index(screen->history_buffer);
 	uint16_t row_cnt;
@@ -313,8 +361,10 @@ void screen_print_history(screen_t *screen, uint16_t number_of_lines, uint32_t h
 
 void screen_save_row_to_history(screen_t *screen, uint16_t row)
 {
-    if (row >= SCREEN_HEIGHT)
+    if (screen == NULL || screen->history_buffer == NULL || row >= SCREEN_HEIGHT)
+    {
         return;
+    }
     
     uint16_t *row_buffer = &screen->screen_buffer[row * SCREEN_WIDTH];
     history_add_entry(screen->history_buffer, row_buffer);
@@ -341,6 +391,11 @@ static uint32_t screen_get_max_history_offset(screen_t *screen)
 
 void screen_scroll_up(screen_t *screen)
 {
+	if (screen == NULL)
+	{
+		return;
+	}
+	
 	uint32_t max_his_off = screen_get_max_history_offset(screen);
 
 	if (screen->cursor_row > screen->start_row)
@@ -369,6 +424,11 @@ void screen_scroll_up(screen_t *screen)
 
 void screen_scroll_down(screen_t *screen)
 {
+	if (screen == NULL)
+	{
+		return;
+	}
+	
 	if (screen->cursor_row < screen->screen_row)
 	{
 		screen->cursor_row++;

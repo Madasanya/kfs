@@ -1,8 +1,7 @@
-#ifndef _SCREEN_H
-#define _SCREEN_H
+#ifndef _SCREEN_H_
+#define _SCREEN_H_
 
 #include "inttype.h"
-#include "kernel.h"
 #include "screen_settings.h"
 
 #define VGA_MEMORY  0xB8000
@@ -16,7 +15,7 @@ typedef struct screen_s{
     uint16_t start_column;
     uint16_t screen_row;
     uint16_t screen_column;
-    char    screen_header[SCREEN_WIDTH];
+    char    screen_header[SCREEN_HEADER_LEN];
     uint16_t screen_color_default;
     uint16_t screen_color_current;
     history_buffer_t *history_buffer;
@@ -151,4 +150,4 @@ void screen_scroll_up(screen_t *screen);
  */
 void screen_scroll_down(screen_t *screen);
 
-#endif /* _SCREEN_H */
+#endif /* _SCREEN_H_ */
