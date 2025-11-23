@@ -13,7 +13,7 @@ typedef struct __attribute__((packed)) kernel_ver_s
 
 /** @brief Current version macros. */
 #define MAJOR_VER 0x01
-#define MINOR_VER 0x00
+#define MINOR_VER 0x01
 
 extern kernel_ver_t version;
 extern errlog_t errlog;
