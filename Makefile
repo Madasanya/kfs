@@ -25,7 +25,8 @@ CSRC		= main/src/kernel.c \
 			  tools/src/colors.c \
 			  tools/src/printk.c \
 			  tools/src/vsnprintf.c \
-			  drivers/src/cursor.c
+			  drivers/src/cursor.c \
+			  main/src/gdt.c
 
 LDSRC		= kernel.ld
 
