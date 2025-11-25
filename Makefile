@@ -6,8 +6,8 @@ RM			= rm -rf
 # Memory configuration
 QEMU_MEMORY	= 128M
 
-ASFLAGS		= -felf32
-CFLAGS		= -std=gnu99 -ffreestanding -fno-builtin -fno-stack-protector -nostdlib -nodefaultlibs -Wall -Wextra -Werror
+ASFLAGS		= -felf32 -g -F dwarf
+CFLAGS		= -std=gnu99 -ffreestanding -fno-builtin -fno-stack-protector -nostdlib -nodefaultlibs -Wall -Wextra -Werror -g
 LDFLAGS		= -ffreestanding -nostdlib -nodefaultlibs -static -lgcc
 INCFLAG		= -I
 
@@ -90,6 +90,10 @@ create_image: check_bin
 run: all create_image
 				echo "Launching QEMU..."
 				sudo qemu-system-i386 -drive file=./boot/bootdisk.img,format=raw -m $(QEMU_MEMORY)
-				
 
-.PHONY:		all clean fclean re build_gcc build_as build_tools check_bin create_image run
+debug: all create_image
+				echo "Launching QEMU with GDB server on port 1234..."
+				sudo qemu-system-i386 -drive file=./boot/bootdisk.img,format=raw -m $(QEMU_MEMORY) -s -S -cpu 486
+# -nographic -monitor none -serial none
+
+.PHONY:		all clean fclean re build_gcc build_as build_tools check_bin create_image run debug

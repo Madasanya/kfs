@@ -21,7 +21,7 @@ error()   { echo -e "${RED}[ERROR]${RESET} $*" >&2; }
 # ---------------------------
 GCC_VERSION="12.1.0"
 BINUTILS_VERSION="2.40"
-GDB_VERSION="13.2"
+GDB_VERSION="16.3"
 TARGET="i386-elf"
 PREFIX="$HOME/opt/cross/gcc"
 SRC_DIR="$HOME/src"
