@@ -84,6 +84,10 @@ static void gdt_entry_create(gdt_entry_t* entry, const gdt_segment_data_t *seg_d
     entry->base24_31    = (seg_data->base >> 24) & 0xFF;
 }
 
+gdt_reg_t gdt_reg = {0};
+
+extern void gdt_load(gdt_reg_t *gdt);
+
 void init_gdt(void)
 {
     gdt_entry_t* gdt = (gdt_entry_t*)GDTBASE;
@@ -92,16 +96,16 @@ void init_gdt(void)
     // Non-flat memory layout with 6MB total image
     // Kernel code: 0x00100000 - 0x002FFFFF (2MB starting at 1MB)
     const gdt_segment_data_t code_seg_pl0 = {0x00100000, 0x000001FF, GDT_CODE_PL0};
+    // User code: 0x00200000 - 0x002FFFFF (1MB starting at 2MB)
+    const gdt_segment_data_t code_seg_pl3 = {0x00200000, 0x000000FF, GDT_CODE_PL3};
     // Kernel data: 0x00300000 - 0x004FFFFF (2MB starting at 3MB)
     const gdt_segment_data_t data_seg_pl0 = {0x00300000, 0x000001FF, GDT_DATA_PL0};
-    // User code: 0x00500000 - 0x005FFFFF (1MB starting at 5MB)
-    const gdt_segment_data_t code_seg_pl3 = {0x00500000, 0x000000FF, GDT_CODE_PL3};
-    // User data: 0x00600000 - 0x006FFFFF (1MB starting at 6MB)
-    const gdt_segment_data_t data_seg_pl3 = {0x00600000, 0x000000FF, GDT_DATA_PL3};
-    // Kernel BSS: 0x00700000 - 0x007FFFFF (1MB starting at 7MB)
-    const gdt_segment_data_t bss_seg_pl0 = {0x00700000, 0x000000FF, GDT_BSS_PL0};
-    // User BSS: 0x00800000 - 0x008FFFFF (1MB starting at 8MB)
-    const gdt_segment_data_t bss_seg_pl3 = {0x00800000, 0x000000FF, GDT_BSS_PL3};
+    // User data: 0x00400000 - 0x004FFFFF (1MB starting at 4MB)
+    const gdt_segment_data_t data_seg_pl3 = {0x00400000, 0x000000FF, GDT_DATA_PL3};
+    // Kernel BSS: 0x00500000 - 0x006FFFFF (2MB starting at 6MB)
+    const gdt_segment_data_t bss_seg_pl0 = {0x00500000, 0x000001FF, GDT_BSS_PL0};
+    // User BSS: 0x00800000 - 0x008FFFFF (1MB starting at 7MB)
+    const gdt_segment_data_t bss_seg_pl3 = {0x00600000, 0x000000FF, GDT_BSS_PL3};
     
     gdt_entry_create(&gdt[0], &null_seg);
     gdt_entry_create(&gdt[1], &code_seg_pl0);
@@ -111,9 +115,10 @@ void init_gdt(void)
     gdt_entry_create(&gdt[5], &bss_seg_pl0);
     gdt_entry_create(&gdt[6], &bss_seg_pl3);
 
-    gdt_reg_t gdt_reg;
+    
     gdt_reg.limit = (sizeof(gdt_entry_t) * 7) - 1;
     gdt_reg.base  = GDTBASE;
 
-    asm volatile ("lgdt %0" : : "m"(gdt_reg));
+    gdt_load(&gdt_reg);
+
 }
