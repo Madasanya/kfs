@@ -4,9 +4,9 @@
 ;   user_eip = linear address inside user code segment (e.g. 0x00300000 + offset)
 
 global user_enter
-extern USER_CODE_SEL    ; 0x13
-extern USER_DATA_SEL    ; 0x23
-extern USER_BSS_SEL     ; 0x33
+%define USER_CODE_SEL 0x13
+%define USER_DATA_SEL 0x23
+%define USER_BSS_SEL  0x33
 
 section .text
 align 16

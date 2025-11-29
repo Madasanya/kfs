@@ -12,7 +12,8 @@ LDFLAGS		= -ffreestanding -nostdlib -nodefaultlibs -static -lgcc
 INCFLAG		= -I
 
 ASSRC		= boot.asm \
-			  drivers/src/io.asm
+			  drivers/src/io.asm \
+			  main/src/gdt_flush.asm
 
 CSRC		= main/src/kernel.c \
 			  main/src/start.c \

@@ -2,9 +2,9 @@
 ; Called from init_gdt() after filling the table
 
 global gdt_flush
-extern KERNEL_CODE_SEL
-extern KERNEL_DATA_SEL
-extern KERNEL_BSS_SEL
+%define KERNEL_CODE_SEL  0x08
+%define KERNEL_DATA_SEL  0x18
+%define KERNEL_BSS_SEL   0x28
 
 section .text
 align 16

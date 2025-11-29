@@ -73,6 +73,17 @@ typedef struct {
     uint16_t flags;
 } gdt_segment_data_t;
 
+const uint16_t KERNEL_CODE_SEL = 0x08;
+const uint16_t USER_CODE_SEL   = 0x13;
+const uint16_t KERNEL_DATA_SEL = 0x18;
+const uint16_t USER_DATA_SEL   = 0x23;
+const uint16_t KERNEL_BSS_SEL  = 0x28;
+const uint16_t USER_BSS_SEL    = 0x33;
+
+gdt_reg_t gdt_reg = {0};
+
+extern void gdt_flush(gdt_reg_t *gdt);
+
 static void gdt_entry_create(gdt_entry_t* entry, const gdt_segment_data_t *seg_data)
 {
     entry->lim0_15      = (seg_data->limit & 0xFFFF);
@@ -83,10 +94,6 @@ static void gdt_entry_create(gdt_entry_t* entry, const gdt_segment_data_t *seg_d
     entry->flags_others = (seg_data->flags >> 8) & 0x0F;
     entry->base24_31    = (seg_data->base >> 24) & 0xFF;
 }
-
-gdt_reg_t gdt_reg = {0};
-
-extern void gdt_load(gdt_reg_t *gdt);
 
 void init_gdt(void)
 {
@@ -119,6 +126,6 @@ void init_gdt(void)
     gdt_reg.limit = (sizeof(gdt_entry_t) * 7) - 1;
     gdt_reg.base  = GDTBASE;
 
-    gdt_load(&gdt_reg);
+    gdt_flush(&gdt_reg);
 
 }
