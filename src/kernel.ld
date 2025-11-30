@@ -9,21 +9,23 @@ SECTIONS
         *(.multiboot1)  /* For GRUB/Multiboot header if used */
         *(.kernel_info) /* kernel information (version etc.) */
         *(.text)
-    }
-
-    .rodata BLOCK(4K) : ALIGN(4K)
-    {
         *(.rodata)
     }
+
+. = 3M;
 
     .data BLOCK(4K) : ALIGN(4K)
     {
         *(.data)
+        *(COMMON)
+        *(.bss)
     }
+
+    /* . = 3M; 
 
     .bss BLOCK(4K) : ALIGN(4K)
     {
         *(COMMON)
         *(.bss)
-    }
+    } */
 }
