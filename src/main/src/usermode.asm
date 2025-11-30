@@ -33,17 +33,17 @@ user_enter:
 
     ; ------------------------------------------------------------------
     ; 2. Set up a SAFE user stack
-    ;    Top of your 1 MB user BSS segment: 0x00A00000 + 0x100000 = 0x00B00000
+    ;    Top of your 1 MB user BSS segment: 0x00600000 + 0x100000 = 0x00700000
     ;    We subtract 32 bytes just to be safe
     ; ------------------------------------------------------------------
-    mov  esp, 0x00B00000 - 32
+    mov  esp, 0x00700000 - 32
 
     ; ------------------------------------------------------------------
     ; 3. Build the IRET frame on the user stack
     ;    Order: SS, ESP, EFLAGS, CS, EIP
     ; ------------------------------------------------------------------
     push USER_BSS_SEL            ; User SS
-    push 0x00B00000 - 32         ; User ESP (after this frame)
+    push 0x00700000 - 32         ; User ESP (after this frame)
 
     pushf                        ; EFLAGS
     pop  ecx

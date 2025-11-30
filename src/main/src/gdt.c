@@ -28,6 +28,8 @@
 #define SEG_CODE_EXCA      0x0Du // Execute-Only, conforming, accessed
 #define SEG_CODE_EXRDC     0x0Eu // Execute/Read, conforming
 #define SEG_CODE_EXRDCA    0x0Fu // Execute/Read, conforming, accessed
+
+#define SEG_TSS_AVAIL      0x09u // Available 32-bit TSS
  
 #define GDT_CODE_PL0 SEG_DESCTYPE(1u) | SEG_PRES(1u) | SEG_SAVL(0u) | \
                      SEG_LONG(0u)     | SEG_SIZE(1u) | SEG_GRAN(1u) | \
@@ -44,6 +46,7 @@
 #define GDT_DATA_PL3 SEG_DESCTYPE(1u) | SEG_PRES(1u) | SEG_SAVL(0u) | \
                      SEG_LONG(0u)     | SEG_SIZE(1u) | SEG_GRAN(1u) | \
                      SEG_PRIV(3u)     | SEG_DATA_RDWR
+                     
 #define GDT_BSS_PL0 SEG_DESCTYPE(1u) | SEG_PRES(1u) | SEG_SAVL(0u) | \
                     SEG_LONG(0u)     | SEG_SIZE(1u) | SEG_GRAN(1u) | \
                     SEG_PRIV(0u)     | SEG_DATA_RDWR
@@ -51,6 +54,10 @@
 #define GDT_BSS_PL3 SEG_DESCTYPE(1u) | SEG_PRES(1u) | SEG_SAVL(0u) | \
                     SEG_LONG(0u)     | SEG_SIZE(1u) | SEG_GRAN(1u) | \
                     SEG_PRIV(3u)     | SEG_DATA_RDWR
+
+#define GDT_TSS     SEG_DESCTYPE(0u) | SEG_PRES(1u) | SEG_SAVL(0u) | \
+                    SEG_LONG(0u)     | SEG_SIZE(0u) | SEG_GRAN(0u) | \
+                    SEG_PRIV(0u)     | SEG_TSS_AVAIL
 
 typedef struct {
     uint16_t limit;
@@ -73,16 +80,42 @@ typedef struct {
     uint16_t flags;
 } gdt_segment_data_t;
 
-const uint16_t KERNEL_CODE_SEL = 0x08;
-const uint16_t USER_CODE_SEL   = 0x13;
-const uint16_t KERNEL_DATA_SEL = 0x18;
-const uint16_t USER_DATA_SEL   = 0x23;
-const uint16_t KERNEL_BSS_SEL  = 0x28;
-const uint16_t USER_BSS_SEL    = 0x33;
+typedef struct {
+	uint32_t prev_tss; // The previous TSS - with hardware task switching these form a kind of backward linked list.
+	uint32_t esp0;     // The stack pointer to load when changing to kernel mode.
+	uint32_t ss0;      // The stack segment to load when changing to kernel mode.
+	// Everything below here is unused.
+	uint32_t esp1; // esp and ss 1 and 2 would be used when switching to rings 1 or 2.
+	uint32_t ss1;
+	uint32_t esp2;
+	uint32_t ss2;
+	uint32_t cr3;
+	uint32_t eip;
+	uint32_t eflags;
+	uint32_t eax;
+	uint32_t ecx;
+	uint32_t edx;
+	uint32_t ebx;
+	uint32_t esp;
+	uint32_t ebp;
+	uint32_t esi;
+	uint32_t edi;
+	uint32_t es;
+	uint32_t cs;
+	uint32_t ss;
+	uint32_t ds;
+	uint32_t fs;
+	uint32_t gs;
+	uint32_t ldt;
+	uint16_t trap;
+	uint16_t iomap_base;
+} __attribute__ ((packed)) tss_entry_t;
 
 gdt_reg_t gdt_reg = {0};
 
 extern void gdt_flush(gdt_reg_t *gdt);
+extern void tss_flush(void);
+
 
 static void gdt_entry_create(gdt_entry_t* entry, const gdt_segment_data_t *seg_data)
 {
@@ -113,19 +146,31 @@ void init_gdt(void)
     const gdt_segment_data_t bss_seg_pl0 = {0x00500000, 0x000001FF, GDT_BSS_PL0};
     // User BSS: 0x00800000 - 0x008FFFFF (1MB starting at 7MB)
     const gdt_segment_data_t bss_seg_pl3 = {0x00600000, 0x000000FF, GDT_BSS_PL3};
+    // TSS segment
+    const gdt_segment_data_t tss_seg = {0x00700000, 0x00000067, GDT_TSS};
     
     gdt_entry_create(&gdt[0], &null_seg);
     gdt_entry_create(&gdt[1], &code_seg_pl0);
-    gdt_entry_create(&gdt[2], &data_seg_pl0);
-    gdt_entry_create(&gdt[3], &code_seg_pl3);
+    gdt_entry_create(&gdt[2], &code_seg_pl3);
+    gdt_entry_create(&gdt[3], &data_seg_pl0);
     gdt_entry_create(&gdt[4], &data_seg_pl3);
     gdt_entry_create(&gdt[5], &bss_seg_pl0);
     gdt_entry_create(&gdt[6], &bss_seg_pl3);
+    gdt_entry_create(&gdt[7], &tss_seg);
 
     
-    gdt_reg.limit = (sizeof(gdt_entry_t) * 7) - 1;
+    gdt_reg.limit = (sizeof(gdt_entry_t) * 8) - 1;
     gdt_reg.base  = GDTBASE;
-
     gdt_flush(&gdt_reg);
 
+    // Initialize TSS
+    tss_entry_t* tss = (tss_entry_t*)0x00700000;
+    for (uint32_t i = 0; i < sizeof(tss_entry_t); i++)
+    {
+        ((uint8_t*)tss)[i] = 0; // Zero out the TSS
+    }
+    tss->ss0 = 0x10; // Kernel data segment selector
+    tss->esp0 = 0x007FFFFC; // Stack pointer for kernel mode
+
+    tss_flush();
 }

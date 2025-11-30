@@ -5,6 +5,7 @@ global gdt_flush
 %define KERNEL_CODE_SEL  0x08
 %define KERNEL_DATA_SEL  0x18
 %define KERNEL_BSS_SEL   0x28
+%define KERNEL_TSS_SEL   0x38
 
 section .text
 align 16
@@ -25,3 +26,10 @@ gdt_flush:
     jmp   KERNEL_CODE_SEL:.flush_cs
 .flush_cs:
     ret
+
+; C declaration: void flush_tss(void);
+global tss_flush
+tss_flush:
+	mov ax, (5 * 8) | 0 ; fifth 8-byte selector, symbolically OR-ed with 0 to set the RPL (requested privilege level).
+	ltr ax
+	ret
