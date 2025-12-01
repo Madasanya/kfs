@@ -28,14 +28,15 @@ CSRC		= main/src/kernel.c \
 			  tools/src/printk.c \
 			  tools/src/vsnprintf.c \
 			  drivers/src/cursor.c \
-			  main/src/gdt.c
+			  main/src/gdt.c \
+			  user/src/user_main.c
 
 LDSRC		= kernel.ld
 
 SRCD		= ./src/
 OBJD		= ./obj/
 BUILTD		= ./build/
-INCD		= main/inc tools/inc drivers/inc
+INCD		= main/inc tools/inc drivers/inc user/inc
 
 INCPATH		:= $(addprefix $(INCFLAG)src/,$(INCD))
 

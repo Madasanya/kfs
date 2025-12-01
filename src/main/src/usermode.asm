@@ -24,14 +24,14 @@ user_enter:
     ;    Order: SS, ESP, EFLAGS, CS, EIP
     ; ------------------------------------------------------------------
     push USER_BSS_SEL            ; User SS
-    push 0x006FFFE0              ; User ESP (top of BSS - 32 bytes)
+    push 0x001FFFE0              ; User ESP (top of BSS - 32 bytes)
 
-    pushf                        ; EFLAGS
-    pop  ecx
-    or   ecx, 0x200              ; Enable interrupts (IF = 1)
-    push ecx
+    pushfd                        ; EFLAGS last d -makes sure that 32bit fags are pushed
+    ;pop  ecx
+    ;or   ecx, 0x200              ; Enable interrupts (IF = 1)
+    ;push ecx
 
-    push USER_CODE_SEL           ; User CS
+    push USER_CODE_SEL          ; User CS
     push eax                     ; User EIP (entry point)
 
     ; ------------------------------------------------------------------

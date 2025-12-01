@@ -6,6 +6,9 @@
 #include "keyboard.h"
 #include "printk.h"
 #include "str_utils.h"
+#include "user.h"
+#include "usermode.h"
+
 
 #define NUM_SCREENS 5
 #define SCREEN_HEADER_BUF_LEN 15u
@@ -222,11 +225,14 @@ void kernel(void)
 
     /* KERNEL RUN */
     md_printk("Kernel running...\n");
+
     while (1)
     {
         keyboard_run(&keyboard);
         ascii_handler(&keyboard, active_screen);
         command_handler(&keyboard, active_screen, &current_screen_index, screens, &(current_color_index[current_screen_index]));
         active_screen = &(screens[current_screen_index]);
+        // Now we can jump to user mode if needed
+        user_enter((void*)user_main); // Uncomment when user code is loaded
     }
 }

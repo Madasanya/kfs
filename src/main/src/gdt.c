@@ -1,5 +1,6 @@
 #include "gdt.h"
 
+
 #define GDTBASE    0x00000800
 
 // Each define here is for a specific flag in the descriptor.
@@ -115,7 +116,7 @@ gdt_reg_t gdt_reg = {0};
 
 extern void gdt_flush(gdt_reg_t *gdt);
 extern void gdt_save(gdt_reg_t *gdt);
-extern void user_enter(void *user_eip);
+
 extern void tss_flush(void);
 
 
@@ -182,6 +183,5 @@ void init_gdt(void)
     tss->esp0 = 0x007FFFFC; // Stack pointer for kernel mode
     tss_flush();
 
-    // Now we can jump to user mode if needed
-    // user_enter((void*)0x00300000); // Uncomment when user code is loaded
+    
 }
