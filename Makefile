@@ -14,7 +14,9 @@ INCFLAG		= -I
 ASSRC		= boot.asm \
 			  drivers/src/io.asm \
 			  main/src/gdt_flush.asm \
-			  main/src/usermode.asm
+			  main/src/usermode.asm \
+			  isr/src/isr_dummy.asm
+
 
 CSRC		= main/src/kernel.c \
 			  main/src/start.c \
@@ -29,14 +31,15 @@ CSRC		= main/src/kernel.c \
 			  tools/src/vsnprintf.c \
 			  drivers/src/cursor.c \
 			  main/src/gdt.c \
-			  user/src/user_main.c
+			  user/src/user_main.c \
+			  main/src/idt.c
 
 LDSRC		= kernel.ld
 
 SRCD		= ./src/
 OBJD		= ./obj/
 BUILTD		= ./build/
-INCD		= main/inc tools/inc drivers/inc user/inc
+INCD		= main/inc tools/inc drivers/inc user/inc  isr/inc
 
 INCPATH		:= $(addprefix $(INCFLAG)src/,$(INCD))
 
