@@ -115,7 +115,8 @@ gdt_reg_t gdt_reg = {0};
 
 extern void gdt_flush(gdt_reg_t *gdt);
 extern void gdt_save(gdt_reg_t *gdt);
-//extern void tss_flush(void);
+extern void user_enter(void *user_eip);
+extern void tss_flush(void);
 
 
 static void gdt_entry_create(gdt_entry_t* entry, const gdt_segment_data_t *seg_data)
@@ -134,49 +135,53 @@ void init_gdt(void)
     gdt_entry_t* gdt = (gdt_entry_t*)GDTBASE;
 
     const gdt_segment_data_t null_seg = {0, 0, 0};
-    // Flat memory layout - base=0, covering full 4GB address space
-    // Kernel code: base=0, limit=0xFFFFF (with granularity=1 => 4GB)
-    const gdt_segment_data_t code_seg_pl0 = {0x00000000, 0x000FFFFF, GDT_CODE_PL0};
-    // Kernel data: base=0, limit=0xFFFFF (with granularity=1 => 4GB)
-    const gdt_segment_data_t data_seg_pl0 = {0x00000000, 0x000FFFFF, GDT_DATA_PL0};
-    // User code: 0x00200000 - 0x002FFFFF (1MB starting at 2MB)
-    //const gdt_segment_data_t code_seg_pl3 = {0x00200000, 0x000000FF, GDT_CODE_PL3};
-
-    // User data: 0x00400000 - 0x004FFFFF (1MB starting at 4MB)
-    //const gdt_segment_data_t data_seg_pl3 = {0x00400000, 0x000000FF, GDT_DATA_PL3};
-    // Kernel BSS: 0x00500000 - 0x006FFFFF (2MB starting at 6MB)
-    //const gdt_segment_data_t bss_seg_pl0 = {0x00500000, 0x000001FF, GDT_BSS_PL0};
-    // User BSS: 0x00800000 - 0x008FFFFF (1MB starting at 7MB)
-    //const gdt_segment_data_t bss_seg_pl3 = {0x00600000, 0x000000FF, GDT_BSS_PL3};
+    // Flat memory layout - base=0, covering 2MB per segment
+    // Kernel code: base=0, limit=0x7FF (with granularity=1 => 8MB)
+    const gdt_segment_data_t code_seg_pl0 = {0x00000000, 0x000007FF, GDT_CODE_PL0};
+    // Kernel data: base=0, limit=0x5FF (with granularity=1 => 6MB)
+    const gdt_segment_data_t data_seg_pl0 = {0x00000000, 0x000005FF, GDT_DATA_PL0};
+    // Kernel BSS: base=0, limit=0x4FF (with granularity=1 => 5MB)
+    const gdt_segment_data_t bss_seg_pl0 = {0x00000000, 0x000004FF, GDT_BSS_PL0};
+    // User code: base=0, limit=0x3FF (with granularity=1 => 4MB)
+    const gdt_segment_data_t code_seg_pl3 = {0x00000000, 0x000003FF, GDT_CODE_PL3};
+    // User data: base=0, limit=0x2FF (with granularity=1 => 3MB)
+    const gdt_segment_data_t data_seg_pl3 = {0x00000000, 0x000002FF, GDT_DATA_PL3};
+    // User BSS: base=0, limit=0x1FF (with granularity=1 => 2MB)
+    const gdt_segment_data_t bss_seg_pl3 = {0x00000000, 0x000001FF, GDT_BSS_PL3};
     // TSS segment
-    //const gdt_segment_data_t tss_seg = {0x00700000, 0x00000067, GDT_TSS};
+    const gdt_segment_data_t tss_seg = {0x00000000, 0x00000067, GDT_TSS};
     
     gdt_entry_create(&gdt[0], &null_seg);
     gdt_entry_create(&gdt[1], &code_seg_pl0);
-    //gdt_entry_create(&gdt[2], &code_seg_pl3);
     gdt_entry_create(&gdt[2], &data_seg_pl0);
-    //gdt_entry_create(&gdt[4], &data_seg_pl3);
-    //gdt_entry_create(&gdt[5], &bss_seg_pl0);
-    //gdt_entry_create(&gdt[6], &bss_seg_pl3);
-    //gdt_entry_create(&gdt[7], &tss_seg);
+    gdt_entry_create(&gdt[3], &bss_seg_pl0);
+    gdt_entry_create(&gdt[4], &code_seg_pl3);
+    gdt_entry_create(&gdt[5], &data_seg_pl3);
+    gdt_entry_create(&gdt[6], &bss_seg_pl3);
+    gdt_entry_create(&gdt[7], &tss_seg);
     
     gdt_save(&gdt_reg);
 
     gdt_entry_t* gdt_old = (gdt_entry_t*)gdt_reg.base;
     gdt_old = gdt_old;
 
-    gdt_reg.limit = (sizeof(gdt_entry_t) * 3) - 1;
+    gdt_reg.limit = (sizeof(gdt_entry_t) * 8) - 1;
     gdt_reg.base  = GDTBASE;
+    
+    // Load the new GDT FIRST
     gdt_flush(&gdt_reg);
+    
 
-    // Initialize TSS
-    // tss_entry_t* tss = (tss_entry_t*)0x00700000;
-    // for (uint32_t i = 0; i < sizeof(tss_entry_t); i++)
-    // {
-    //     ((uint8_t*)tss)[i] = 0; // Zero out the TSS
-    // }
-    // tss->ss0 = 0x10; // Kernel data segment selector
-    // tss->esp0 = 0x007FFFFC; // Stack pointer for kernel mode
+    //Initialize TSS
+    tss_entry_t* tss = (tss_entry_t*)0x00700000;
+    for (uint32_t i = 0; i < sizeof(tss_entry_t); i++)
+    {
+        ((uint8_t*)tss)[i] = 0; // Zero out the TSS
+    }
+    tss->ss0 = 0x10; // Kernel data segment selector
+    tss->esp0 = 0x007FFFFC; // Stack pointer for kernel mode
+    tss_flush();
 
-    // tss_flush();
+    // Now we can jump to user mode if needed
+    // user_enter((void*)0x00300000); // Uncomment when user code is loaded
 }

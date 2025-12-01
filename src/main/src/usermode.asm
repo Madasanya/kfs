@@ -4,8 +4,8 @@
 ;   user_eip = linear address inside user code segment (e.g. 0x00300000 + offset)
 
 global user_enter
-%define USER_CODE_SEL 0x13
-%define USER_DATA_SEL 0x23
+%define USER_CODE_SEL 0x23
+%define USER_DATA_SEL 0x2B
 %define USER_BSS_SEL  0x33
 
 section .text
@@ -20,7 +20,22 @@ user_enter:
     mov  eax, [ebp + 8]          ; user_eip (first argument)
 
     ; ------------------------------------------------------------------
-    ; 1. Load ALL user-mode segment registers
+    ; 1. Build the IRET frame on the KERNEL stack first
+    ;    Order: SS, ESP, EFLAGS, CS, EIP
+    ; ------------------------------------------------------------------
+    push USER_BSS_SEL            ; User SS
+    push 0x006FFFE0              ; User ESP (top of BSS - 32 bytes)
+
+    pushf                        ; EFLAGS
+    pop  ecx
+    or   ecx, 0x200              ; Enable interrupts (IF = 1)
+    push ecx
+
+    push USER_CODE_SEL           ; User CS
+    push eax                     ; User EIP (entry point)
+
+    ; ------------------------------------------------------------------
+    ; 2. Load user-mode DATA segment registers (not SS yet!)
     ; ------------------------------------------------------------------
     mov  cx, USER_DATA_SEL
     mov  ds, cx
@@ -28,33 +43,8 @@ user_enter:
     mov  fs, cx
     mov  gs, cx
 
-    mov  cx, USER_BSS_SEL
-    mov  ss, cx
-
     ; ------------------------------------------------------------------
-    ; 2. Set up a SAFE user stack
-    ;    Top of your 1 MB user BSS segment: 0x00600000 + 0x100000 = 0x00700000
-    ;    We subtract 32 bytes just to be safe
-    ; ------------------------------------------------------------------
-    mov  esp, 0x00700000 - 32
-
-    ; ------------------------------------------------------------------
-    ; 3. Build the IRET frame on the user stack
-    ;    Order: SS, ESP, EFLAGS, CS, EIP
-    ; ------------------------------------------------------------------
-    push USER_BSS_SEL            ; User SS
-    push 0x00700000 - 32         ; User ESP (after this frame)
-
-    pushf                        ; EFLAGS
-    pop  ecx
-    or   ecx, 0x200              ; Enable interrupts (IF = 1)
-    push ecx
-
-    push USER_CODE_SEL           ; User CS (0x13)
-    push eax                     ; User EIP (entry point)
-
-    ; ------------------------------------------------------------------
-    ; 4. Final jump to ring-3 — we never come back!
+    ; 3. Final jump to ring-3 — IRET loads SS:ESP, CS:EIP, EFLAGS
     ; ------------------------------------------------------------------
     iret
 

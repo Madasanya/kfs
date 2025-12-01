@@ -14,6 +14,7 @@ INCFLAG		= -I
 ASSRC		= boot.asm \
 			  drivers/src/io.asm \
 			  main/src/gdt_flush.asm \
+			  main/src/usermode.asm
 
 CSRC		= main/src/kernel.c \
 			  main/src/start.c \
