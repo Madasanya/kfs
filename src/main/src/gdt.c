@@ -1,7 +1,7 @@
 #include "gdt.h"
 
-
 #define GDTBASE    0x00000800
+#define NUM_GDT_ENTRIES 8
 
 // Each define here is for a specific flag in the descriptor.
 // Refer to the intel documentation for a description of what each one does.
@@ -30,7 +30,7 @@
 #define SEG_CODE_EXRDC     0x0Eu // Execute/Read, conforming
 #define SEG_CODE_EXRDCA    0x0Fu // Execute/Read, conforming, accessed
 
-#define SEG_TSS_AVAIL      0x09u // Available 32-bit TSS
+#define SEG_TSS_AVAIL      0x09u // Available 32-bit TSS with busy flag 0
  
 #define GDT_CODE_PL0 SEG_DESCTYPE(1u) | SEG_PRES(1u) | SEG_SAVL(0u) | \
                      SEG_LONG(0u)     | SEG_SIZE(1u) | SEG_GRAN(1u) | \
@@ -150,7 +150,7 @@ void init_gdt(void)
     // User BSS: base=0, limit=0x1FF (with granularity=1 => 2MB)
     const gdt_segment_data_t bss_seg_pl3 = {0x00000000, 0x000001FF, GDT_BSS_PL3};
     // TSS segment
-    const gdt_segment_data_t tss_seg = {0x00000000, 0x00000067, GDT_TSS};
+    const gdt_segment_data_t tss_seg = {0x00700000, 0x00000067, GDT_TSS};
     
     gdt_entry_create(&gdt[0], &null_seg);
     gdt_entry_create(&gdt[1], &code_seg_pl0);
@@ -166,7 +166,7 @@ void init_gdt(void)
     gdt_entry_t* gdt_old = (gdt_entry_t*)gdt_reg.base;
     gdt_old = gdt_old;
 
-    gdt_reg.limit = (sizeof(gdt_entry_t) * 8) - 1;
+    gdt_reg.limit = (NUM_GDT_ENTRIES * sizeof(gdt_entry_t)) - 1;
     gdt_reg.base  = GDTBASE;
     
     // Load the new GDT FIRST
@@ -179,7 +179,7 @@ void init_gdt(void)
     {
         ((uint8_t*)tss)[i] = 0; // Zero out the TSS
     }
-    tss->ss0 = 0x10; // Kernel data segment selector
+    tss->ss0 = 0x18; // Kernel data segment selector
     tss->esp0 = 0x007FFFFC; // Stack pointer for kernel mode
     tss_flush();
 

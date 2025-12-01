@@ -37,7 +37,7 @@ flush_cs:
 ; C declaration: void flush_tss(void);
 global tss_flush
 tss_flush:
-	mov ax, (7 * 8) | 0 ; seventh 8-byte selector (index 7), RPL=0 for TSS
+	mov ax, KERNEL_TSS_SEL
 	ltr ax
 	ret
 

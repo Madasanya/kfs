@@ -6,11 +6,11 @@ global isr_dummy_nonblocking
 global isr_dummy_blocking
 
 ; Non-blocking: just return immediately
-dummy_isr_nonblocking:
+isr_dummy_nonblocking:
     iret
 
 ; Blocking: disable interrupts and halt forever
-dummy_isr_blocking:
+isr_dummy_blocking:
     cli
     hlt
-    jmp dummy_isr_blocking
+    jmp isr_dummy_blocking

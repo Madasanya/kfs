@@ -25,9 +25,9 @@ typedef struct {
 } idt_entry_data_t;
 
 
-extern void idt_flush(idt_reg_t *idt);
+void idt_save(void);
 
 void idt_init(void);
-void idt_interrupt_set(uint8_t num, const idt_entry_data_t isr_data);
+void idt_interrupt_set(uint8_t num, const idt_entry_data_t *isr_data);
 
 #endif

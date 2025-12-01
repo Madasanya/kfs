@@ -5,6 +5,9 @@ target remote localhost:1234
 disconnect
 set architecture i386
 target remote localhost:1234
-break start_multiboot1
+break idt_init
+break isr_dummy_nonblocking
+break user_enter
+break idt_flush
 c
 layout regs

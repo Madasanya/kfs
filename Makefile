@@ -15,7 +15,8 @@ ASSRC		= boot.asm \
 			  drivers/src/io.asm \
 			  main/src/gdt_flush.asm \
 			  main/src/usermode.asm \
-			  isr/src/isr_dummy.asm
+			  isr/src/isr_dummy.asm \
+			  main/src/idt_flush.asm
 
 
 CSRC		= main/src/kernel.c \

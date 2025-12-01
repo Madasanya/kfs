@@ -27,9 +27,9 @@ user_enter:
     push 0x001FFFE0              ; User ESP (top of BSS - 32 bytes)
 
     pushfd                        ; EFLAGS last d -makes sure that 32bit fags are pushed
-    ;pop  ecx
-    ;or   ecx, 0x200              ; Enable interrupts (IF = 1)
-    ;push ecx
+    pop  ecx
+    or   ecx, 0x200              ; Enable interrupts (IF = 1)
+    push ecx
 
     push USER_CODE_SEL          ; User CS
     push eax                     ; User EIP (entry point)

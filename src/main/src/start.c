@@ -1,6 +1,7 @@
 #include "multiboot.h"
 #include "start.h"
 #include "gdt.h"
+#include "idt.h"
 
 kernel_ver_t version __attribute__((section(".kernel_info"))) = \
 {
@@ -16,6 +17,8 @@ void start_multiboot1(uint32_t magic)
     if (magic == 0x2BADB002)
     {
         init_gdt();
+        idt_init();
+        idt_save();
         kernel();
 
     }
