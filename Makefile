@@ -16,7 +16,9 @@ ASSRC		= boot.asm \
 			  main/src/gdt_flush.asm \
 			  main/src/usermode.asm \
 			  isr/src/isr_dummy.asm \
-			  main/src/idt_flush.asm
+			  main/src/idt_flush.asm \
+			  user/src/user_syscall.asm \
+			  isr/src/isr_stub80.asm
 
 
 CSRC		= main/src/kernel.c \
@@ -33,14 +35,15 @@ CSRC		= main/src/kernel.c \
 			  drivers/src/cursor.c \
 			  main/src/gdt.c \
 			  user/src/user_main.c \
-			  main/src/idt.c
+			  main/src/idt.c \
+			  isr/src/isr_syscall.asm
 
 LDSRC		= kernel.ld
 
 SRCD		= ./src/
 OBJD		= ./obj/
 BUILTD		= ./build/
-INCD		= main/inc tools/inc drivers/inc user/inc  isr/inc
+INCD		= main/inc tools/inc drivers/inc user/inc isr/inc
 
 INCPATH		:= $(addprefix $(INCFLAG)src/,$(INCD))
 

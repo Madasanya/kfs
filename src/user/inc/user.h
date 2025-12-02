@@ -11,5 +11,4 @@
 
 void user_main(void) USER_TEXT;          // prototype stays clean
 
-
 #endif /* _USER_H_ */

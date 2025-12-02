@@ -13,6 +13,8 @@
 #define NUM_SCREENS 5
 #define SCREEN_HEADER_BUF_LEN 15u
 
+screen_t *g_screen;
+
 /**
  * @brief Assembles an error log screen display from the kernel error log, filtered by severity level.
  *
@@ -222,6 +224,7 @@ void kernel(void)
 
     active_screen = &(screens[current_screen_index]);
     screen_open(active_screen);
+    g_screen = active_screen;
 
     /* KERNEL RUN */
     md_printk("Kernel running...\n");

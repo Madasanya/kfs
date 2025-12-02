@@ -1,12 +1,16 @@
 #define DEFINE_USER_FUNCTIONS
 #include "user.h"
 
+extern unsigned int user_syscall(unsigned int num, unsigned int arg0, unsigned int arg1);
+
+
 int user_var USER_DATA = -20000;
 
 USER_TEXT
 void user_main(void)
 {
-    asm volatile("int $0x80");
+    user_syscall(0, "Crazy", 5);
+
 
     while (1)
     {
