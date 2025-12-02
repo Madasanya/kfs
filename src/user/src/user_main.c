@@ -6,6 +6,8 @@ int user_var USER_DATA = -20000;
 USER_TEXT
 void user_main(void)
 {
+    asm volatile("int $0x80");
+
     while (1)
     {
         user_var++;

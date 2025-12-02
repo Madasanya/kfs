@@ -9,5 +9,6 @@ break idt_init
 break isr_dummy_nonblocking
 break user_enter
 break idt_flush
+break user_main
 c
 layout regs
