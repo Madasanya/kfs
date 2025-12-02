@@ -9,7 +9,7 @@ int user_var USER_DATA = -20000;
 USER_TEXT
 void user_main(void)
 {
-    user_syscall(0, "Crazy", 5);
+    user_syscall(0, (unsigned int)"Crazy", 5);
 
 
     while (1)

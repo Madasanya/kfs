@@ -8,8 +8,8 @@ isr_stub80:
     ; already on stack: ss, sp, flags, cs, ip.
     ; need to push ax, gs, fs, es, ds, -ENOSYS, bp, di, si, dx, cx, and bx
     cli
-    push dword ds
-    push dword -ENOSYS
+    push ds
+;    push dword -ENOSYS
     push ebp
     push edi
     push esi
@@ -26,10 +26,12 @@ isr_stub80:
     call isr_syscall
     cli
     add esp, 28
-    pop word -ENOSYS
-    pop word ds
-    mov es, ds
-    mov fs, ds
-    mov gs, ds
+;    pop word -ENOSYS
+;    pop word ds
+    pop dx
+    mov ds, dx
+    mov es, dx
+    mov fs, dx
+    mov gs, dx
     sti
     iretd
