@@ -36,7 +36,7 @@ CSRC		= main/src/kernel.c \
 			  main/src/gdt.c \
 			  user/src/user_main.c \
 			  main/src/idt.c \
-			  isr/src/isr_syscall.asm
+			  isr/src/isr_syscall.c
 
 LDSRC		= kernel.ld
 

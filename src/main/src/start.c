@@ -3,6 +3,7 @@
 #include "gdt.h"
 #include "idt.h"
 #include "isr_dummy.h"
+#include "isr_stub.h"
 
 kernel_ver_t version __attribute__((section(".kernel_info"))) = \
 {
@@ -20,7 +21,7 @@ void start_multiboot1(uint32_t magic)
         init_gdt();
         idt_init();
         idt_interrupt_set(0x80, &(idt_entry_data_t){
-            .isr        = (uint32_t)isr_dummy_blocking,
+            .isr        = (uint32_t)isr_stub80,
             .attributes = IDT_ATTR_SYSCALL
         });
         idt_save();
