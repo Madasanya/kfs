@@ -3,6 +3,7 @@
 #include "str_utils.h"
 #include "screen.h"
 #include "kernel.h"
+#include "user_syscall.h"
 
 #define MAX_WRITE 20
 
@@ -32,6 +33,9 @@ uint32_t isr_syscall(uint32_t num, uint32_t arg0, uint32_t arg1, uint32_t arg2, 
             break;
         case SYS_READ:
             
+            break;
+        case SYS_PRINTERR:
+            ret = isr_syscall_printerr(arg0);
             break;
     
         default:
