@@ -35,6 +35,9 @@ uint32_t isr_syscall(uint32_t num, uint32_t arg0, uint32_t arg1, uint32_t arg2, 
         case SYS_READ:
             
             break;
+        case SYS_ERRWRITE:
+            ret = isr_syscall_errwrite((char *)arg0, arg1, arg2);
+            break;
         case SYS_ERRPRINT:
             ret = isr_syscall_errprint(arg0);
             break;

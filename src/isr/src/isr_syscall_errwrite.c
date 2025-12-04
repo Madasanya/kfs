@@ -7,6 +7,11 @@
 
 uint32_t isr_syscall_errwrite(char *arr, uint32_t len, uint32_t lvl)
 {
-
+    if (arr == NULL || len == 0)
+    {
+        return 1;
+    }
+    errlog_write(&errlog, lvl, arr);
+        
     return 0;
 }

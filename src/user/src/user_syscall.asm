@@ -1,6 +1,6 @@
 global user_syscall
 
-section .user_text
+section .text
 user_syscall:
     push ebp
     push edi
@@ -10,10 +10,10 @@ user_syscall:
     mov eax, [esp + 20]
     cmp eax, 0  ;syswrite
     je syscall_2arg
-    cmp eax, 4 ;syserrprint
-    je syscall_1arg
     cmp eax, 3 ;syserrwrite
     je syscall_3arg
+    cmp eax, 4 ;syserrprint
+    je syscall_1arg
     jmp syscall_0arg
 syscall_6arg:
     mov ebp, [esp + 44]

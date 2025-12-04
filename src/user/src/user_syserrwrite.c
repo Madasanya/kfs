@@ -3,9 +3,9 @@
 #include "inttype.h"
 #include "syscall.h"
 
-extern uint32_t user_syscall(uint32_t num, uint32_t arg0);
+extern uint32_t user_syscall(uint32_t num, char *arg0, uint32_t arg1, uint32_t arg2);
 
 uint32_t user_syserrwrite(char *arr, uint32_t len, uint32_t lvl)
 {
-    return (user_syscall(SYS_ERRWRITE, lvl));
+    return (user_syscall(SYS_ERRWRITE, arr, len, lvl));
 }

@@ -7,6 +7,8 @@ set architecture i386
 target remote localhost:1234
 break user_main
 break user_syscall
-break isr_syscall
+break user_syserrwrite
+break user_syserrprint
+break isr_stub80
 c
 layout regs
