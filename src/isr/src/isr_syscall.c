@@ -17,11 +17,17 @@ uint32_t isr_syscall(uint32_t num, uint32_t arg0, uint32_t arg1, uint32_t arg2, 
             
             break;
         case SYS_PRINTERR:
-            ret = isr_syscall_printerr(arg0);
+            //ret = isr_syscall_printerr(arg0);
             break;
 
         case SYS_SCROLL:
-            ret = isr_syscall_scroll(arg0, arg1);
+            ret = isr_syscall_scroll((uint8_t)arg0, arg1);
+            break;
+        case SYS_SCREENSET:
+            ret = isr_syscall_screenset((uint8_t)arg0, (uint8_t)arg1);
+            break;
+        case SYS_COLORSET:
+            ret = isr_syscall_colorset((uint8_t)arg0, (uint8_t)arg1);
             break;
     
         default:

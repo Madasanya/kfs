@@ -5,7 +5,7 @@
 
 #define MAX_SCROLL 32
 
-uint32_t isr_syscall_scroll(uint32_t dir, uint32_t num)
+uint32_t isr_syscall_scroll(uint8_t dir, uint32_t num)
 {
     if (dir > 1)
     {
@@ -19,23 +19,19 @@ uint32_t isr_syscall_scroll(uint32_t dir, uint32_t num)
         }
         if (dir == SYS_SCROLL_UP)
         {
-            for (int i = 0; i < num; i++)
+            for (uint32_t i = 0; i < num; i++)
             {
                 screen_scroll_up(g_active_screen);
             }
         }
         else
         {
-            for (int i = 0; i < num; i++)
+            for (uint32_t i = 0; i < num; i++)
             {
                 screen_scroll_down(g_active_screen);
             }
         }
     }
-
-
-
-
 
     return (0);
 }

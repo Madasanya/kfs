@@ -8,12 +8,13 @@
 #include "str_utils.h"
 #include "user.h"
 #include "usermode.h"
+#include "kernel.h"
 
-
-#define NUM_SCREENS 5
 #define SCREEN_HEADER_BUF_LEN 15u
 
 screen_t *g_active_screen = NULL;
+uint8_t g_current_screen_index = 0;
+uint8_t g_current_color_index[NUM_SCREENS] = {0};
 
 /**
  * @brief Assembles an error log screen display from the kernel error log, filtered by severity level.
@@ -159,14 +160,13 @@ static void ascii_handler(keyboard_t *keyboard, screen_t *screen)
 static void command_handler(keyboard_t *keyboard, screen_t *screen, uint8_t *current_screen_index, screen_t *screens, uint8_t *current_color_index)
 {
     uint8_t comm;
+    current_screen_index = current_screen_index;
+    screens = screens;
     if (keyboard_comm_get(keyboard, &comm) == 1)
     {
         if (comm == KEYBOARD_COMM_CHANGE_SCREEN)
         {
-            screen_close(screen);
-            *current_screen_index = (*current_screen_index + 1) % NUM_SCREENS;
-            screen = &(screens[*current_screen_index]);
-            screen_open(screen);
+            
         }
         else if (comm >= KEYBOARD_COMM_START_LOG_LVL1 && comm <= KEYBOARD_COMM_START_LOG_LVL8)
         {
@@ -198,8 +198,6 @@ void kernel(void)
 {
     screen_t screens[NUM_SCREENS];
     history_buffer_t history_buffers[NUM_SCREENS];
-    uint8_t current_screen_index = 0;
-    uint8_t current_color_index[NUM_SCREENS] = {0};
     char header_buf[SCREEN_HEADER_BUF_LEN];
 
     keyboard_t keyboard = {0};
@@ -210,10 +208,10 @@ void kernel(void)
     {
         md_vsnprintf(header_buf, sizeof(header_buf), "42 - Screen %d", i + 1);
         screen_init(&(screens[i]), &(history_buffers[i]), SCREEN_COLOR_PROFILES[4 - i], header_buf);
-        current_color_index[i] = 4 - i;
+        g_current_color_index[i] = 4 - i;
     }
 
-    g_active_screen = &(screens[current_screen_index]);
+    g_active_screen = &(screens[g_current_screen_index]);
     screen_open(g_active_screen);
 
     /* KERNEL RUN */
@@ -223,8 +221,8 @@ void kernel(void)
     {
         keyboard_run(&keyboard);
         ascii_handler(&keyboard, g_active_screen);
-        command_handler(&keyboard, g_active_screen, &current_screen_index, screens, &(current_color_index[current_screen_index]));
-        g_active_screen = &(screens[current_screen_index]);
+        command_handler(&keyboard, g_active_screen, &g_current_screen_index, screens, &(g_current_color_index[g_current_screen_index]));
+        g_active_screen = &(screens[g_current_screen_index]);
         // Now we can jump to user mode if needed
         user_enter((void*)user_main); // Uncomment when user code is loaded
     }

@@ -10,8 +10,12 @@ push ebx
 mov eax, [esp + 20]
 cmp eax, 0  ;syswrite
 je syscall_2arg
-cmp eax, 10 ;syswhatever
-je syscall_1arg
+cmp eax, 10 ;sysscroll
+je syscall_2arg
+cmp eax, 11 ;sysscreenset
+je syscall_2arg
+cmp eax, 12 ;syscolorset
+je syscall_2arg
 jmp syscall_0arg
 syscall_6arg:
 mov ebp, [esp + 44]
