@@ -6,8 +6,8 @@ RM			= rm -rf
 # Memory configuration
 QEMU_MEMORY	= 128M
 
-ASFLAGS		= -felf32 -g -F dwarf
-CFLAGS		= -std=gnu99 -ffreestanding -fno-builtin -fno-stack-protector -nostdlib -nodefaultlibs -Wall -Wextra -Werror -g
+ASFLAGS		= -felf32 -g3 -F dwarf
+CFLAGS		= -std=gnu99 -ffreestanding -fno-builtin -fno-stack-protector -nostdlib -nodefaultlibs -Wall -Wextra -Werror -g3
 LDFLAGS		= -ffreestanding -nostdlib -nodefaultlibs -static -lgcc
 INCFLAG		= -I
 
@@ -36,7 +36,9 @@ CSRC		= main/src/kernel.c \
 			  main/src/gdt.c \
 			  user/src/user_main.c \
 			  main/src/idt.c \
-			  isr/src/isr_syscall.c
+			  isr/src/isr_syscall.c \
+			  isr/src/isr_syscall_errprint.c \
+			  user/src/user_syserrprint.c
 
 LDSRC		= kernel.ld
 

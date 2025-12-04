@@ -12,6 +12,6 @@ uint32_t user_syssetscreen(uint32_t num);
 uint32_t user_syssetfont(uint32_t font);
 
 uint32_t user_syswriteerr(char *arr, uint32_t len, uint32_t lvl);
-uint32_t user_sysprinterr(uint32_t lvl);
+uint32_t user_syserrprint(uint32_t lvl);
 
 #endif /* _USER_SYSCALL_H_ */

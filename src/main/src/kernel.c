@@ -8,6 +8,7 @@
 #include "str_utils.h"
 #include "user.h"
 #include "usermode.h"
+#include "isr_syscall.h"
 
 
 #define NUM_SCREENS 5
@@ -16,55 +17,12 @@
 screen_t *g_screen;
 
 /**
- * @brief Assembles an error log screen display from the kernel error log, filtered by severity level.
- *
- * @details
- * This function initializes a history buffer (intended to represent a screen display) and populates it
- * with formatted error log entries retrieved from the kernel error log subsystem. Each entry is prefixed
- * with a single-character tag corresponding to its severity level (e.g., 'e' for Error, 'w' for Warning).
- *
- * The function reads entries sequentially starting from the last saved  one. Displays only messages specified
- * by @p lvl or more important and continues until no more entries are available.
- *
- * @param[out] screen  Pointer to the history buffer that will hold the formatted error log lines.
- *                     Must be pre-allocated and will be initialized by this function.
- * @param[in]  lvl     Minimum error level to include in the output. Entries with level >= @p lvl are displayed.
- *                     Uses @c errlog_err_lvl_t enumeration.
- *
- * @note @c err_tags string maps @c err.lvl indices to display tag: " Eacewnid"
- *   (index 0: space (none), 1: 'E', 2: 'a', 3: 'c', 4: 'e', 5: 'w', 6: 'n', 7: 'i', 8: 'd')
- */
-static void errlog_screen_assemble (screen_t *screen, errlog_err_lvl_t lvl)
-{
-    char entry_str[HISTORY_WIDTH];
-    errlog_entry_t err;
-    char err_tag;
-    const char *err_tags = " Eacewnid";
-
-    errlog_read_init(&errlog, lvl);
-    while (errlog_read(&errlog, &err) == ERRLOG_RET_OK)
-    {
-        err_tag = err_tags[err.lvl];
-        int len = md_vsnprintf(entry_str, HISTORY_WIDTH, "%c: %s", err_tag, err.message_str);
-        screen_put_str(screen, entry_str);
-        if (len > 0)
-        {
-            if (entry_str[len - 1] != '\n')
-            {
-                screen_put_char(screen, '\n');
-            }
-        }
-        
-    }
-}
-
-/**
  * @brief Handles error log display commands triggered by keyboard input.
  *
  * @details
  * This function processes keyboard commands related to error log display requests.
  * When a valid log level command is received, it displays an appropriate header
- * and calls @c errlog_screen_assemble to populate the screen with error log entries
+ * and calls @c isr_syscall_errprint to populate the screen with error log entries
  * filtered by the corresponding severity level.
  *
  * The function maps keyboard commands (KEYBOARD_COMM_START_LOG_LVL1 through
@@ -80,35 +38,35 @@ static void errorlog_key_handler(screen_t *screen, uint8_t command)
     {
         case KEYBOARD_COMM_START_LOG_LVL1:
             screen_put_str(screen, "ERROR LOG - LEVEL EMERGENCY:\n");
-            errlog_screen_assemble(screen, ERRLOG_LVL_EMERG);
+            isr_syscall_errprint(ERRLOG_LVL_EMERG);
             break;
         case KEYBOARD_COMM_START_LOG_LVL2:
             screen_put_str(screen, "ERROR LOG - LEVEL ALERT:\n");
-            errlog_screen_assemble(screen, ERRLOG_LVL_ALERT);
+            isr_syscall_errprint(ERRLOG_LVL_ALERT);
             break;
         case KEYBOARD_COMM_START_LOG_LVL3:
             screen_put_str(screen, "ERROR LOG - LEVEL CRITICAL:\n");
-            errlog_screen_assemble(screen, ERRLOG_LVL_CRIT);
+            isr_syscall_errprint(ERRLOG_LVL_CRIT);
             break;
         case KEYBOARD_COMM_START_LOG_LVL4:
             screen_put_str(screen, "ERROR LOG - LEVEL ERROR:\n");
-            errlog_screen_assemble(screen, ERRLOG_LVL_ERR);
+            isr_syscall_errprint(ERRLOG_LVL_ERR);
             break;
         case KEYBOARD_COMM_START_LOG_LVL5:
             screen_put_str(screen, "ERROR LOG - LEVEL WARNING:\n");
-            errlog_screen_assemble(screen, ERRLOG_LVL_WARNING);
+            isr_syscall_errprint(ERRLOG_LVL_WARNING);
             break;
         case KEYBOARD_COMM_START_LOG_LVL6:
             screen_put_str(screen, "ERROR LOG - LEVEL NOTICE:\n");
-            errlog_screen_assemble(screen, ERRLOG_LVL_NOTICE);
+            isr_syscall_errprint(ERRLOG_LVL_NOTICE);
             break;
         case KEYBOARD_COMM_START_LOG_LVL7:
             screen_put_str(screen, "ERROR LOG - LEVEL INFO:\n");
-            errlog_screen_assemble(screen, ERRLOG_LVL_INFO);
+            isr_syscall_errprint(ERRLOG_LVL_INFO);
             break;
         case KEYBOARD_COMM_START_LOG_LVL8:
             screen_put_str(screen, "ERROR LOG - LEVEL DEBUG:\n");
-            errlog_screen_assemble(screen, ERRLOG_LVL_DEBUG);
+            isr_syscall_errprint(ERRLOG_LVL_DEBUG);
             break;
         default:
             break;
