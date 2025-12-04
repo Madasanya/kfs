@@ -12,6 +12,8 @@ user_syscall:
     je syscall_2arg
     cmp eax, 4 ;syserrprint
     je syscall_1arg
+    cmp eax, 3 ;syserrwrite
+    je syscall_3arg
     jmp syscall_0arg
 syscall_6arg:
     mov ebp, [esp + 44]
