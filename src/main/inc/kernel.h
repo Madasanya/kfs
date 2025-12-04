@@ -3,7 +3,7 @@
 
 #include "screen.h"
 
-extern screen_t *g_screen;
+extern screen_t *g_active_screen;
 
 
 #endif /* _KERNEL_H_ */

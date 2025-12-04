@@ -13,7 +13,7 @@
 #define NUM_SCREENS 5
 #define SCREEN_HEADER_BUF_LEN 15u
 
-screen_t *g_screen;
+screen_t *g_active_screen = NULL;
 
 /**
  * @brief Assembles an error log screen display from the kernel error log, filtered by severity level.
@@ -172,14 +172,6 @@ static void command_handler(keyboard_t *keyboard, screen_t *screen, uint8_t *cur
         {
             errorlog_key_handler(screen, comm);
         }
-        else if (comm == KEYBOARD_COMM_SCROLL_UP)
-        {
-            screen_scroll_up(screen);
-        }
-        else if (comm == KEYBOARD_COMM_SCROLL_DOWN)
-        {
-            screen_scroll_down(screen);
-        }
         else if (comm == KEYBOARD_COMM_CHANGE_COLOR)
         {
             *current_color_index = (*current_color_index + 1) % NUM_SCREEN_COLOR_PROFILES;
@@ -206,7 +198,6 @@ void kernel(void)
 {
     screen_t screens[NUM_SCREENS];
     history_buffer_t history_buffers[NUM_SCREENS];
-    screen_t *active_screen = NULL;
     uint8_t current_screen_index = 0;
     uint8_t current_color_index[NUM_SCREENS] = {0};
     char header_buf[SCREEN_HEADER_BUF_LEN];
@@ -222,9 +213,8 @@ void kernel(void)
         current_color_index[i] = 4 - i;
     }
 
-    active_screen = &(screens[current_screen_index]);
-    screen_open(active_screen);
-    g_screen = active_screen;
+    g_active_screen = &(screens[current_screen_index]);
+    screen_open(g_active_screen);
 
     /* KERNEL RUN */
     md_printk("Kernel running...\n");
@@ -232,9 +222,9 @@ void kernel(void)
     while (1)
     {
         keyboard_run(&keyboard);
-        ascii_handler(&keyboard, active_screen);
-        command_handler(&keyboard, active_screen, &current_screen_index, screens, &(current_color_index[current_screen_index]));
-        active_screen = &(screens[current_screen_index]);
+        ascii_handler(&keyboard, g_active_screen);
+        command_handler(&keyboard, g_active_screen, &current_screen_index, screens, &(current_color_index[current_screen_index]));
+        g_active_screen = &(screens[current_screen_index]);
         // Now we can jump to user mode if needed
         user_enter((void*)user_main); // Uncomment when user code is loaded
     }
