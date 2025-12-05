@@ -28,7 +28,8 @@ isr_stub80:
     add esp, 28
 ;    pop word -ENOSYS
 ;    pop word ds
-    pop dx
+    xor edx, edx
+    pop edx
     mov ds, dx
     mov es, dx
     mov fs, dx
