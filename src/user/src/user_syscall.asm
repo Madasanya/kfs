@@ -10,6 +10,16 @@ user_syscall:
     mov eax, [esp + 20]
     cmp eax, 0  ;syswrite
     je syscall_2arg
+    cmp eax, 10 ;sysscroll
+    je syscall_2arg
+    cmp eax, 11 ;sysscreenset
+    je syscall_2arg
+    cmp eax, 12 ;syscolorset
+    je syscall_2arg
+    jmp syscall_0arg
+    mov eax, [esp + 20]
+    cmp eax, 0  ;syswrite
+    je syscall_2arg
     cmp eax, 3 ;syserrwrite
     je syscall_3arg
     cmp eax, 4 ;syserrprint

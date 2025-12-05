@@ -30,10 +30,19 @@ uint32_t isr_syscall(uint32_t num, uint32_t arg0, uint32_t arg1, uint32_t arg2, 
     switch (num)
     {
         case SYS_WRITE:
-            ret = dummy_write((char *)arg0, arg1);
+            ret = isr_syscall_write((char *)arg0, arg1);
             break;
         case SYS_READ:
             
+            break;
+        case SYS_SCROLL:
+            ret = isr_syscall_scroll((uint8_t)arg0, arg1);
+            break;
+        case SYS_SCREENSET:
+            ret = isr_syscall_screenset((uint8_t)arg0, (uint8_t)arg1);
+            break;
+        case SYS_COLORSET:
+            ret = isr_syscall_colorset((uint8_t)arg0, (uint8_t)arg1);
             break;
         case SYS_ERRWRITE:
             ret = isr_syscall_errwrite((char *)arg0, arg1, arg2);

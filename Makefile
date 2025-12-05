@@ -41,6 +41,11 @@ CSRC		= main/src/kernel.c \
 			  user/src/user_syserrprint.c \
 			  isr/src/isr_syscall_errwrite.c \
 			  user/src/user_syserrwrite.c
+			  isr/src/isr_syscall_write.c \
+			  isr/src/isr_syscall_scroll.c \
+			  isr/src/isr_syscall_screenset.c \
+			  isr/src/isr_syscall_colorset.c \
+
 
 LDSRC		= kernel.ld
 

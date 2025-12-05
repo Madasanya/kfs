@@ -8,8 +8,8 @@ uint32_t user_sysreadcomm(uint8_t *arr, uint32_t len);
 
 uint32_t user_syswrite(char *arr, uint32_t len);
 uint32_t user_sysscroll(uint32_t dir, uint32_t num);
-uint32_t user_syssetscreen(uint32_t num);
-uint32_t user_syssetfont(uint32_t font);
+uint32_t user_sysscreenset(uint8_t mode, uint8_t num);
+uint32_t user_syscolorset(uint8_t mode, uint8_t num);
 
 uint32_t user_syserrwrite(char *arr, uint32_t len, uint32_t lvl);
 uint32_t user_syserrprint(uint32_t lvl);

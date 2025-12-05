@@ -8,13 +8,58 @@
 #include "str_utils.h"
 #include "user.h"
 #include "usermode.h"
+#include "kernel.h"
 #include "isr_syscall.h"
 
 
-#define NUM_SCREENS 5
 #define SCREEN_HEADER_BUF_LEN 15u
 
-screen_t *g_screen;
+screen_t *g_active_screen = NULL;
+uint8_t g_current_screen_index = 0;
+uint8_t g_current_color_index[NUM_SCREENS] = {0};
+
+/**
+ * @brief Assembles an error log screen display from the kernel error log, filtered by severity level.
+ *
+ * @details
+ * This function initializes a history buffer (intended to represent a screen display) and populates it
+ * with formatted error log entries retrieved from the kernel error log subsystem. Each entry is prefixed
+ * with a single-character tag corresponding to its severity level (e.g., 'e' for Error, 'w' for Warning).
+ *
+ * The function reads entries sequentially starting from the last saved  one. Displays only messages specified
+ * by @p lvl or more important and continues until no more entries are available.
+ *
+ * @param[out] screen  Pointer to the history buffer that will hold the formatted error log lines.
+ *                     Must be pre-allocated and will be initialized by this function.
+ * @param[in]  lvl     Minimum error level to include in the output. Entries with level >= @p lvl are displayed.
+ *                     Uses @c errlog_err_lvl_t enumeration.
+ *
+ * @note @c err_tags string maps @c err.lvl indices to display tag: " Eacewnid"
+ *   (index 0: space (none), 1: 'E', 2: 'a', 3: 'c', 4: 'e', 5: 'w', 6: 'n', 7: 'i', 8: 'd')
+ */
+static void errlog_screen_assemble (screen_t *screen, errlog_err_lvl_t lvl)
+{
+    char entry_str[HISTORY_WIDTH];
+    errlog_entry_t err;
+    char err_tag;
+    const char *err_tags = " Eacewnid";
+
+    errlog_read_init(&errlog, lvl);
+    while (errlog_read(&errlog, &err) == ERRLOG_RET_OK)
+    {
+        err_tag = err_tags[err.lvl];
+        int len = md_vsnprintf(entry_str, HISTORY_WIDTH, "%c: %s", err_tag, err.message_str);
+        screen_put_str(screen, entry_str);
+        if (len > 0)
+        {
+            if (entry_str[len - 1] != '\n')
+            {
+                screen_put_char(screen, '\n');
+            }
+        }
+        
+    }
+}
 
 /**
  * @brief Handles error log display commands triggered by keyboard input.
@@ -117,26 +162,17 @@ static void ascii_handler(keyboard_t *keyboard, screen_t *screen)
 static void command_handler(keyboard_t *keyboard, screen_t *screen, uint8_t *current_screen_index, screen_t *screens, uint8_t *current_color_index)
 {
     uint8_t comm;
+    current_screen_index = current_screen_index;
+    screens = screens;
     if (keyboard_comm_get(keyboard, &comm) == 1)
     {
         if (comm == KEYBOARD_COMM_CHANGE_SCREEN)
         {
-            screen_close(screen);
-            *current_screen_index = (*current_screen_index + 1) % NUM_SCREENS;
-            screen = &(screens[*current_screen_index]);
-            screen_open(screen);
+            
         }
         else if (comm >= KEYBOARD_COMM_START_LOG_LVL1 && comm <= KEYBOARD_COMM_START_LOG_LVL8)
         {
             errorlog_key_handler(screen, comm);
-        }
-        else if (comm == KEYBOARD_COMM_SCROLL_UP)
-        {
-            screen_scroll_up(screen);
-        }
-        else if (comm == KEYBOARD_COMM_SCROLL_DOWN)
-        {
-            screen_scroll_down(screen);
         }
         else if (comm == KEYBOARD_COMM_CHANGE_COLOR)
         {
@@ -164,9 +200,6 @@ void kernel(void)
 {
     screen_t screens[NUM_SCREENS];
     history_buffer_t history_buffers[NUM_SCREENS];
-    screen_t *active_screen = NULL;
-    uint8_t current_screen_index = 0;
-    uint8_t current_color_index[NUM_SCREENS] = {0};
     char header_buf[SCREEN_HEADER_BUF_LEN];
 
     keyboard_t keyboard = {0};
@@ -177,12 +210,11 @@ void kernel(void)
     {
         md_vsnprintf(header_buf, sizeof(header_buf), "42 - Screen %d", i + 1);
         screen_init(&(screens[i]), &(history_buffers[i]), SCREEN_COLOR_PROFILES[4 - i], header_buf);
-        current_color_index[i] = 4 - i;
+        g_current_color_index[i] = 4 - i;
     }
 
-    active_screen = &(screens[current_screen_index]);
-    screen_open(active_screen);
-    g_screen = active_screen;
+    g_active_screen = &(screens[g_current_screen_index]);
+    screen_open(g_active_screen);
 
     /* KERNEL RUN */
     md_printk("Kernel running...\n");
@@ -190,9 +222,9 @@ void kernel(void)
     while (1)
     {
         keyboard_run(&keyboard);
-        ascii_handler(&keyboard, active_screen);
-        command_handler(&keyboard, active_screen, &current_screen_index, screens, &(current_color_index[current_screen_index]));
-        active_screen = &(screens[current_screen_index]);
+        ascii_handler(&keyboard, g_active_screen);
+        command_handler(&keyboard, g_active_screen, &g_current_screen_index, screens, &(g_current_color_index[g_current_screen_index]));
+        g_active_screen = &(screens[g_current_screen_index]);
         // Now we can jump to user mode if needed
         user_enter((void*)user_main); // Uncomment when user code is loaded
     }
