@@ -16,7 +16,7 @@ uint32_t dummy_write(const char* data_arr, uint32_t len)
     }
     char data_str[MAX_WRITE + 1] =   {0};
     md_strlencpy(data_str, data_arr, len + 1);
-    screen_put_str(g_screen, data_str);
+    screen_put_str(g_active_screen, data_str);
     return 0;
 }
 

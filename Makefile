@@ -40,7 +40,7 @@ CSRC		= main/src/kernel.c \
 			  isr/src/isr_syscall_errprint.c \
 			  user/src/user_syserrprint.c \
 			  isr/src/isr_syscall_errwrite.c \
-			  user/src/user_syserrwrite.c
+			  user/src/user_syserrwrite.c \
 			  isr/src/isr_syscall_write.c \
 			  isr/src/isr_syscall_scroll.c \
 			  isr/src/isr_syscall_screenset.c \

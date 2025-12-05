@@ -36,12 +36,12 @@ uint32_t isr_syscall_errprint(uint32_t lvl)
     {
         err_tag = err_tags[err.lvl];
         int len = md_vsnprintf(entry_str, HISTORY_WIDTH, "%c: %s", err_tag, err.message_str);
-        screen_put_str(g_screen, entry_str);
+        screen_put_str(g_active_screen, entry_str);
         if (len > 0)
         {
             if (entry_str[len - 1] != '\n')
             {
-                screen_put_char(g_screen, '\n');
+                screen_put_char(g_active_screen, '\n');
             }
         }
         
