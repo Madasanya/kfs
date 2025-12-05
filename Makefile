@@ -45,6 +45,9 @@ CSRC		= main/src/kernel.c \
 			  isr/src/isr_syscall_scroll.c \
 			  isr/src/isr_syscall_screenset.c \
 			  isr/src/isr_syscall_colorset.c \
+			  isr/src/isr_syscall_hexdump.c \
+			  user/src/user_syshexdump.c \
+			  tools/src/hexdump.c
 
 
 LDSRC		= kernel.ld

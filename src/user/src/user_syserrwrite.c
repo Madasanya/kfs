@@ -1,5 +1,3 @@
-#include "user_syscall.h"
-#include "isr_syscall.h"
 #include "inttype.h"
 #include "syscall.h"
 
