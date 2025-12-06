@@ -136,39 +136,6 @@ void keyboard_run(keyboard_t *keyboard)
     }
     
     uint8_t ret;
-    uint8_t scancode;
-    uint16_t scancode_full = 0u;
-    if((md_inb(PS2_STATUS) & PS2_FULL_FLAG) != 0u)  // Check if data is available
-    {
-        if ((keyboard->flags & KEYBOARD_FLG_E0) != 0u)  // If E0 flag is set, prefix with 0xE0
-        {
-            scancode_full = 0xE000u;
-            keyboard->flags &= ~KEYBOARD_FLG_E0;  // Clear E0 flag after use
-        }
-        md_io_wait();  // Wait for I/O stability
-        scancode = md_inb(PS2_DATA);  // Read the scancode byte
-        scancode_full |= (uint16_t)scancode;  // Combine with prefix if any
-        ret = special_scancode_handler(keyboard, scancode_full);  // Try special handler first
-        if (ret != 0u)
-        {
-            ret = ascii_scancode_handler(keyboard, scancode_full);  // Then ASCII if not special
-        }
-        if(ret != 0)
-        {
-            ret = comm_scancode_handler(keyboard, scancode_full);  // Finally commands if neither
-        }
-    }
-    return;
-}
-
-void keyboard_process_scancode(keyboard_t *keyboard, uint8_t scancode)
-{
-    if (keyboard == NULL)
-    {
-        return;
-    }
-    
-    uint8_t ret;
     uint16_t scancode_full = 0u;
     
     if ((keyboard->flags & KEYBOARD_FLG_E0) != 0u)  // If E0 flag is set, prefix with 0xE0
@@ -177,7 +144,7 @@ void keyboard_process_scancode(keyboard_t *keyboard, uint8_t scancode)
         keyboard->flags &= ~KEYBOARD_FLG_E0;  // Clear E0 flag after use
     }
     
-    scancode_full |= (uint16_t)scancode;  // Combine with prefix if any
+    scancode_full |= (uint16_t)md_inb(PS2_DATA);  // Combine with prefix if any
     ret = special_scancode_handler(keyboard, scancode_full);  // Try special handler first
     if (ret != 0u)
     {

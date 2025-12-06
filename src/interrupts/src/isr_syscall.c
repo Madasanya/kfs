@@ -18,7 +18,10 @@ uint32_t isr_syscall(uint32_t num, uint32_t arg0, uint32_t arg1, uint32_t arg2, 
             ret = isr_syscall_write((char *)arg0, arg1);
             break;
         case SYS_READ:
-            
+            ret = isr_syscall_read((char*)arg0, (uint8_t)arg1);
+            break;
+        case SYS_COMMREAD:
+            ret = isr_syscall_commread((uint8_t*)arg0, (uint8_t)arg1);
             break;
         case SYS_SCROLL:
             ret = isr_syscall_scroll((uint8_t)arg0, arg1);

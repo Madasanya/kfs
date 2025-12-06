@@ -89,5 +89,9 @@ void nanoshell_run()
             }
             nanoshell_echo(SHELL_NAME);
         }
+        if (gnc(comm) != 0)
+        {
+            
+        }
     }
 }

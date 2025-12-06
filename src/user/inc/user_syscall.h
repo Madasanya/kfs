@@ -3,8 +3,8 @@
 
 #include "inttype.h"
 
-uint32_t user_sysread(char *arr, uint32_t len);
-uint32_t user_sysreadcomm(uint8_t *arr, uint32_t len);
+uint32_t user_sysread(char *arr, uint8_t len);
+uint32_t user_sysreadcomm(uint8_t *arr, uint8_t len);
 
 uint32_t user_syswrite(char *arr, uint32_t len);
 uint32_t user_sysscroll(uint32_t dir, uint32_t num);

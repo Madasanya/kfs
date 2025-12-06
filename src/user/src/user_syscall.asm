@@ -16,12 +16,16 @@ user_syscall:
     je syscall_2arg
     cmp eax, 12 ;syscolorset
     je syscall_2arg
-    cmp eax, 13 ;hexdump
+    cmp eax, 13 ;syshexdump
     je syscall_2arg
     cmp eax, 3 ;syserrwrite
     je syscall_3arg
     cmp eax, 4 ;syserrprint
     je syscall_1arg
+    cmp eax, 1 ;sysread
+    je syscall_2arg
+    cmp eax, 2 ;syscommread
+    je syscall_2arg
     jmp syscall_0arg
 syscall_6arg:
     mov ebp, [esp + 44]

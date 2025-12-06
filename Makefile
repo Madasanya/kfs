@@ -53,7 +53,12 @@ CSRC		= main/src/kernel.c \
 			  drivers/src/pic.c \
 			  user/src/nanoshell.c \
 			  user/src/nanoshell_echo.c \
-			  user/src/user_str_utils.c
+			  user/src/user_str_utils.c \
+			  interrupts/src/isr_syscall_read.c \
+			  interrupts/src/isr_syscall_commread.c \
+			  user/src/user_sysread.c \
+			  user/src/user_sysecommread.c \
+
 
 
 LDSRC		= kernel.ld
