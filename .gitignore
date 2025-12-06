@@ -43,6 +43,7 @@
 *.idb
 *.pdb
 .gdbinit
+*.dwo
 
 # Kernel Module Compile Results
 *.mod*
@@ -56,11 +57,9 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-# debug information files
-*.dwo
-
-# Testing environment
+# Testing/Debugging
 testing/
+logs/
 
 # Mount points
 mnt/

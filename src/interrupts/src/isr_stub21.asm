@@ -6,10 +6,10 @@ align 16
 
 extern irq1_keyboard_handler
 
-global isr_irq1_keyboard
+global isr_stub21
 
 ; IRQ1 (Keyboard) interrupt handler
-isr_irq1_keyboard:
+isr_stub21:
     ; already on stack: ss, sp, flags, cs, ip.
     ; need to push ax, gs, fs, es, ds, -ENOSYS, bp, di, si, dx, cx, and bx
     push ds

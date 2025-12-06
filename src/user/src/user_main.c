@@ -18,7 +18,7 @@ void user_main(void)
             user_var = -20000;
         }
         // Allow interrupts to be processed
-        __asm__ volatile("hlt");
+        //__asm__ volatile("hlt");
     }
 }
 

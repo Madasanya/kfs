@@ -15,11 +15,11 @@ ASSRC		= boot.asm \
 			  drivers/src/io.asm \
 			  main/src/gdt_flush.asm \
 			  main/src/usermode.asm \
-			  isr/src/isr_dummy.asm \
+			  interrupts/src/isr_dummy.asm \
 			  main/src/idt_flush.asm \
 			  user/src/user_syscall.asm \
-			  isr/src/isr_stub80.asm \
-			  isr/src/isr_irq1.asm
+			  interrupts/src/isr_stub80.asm \
+			  interrupts/src/isr_stub21.asm
 
 
 CSRC		= main/src/kernel.c \
@@ -37,16 +37,16 @@ CSRC		= main/src/kernel.c \
 			  main/src/gdt.c \
 			  user/src/user_main.c \
 			  main/src/idt.c \
-			  isr/src/isr_syscall.c \
-			  isr/src/isr_syscall_errprint.c \
+			  interrupts/src/isr_syscall.c \
+			  interrupts/src/isr_syscall_errprint.c \
 			  user/src/user_syserrprint.c \
-			  isr/src/isr_syscall_errwrite.c \
+			  interrupts/src/isr_syscall_errwrite.c \
 			  user/src/user_syserrwrite.c \
-			  isr/src/isr_syscall_write.c \
-			  isr/src/isr_syscall_scroll.c \
-			  isr/src/isr_syscall_screenset.c \
-			  isr/src/isr_syscall_colorset.c \
-			  isr/src/isr_irq1_handler.c \
+			  interrupts/src/isr_syscall_write.c \
+			  interrupts/src/isr_syscall_scroll.c \
+			  interrupts/src/isr_syscall_screenset.c \
+			  interrupts/src/isr_syscall_colorset.c \
+			  interrupts/src/irq1_keyboard_handler.c \
 			  drivers/src/pic.c
 
 
@@ -55,7 +55,7 @@ LDSRC		= kernel.ld
 SRCD		= ./src/
 OBJD		= ./obj/
 BUILTD		= ./build/
-INCD		= main/inc tools/inc drivers/inc user/inc isr/inc
+INCD		= main/inc tools/inc drivers/inc user/inc interrupts/inc
 
 INCPATH		:= $(addprefix $(INCFLAG)src/,$(INCD))
 
@@ -84,6 +84,7 @@ clean:
 
 fclean:		clean
 			$(RM) $(BUILTD)
+			$(RM) ./logs/
 
 re:			fclean all
 
@@ -111,11 +112,13 @@ create_image: check_bin
 					
 run: all create_image
 				echo "Launching QEMU..."
-				sudo qemu-system-i386 -drive file=./boot/bootdisk.img,format=raw -m $(QEMU_MEMORY) -device isa-debug-exit,iobase=0xf4,iosize=0x04
-
-debug: all create_image
+				mkdir -p ./logs
+				sudo qemu-system-i386 -d int,cpu_reset,invalid_mem -D ./logs/qemu_run_$(shell date +%Y%m%d_%H%M%S).log -drive file=./boot/bootdisk.img,format=raw -m $(QEMU_MEMORY)
+#
+debug: fclean all create_image
 				echo "Launching QEMU with GDB server on port 1234..."
-				sudo qemu-system-i386 -drive file=./boot/bootdisk.img,format=raw -m $(QEMU_MEMORY) -s -S -cpu 486
+				mkdir -p ./logs
+				sudo qemu-system-i386 -d cpu_reset,invalid_mem -D ./logs/qemu_debug_$(shell date +%Y%m%d_%H%M%S).log -drive file=./boot/bootdisk.img,format=raw -m $(QEMU_MEMORY) -s -S -cpu 486
 # -nographic -monitor none -serial none
 
 .PHONY:		all clean fclean re build_gcc build_as build_tools check_bin create_image run debug

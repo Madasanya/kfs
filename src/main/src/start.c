@@ -4,7 +4,6 @@
 #include "idt.h"
 #include "isr_dummy.h"
 #include "isr_stub.h"
-#include "isr_irq.h"
 #include "pic.h"
 #include "io.h"
 
@@ -36,12 +35,12 @@ void start_multiboot1(uint32_t magic)
         
         // Set up keyboard interrupt (IRQ1 -> interrupt 0x21)
         idt_interrupt_set(0x21, &(idt_entry_data_t){
-            .isr        = (uint32_t)isr_irq1_keyboard,
+            .isr        = (uint32_t)isr_stub21,
             .attributes = IDT_ATTR_INTERRUPTS
         });
         
         idt_save();
-        
+        //PIC_disable();
         // Enable IRQ1 (keyboard) by unmasking it in PIC
         IRQ_clear_mask(1);
         

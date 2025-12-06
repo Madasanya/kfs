@@ -26,12 +26,10 @@ user_enter:
     push USER_BSS_SEL            ; User SS
     push 0x001FFFE0              ; User ESP (top of BSS - 32 bytes)
 
-    sti
-
     pushfd                        ; EFLAGS last d -makes sure that 32bit flags are pushed
-    ; pop  ecx
-    ; or   ecx, 0x200              ; Enable interrupts (IF = 1)
-    ; push ecx
+    pop  ecx
+    or   ecx, 0x200              ; Enable interrupts (IF = 1)
+    push ecx
 
     push USER_CODE_SEL          ; User CS
     push eax                     ; User EIP (entry point)
@@ -48,6 +46,7 @@ user_enter:
     ; ------------------------------------------------------------------
     ; 3. Final jump to ring-3 — IRET loads SS:ESP, CS:EIP, EFLAGS
     ; ------------------------------------------------------------------
+    sti
     iret
 
     ; If user code ever returns here (should never happen), we hang safely

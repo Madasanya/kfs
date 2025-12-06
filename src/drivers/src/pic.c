@@ -67,11 +67,13 @@ void PIC_remap(int offset1, int offset2)
 	// Unmask both PICs.
 	md_outb(PIC1_DATA, 0xff);
 	md_outb(PIC2_DATA, 0xff);
+    md_io_wait();
+
 }
 
 void PIC_disable(void) {
-    md_outb(PIC1_DATA, 0);
-    md_outb(PIC2_DATA, 0);
+    md_outb(PIC1_DATA, 0xff);
+    md_outb(PIC2_DATA, 0xff);
 }
 
 void IRQ_set_mask(uint8_t IRQline) {

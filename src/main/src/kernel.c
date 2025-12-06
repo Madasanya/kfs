@@ -62,7 +62,6 @@ void kernel(void)
         // Keyboard handled by interrupt, but we still process commands
         //ascii_handler(&g_keyboard, g_active_screen);
         //command_handler(&g_keyboard, g_active_screen, &g_current_screen_index, screens, &(g_current_color_index[g_current_screen_index]));
-        
         // Enter user mode
         user_enter((void*)user_main);
         //__asm__ volatile("hlt");
