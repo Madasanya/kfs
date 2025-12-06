@@ -172,6 +172,23 @@ extern const char keyboard_shifted_map[0x100];
 void keyboard_run(keyboard_t *keyboard);
 
 /**
+ * @brief Processes a keyboard scancode (for interrupt-driven keyboard handling).
+ * 
+ * @details
+ * This function processes a scancode that has already been read from the PS/2 data port.
+ * It handles extended codes (E0 prefix), modifiers (shift keys), ASCII-mappable keys,
+ * and special command keys. This function is designed for use in interrupt handlers
+ * where the scancode is read immediately upon interrupt.
+ * 
+ * @note For E0-prefixed scancodes, call this function twice: first with 0xE0, then with
+ *       the actual scancode byte.
+ * 
+ * @param[in,out] keyboard Pointer to the keyboard structure.
+ * @param[in] scancode The scancode byte to process.
+ */
+void keyboard_process_scancode(keyboard_t *keyboard, uint8_t scancode);
+
+/**
  * @brief Retrieves a single queued character from the keyboard buffer.
  * 
  * @details

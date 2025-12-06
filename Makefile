@@ -18,7 +18,8 @@ ASSRC		= boot.asm \
 			  isr/src/isr_dummy.asm \
 			  main/src/idt_flush.asm \
 			  user/src/user_syscall.asm \
-			  isr/src/isr_stub80.asm
+			  isr/src/isr_stub80.asm \
+			  isr/src/isr_irq1.asm
 
 
 CSRC		= main/src/kernel.c \
@@ -45,6 +46,8 @@ CSRC		= main/src/kernel.c \
 			  isr/src/isr_syscall_scroll.c \
 			  isr/src/isr_syscall_screenset.c \
 			  isr/src/isr_syscall_colorset.c \
+			  isr/src/isr_irq1_handler.c \
+			  drivers/src/pic.c
 
 
 LDSRC		= kernel.ld
@@ -108,7 +111,7 @@ create_image: check_bin
 					
 run: all create_image
 				echo "Launching QEMU..."
-				sudo qemu-system-i386 -drive file=./boot/bootdisk.img,format=raw -m $(QEMU_MEMORY)
+				sudo qemu-system-i386 -drive file=./boot/bootdisk.img,format=raw -m $(QEMU_MEMORY) -device isa-debug-exit,iobase=0xf4,iosize=0x04
 
 debug: all create_image
 				echo "Launching QEMU with GDB server on port 1234..."

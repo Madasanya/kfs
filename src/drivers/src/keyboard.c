@@ -48,8 +48,7 @@ static uint8_t special_scancode_handler(keyboard_t *keyboard, uint16_t scancode)
         keyboard->flags &= ~KEYBOARD_FLG_SHIFT_RIGHT;  // Clear right shift flag on release
         break;
     case KEYBOARD_SCANCODE_E0:
-        keyboard->flags |= KEYBOARD_FLG_E0;  // Set E0 flag for extended scancodes
-        keyboard_run(keyboard);  // Recursively process the next byte
+        keyboard->flags |= KEYBOARD_FLG_E0;  // Set E0 flag for extended scancodes (next scancode will be extended)
         break;
     default:
         ret = 1u;  // Not a special scancode
@@ -159,6 +158,36 @@ void keyboard_run(keyboard_t *keyboard)
             ret = comm_scancode_handler(keyboard, scancode_full);  // Finally commands if neither
         }
     }
+    return;
+}
+
+void keyboard_process_scancode(keyboard_t *keyboard, uint8_t scancode)
+{
+    if (keyboard == NULL)
+    {
+        return;
+    }
+    
+    uint8_t ret;
+    uint16_t scancode_full = 0u;
+    
+    if ((keyboard->flags & KEYBOARD_FLG_E0) != 0u)  // If E0 flag is set, prefix with 0xE0
+    {
+        scancode_full = 0xE000u;
+        keyboard->flags &= ~KEYBOARD_FLG_E0;  // Clear E0 flag after use
+    }
+    
+    scancode_full |= (uint16_t)scancode;  // Combine with prefix if any
+    ret = special_scancode_handler(keyboard, scancode_full);  // Try special handler first
+    if (ret != 0u)
+    {
+        ret = ascii_scancode_handler(keyboard, scancode_full);  // Then ASCII if not special
+    }
+    if(ret != 0)
+    {
+        ret = comm_scancode_handler(keyboard, scancode_full);  // Finally commands if neither
+    }
+    
     return;
 }
 
