@@ -10,6 +10,7 @@ void user_main(void)
 {
     user_syserrwrite("Hello from user_main!\n", 23, (uint32_t)ERRLOG_LVL_INFO);
     user_syserrprint(ERRLOG_LVL_DEBUG);
+    user_syshexdump(user_main, 100);
     while (1)
     {
         user_var++;

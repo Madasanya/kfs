@@ -9,6 +9,7 @@
 #define SYS_SCROLL 10u
 #define SYS_SCREENSET 11u
 #define SYS_COLORSET 12u
+#define SYS_HEXDUMP 13u
 
 
 #define SYS_SCREENSET_ABSOLUTE 0u

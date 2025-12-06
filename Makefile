@@ -45,6 +45,9 @@ CSRC		= main/src/kernel.c \
 			  interrupts/src/isr_syscall_write.c \
 			  interrupts/src/isr_syscall_scroll.c \
 			  interrupts/src/isr_syscall_screenset.c \
+			  interrupts/src/isr_syscall_hexdump.c \
+			  user/src/user_syshexdump.c \
+			  tools/src/hexdump.c \
 			  interrupts/src/isr_syscall_colorset.c \
 			  interrupts/src/irq1_keyboard_handler.c \
 			  drivers/src/pic.c

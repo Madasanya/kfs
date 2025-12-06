@@ -16,6 +16,8 @@ user_syscall:
     je syscall_2arg
     cmp eax, 12 ;syscolorset
     je syscall_2arg
+    cmp eax, 13 ;hexdump
+    je syscall_2arg
     cmp eax, 3 ;syserrwrite
     je syscall_3arg
     cmp eax, 4 ;syserrprint
