@@ -50,7 +50,10 @@ CSRC		= main/src/kernel.c \
 			  tools/src/hexdump.c \
 			  interrupts/src/isr_syscall_colorset.c \
 			  interrupts/src/irq1_keyboard_handler.c \
-			  drivers/src/pic.c
+			  drivers/src/pic.c \
+			  user/src/nanoshell.c \
+			  user/src/nanoshell_echo.c \
+			  user/src/user_str_utils.c
 
 
 LDSRC		= kernel.ld
