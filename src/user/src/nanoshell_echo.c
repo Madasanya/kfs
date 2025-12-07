@@ -4,7 +4,7 @@
 #include "user_syscall.h"
 #include "user_str_utils.h"
 
-#define ECHO_LIMIT 256u
+#define ECHO_LIMIT 255u
 
 USER_TEXT
 uint8_t nanoshell_echo(char* str)

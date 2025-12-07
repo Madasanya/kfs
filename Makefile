@@ -65,7 +65,8 @@ CSRC		= main/src/kernel.c \
 			  user/src/user_sysscreenset.c \
 			  user/src/nanoshell_color_switch.c \
 			  user/src/user_syscolorset.c \
-			  user/src/nanoshell_hexdump.c
+			  user/src/nanoshell_hexdump.c \
+			  user/src/nanoshell_gnl.c \
 
 LDSRC		= kernel.ld
 
@@ -130,7 +131,7 @@ create_image: check_bin
 run: all create_image
 				echo "Launching QEMU..."
 				mkdir -p ./logs
-				sudo qemu-system-i386 -d int,cpu_reset,invalid_mem -D ./logs/qemu_run_$(shell date +%Y%m%d_%H%M%S).log -drive file=./boot/bootdisk.img,format=raw -m $(QEMU_MEMORY)
+				sudo qemu-system-i386 -d cpu_reset,invalid_mem -D ./logs/qemu_run_$(shell date +%Y%m%d_%H%M%S).log -drive file=./boot/bootdisk.img,format=raw -m $(QEMU_MEMORY)
 #
 debug: fclean all create_image
 				echo "Launching QEMU with GDB server on port 1234..."

@@ -2,6 +2,7 @@
 #include "user.h"
 #include "inttype.h"
 #include "syscall.h"
+#include "user_str_utils.h"
 
 extern uint32_t user_syscall(uint32_t num, ...);
 

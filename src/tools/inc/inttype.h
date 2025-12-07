@@ -15,4 +15,6 @@
 
 #define NULL (void *)0u
 
+#define bool unsigned char
+
 #endif /* _INTTYPE_H_ */

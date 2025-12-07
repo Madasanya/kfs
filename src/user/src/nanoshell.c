@@ -291,7 +291,6 @@ void nanoshell_run()
     const uint8_t comm_list_len = sizeof(command_list)/sizeof(char *);
     char line_buff[81] = {0};
 
-    nanoshell_echo(SHELL_NAME);
     while (1)
     {
         // if (gnl_fake_echo((char *)&line_buff) != 0u)
@@ -327,5 +326,9 @@ void nanoshell_run()
         // {
             
         // }
+        if (nanoshell_gnl(line_buff, 81) != 0u)
+        {
+            user_syswrite(line_buff, user_strlen(line_buff));
+        }
     }
 }

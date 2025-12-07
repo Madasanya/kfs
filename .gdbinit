@@ -8,5 +8,8 @@ target remote localhost:1234
 break nanoshell_screen_switch:13
 break nanoshell_hexdump
 break nanoshell_run
+break nanoshell_run
+b nanoshell_gnl.c:104
+b nanoshell.c:18
 c
 layout regs
