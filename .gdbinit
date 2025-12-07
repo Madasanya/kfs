@@ -6,6 +6,7 @@ disconnect
 set architecture i386
 target remote localhost:1234
 break nanoshell_screen_switch:13
-break isr_stub80
+break nanoshell_hexdump
+break nanoshell_run
 c
 layout regs

@@ -62,9 +62,10 @@ CSRC		= main/src/kernel.c \
 			  user/src/nanoshell_errorlog_write.c \
 			  user/src/nanoshell_errorlog_print.c \
 			  user/src/nanoshell_screen_switch.c \
-			  user/src/user_sysscreenset.c
-
-
+			  user/src/user_sysscreenset.c \
+			  user/src/nanoshell_color_switch.c \
+			  user/src/user_syscolorset.c \
+			  user/src/nanoshell_hexdump.c
 
 LDSRC		= kernel.ld
 

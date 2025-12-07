@@ -179,8 +179,93 @@ uint32_t gnl_fake_screen(char *buffer)
     buffer[4] = 'e';
     buffer[5] = 'n';
     buffer[6] = ' ';
-    buffer[7] = '4'; // set screen 3
+    buffer[7] = '0'; // set screen 3
     buffer[8] = '\0';  // Null terminator
+    
+    return 1;
+}
+
+USER_TEXT
+uint32_t gnl_fake_color(char *buffer)
+{
+    // Ensure clean buffer initialization - this is critical
+    // because find_comm has a bug where it doesn't verify
+    // that *itr_comm == '\0' when itr_str == comm_end
+    int i;
+    for (i = 0; i < 81; i++)
+    {
+        buffer[i] = '\0';
+    }
+    
+    // Write exactly: "echo Hello" with no extra characters
+    // The command must match exactly to work around find_comm bug
+    buffer[0] = 'c';
+    buffer[1] = 'o';
+    buffer[2] = 'l';
+    buffer[3] = 'o';
+    buffer[4] = 'r';
+    buffer[5] = ' ';
+    buffer[6] = '2'; // set color 2
+    buffer[7] = '\0';  // Null terminator
+    
+    return 1;
+}
+
+USER_TEXT
+uint32_t gnl_fake_hexdump(char *buffer)
+{
+    // Ensure clean buffer initialization - this is critical
+    // because find_comm has a bug where it doesn't verify
+    // that *itr_comm == '\0' when itr_str == comm_end
+    int i;
+    for (i = 0; i < 81; i++)
+    {
+        buffer[i] = '\0';
+    }
+    
+    // Write exactly: "echo Hello" with no extra characters
+    // The command must match exactly to work around find_comm bug
+    buffer[0] = 'p';
+    buffer[1] = 'r';
+    buffer[2] = 'i';
+    buffer[3] = 'n';
+    buffer[4] = 't';
+    buffer[5] = '-';
+    buffer[6] = 'k';
+    buffer[7] = 'e';
+    buffer[8] = 'r';
+    buffer[9] = 'n';
+    buffer[10] = 'e';
+    buffer[11] = 'l';
+    buffer[12] = '-';
+    buffer[13] = 's';
+    buffer[14] = 't';
+    buffer[15] = 'a';
+    buffer[16] = 'c';
+    buffer[17] = 'k';
+    buffer[18] = '-';
+    buffer[19] = 't';
+    buffer[20] = 'h';
+    buffer[21] = 'i';
+    buffer[22] = 'n';
+    buffer[23] = 'g';
+    buffer[24] = 'y';
+    buffer[25] = ' ';
+    buffer[26] = '0';
+    buffer[27] = 'x';
+    buffer[28] = '0';
+    buffer[29] = '0';
+    buffer[30] = '3';
+    buffer[31] = '0';
+    buffer[32] = '0';
+    buffer[33] = '5';
+    buffer[34] = 'E';
+    buffer[35] = '1';
+    buffer[36] = ' ';
+    buffer[37] = '1';
+    buffer[38] = '0';
+    buffer[39] = '2';
+    buffer[40] = '\0';  // Null terminator
     
     return 1;
 }
@@ -188,12 +273,21 @@ uint32_t gnl_fake_screen(char *buffer)
 USER_TEXT
 void nanoshell_run()
 {
-    const char *command_list[] = {"_", "echo", "report", "err_log", "screen", "exit" };
+    const char *command_list[] =    {"_", \
+                                    "echo", \
+                                    "report", \
+                                    "err_log", \
+                                    "screen", \
+                                    "color", \
+                                    "print-kernel-stack-thingy"};
+                                    //"exit"};
     uint8_t (*command_funcs[])(char *) =    {wrong_comm, \
                                             nanoshell_echo, \
                                             nanoshell_errlog_write, \
                                             nanoshell_errlog_print, \
-                                            nanoshell_screen_switch};//, change_screen, exit_to_kernel};
+                                            nanoshell_screen_switch, \
+                                            nanoshell_color_switch, \
+                                            nanoshell_hexdump};//, exit_to_kernel};
     const uint8_t comm_list_len = sizeof(command_list)/sizeof(char *);
     char line_buff[81] = {0};
 
@@ -219,23 +313,8 @@ void nanoshell_run()
         }
         nanoshell_echo(SHELL_NAME);
 
-        gnl_fake_screen((char *)&line_buff);
-        line_ptr = line_buff;
-        if (command_funcs[find_comm(&line_ptr, command_list, comm_list_len)](line_ptr) != 0u)
-        {
-            nanoshell_echo("Not executed\n");
-            user_syserrwrite("Not executed\n", user_strlen("Not executed\n"), (uint32_t)ERRLOG_LVL_ERR);
-        }
 
-        gnl_fake_report((char *)&line_buff);
-        line_ptr = line_buff;
-        if (command_funcs[find_comm(&line_ptr, command_list, comm_list_len)](line_ptr) != 0u)
-        {
-            nanoshell_echo("Not executed\n");
-            user_syserrwrite("Not executed\n", user_strlen("Not executed\n"), (uint32_t)ERRLOG_LVL_ERR);
-        }
-
-        gnl_fake_errlog((char *)&line_buff);
+        gnl_fake_hexdump((char *)&line_buff);
         line_ptr = line_buff;
         if (command_funcs[find_comm(&line_ptr, command_list, comm_list_len)](line_ptr) != 0u)
         {
@@ -243,7 +322,7 @@ void nanoshell_run()
             user_syserrwrite("Not executed\n", user_strlen("Not executed\n"), (uint32_t)ERRLOG_LVL_ERR);
         }
         nanoshell_echo(SHELL_NAME);
-
+        
         // if (gnc(comm) != 0)
         // {
             
