@@ -57,7 +57,12 @@ CSRC		= main/src/kernel.c \
 			  interrupts/src/isr_syscall_read.c \
 			  interrupts/src/isr_syscall_commread.c \
 			  user/src/user_sysread.c \
-			  user/src/user_sysecommread.c \
+			  user/src/user_syscommread.c \
+			  user/src/user_syswrite.c \
+			  user/src/nanoshell_errorlog_write.c \
+			  user/src/nanoshell_errorlog_print.c \
+			  user/src/nanoshell_screen_switch.c \
+			  user/src/user_sysscreenset.c
 
 
 

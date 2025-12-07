@@ -5,9 +5,7 @@ target remote localhost:1234
 disconnect
 set architecture i386
 target remote localhost:1234
-break user_mode
-break isr_stub21
-break kernel
-break user_syserrwrite
+break nanoshell_screen_switch:13
+break isr_stub80
 c
 layout regs

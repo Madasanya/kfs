@@ -11,11 +11,11 @@ uint32_t isr_syscall_screenset(uint8_t mode, uint8_t num)
 
     if ((mode <= 2) && (num <= NUM_SCREENS) && (g_active_screen != NULL))
     {
-        if (mode == SYS_SCREENSET_INCREASE)
+        if (mode == SYS_SCREENSET_MODE_INCREASE)
         {
             num = g_current_screen_index + num;
         }
-        else if(mode == SYS_SCREENSET_DECREASE)
+        else if(mode == SYS_SCREENSET_MODE_DECREASE)
         {
 
             tmp_idx = (int8_t)g_current_screen_index - (int8_t)num;
@@ -29,7 +29,7 @@ uint32_t isr_syscall_screenset(uint8_t mode, uint8_t num)
         if (old_screen_idx != g_current_screen_index)
         {
             screen_close(g_active_screen);
-            tmp_idx = (int8_t)old_screen_idx - (int8_t)g_current_screen_index;
+            tmp_idx = (int8_t)g_current_screen_index - (int8_t)old_screen_idx;
             g_active_screen += tmp_idx;
             screen_open(g_active_screen);
         }
