@@ -1,6 +1,6 @@
 global user_syscall
 
-section .text
+section .user_text
 user_syscall:
     push ebp
     push edi

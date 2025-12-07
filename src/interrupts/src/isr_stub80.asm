@@ -17,12 +17,15 @@ isr_stub80:
     push ecx
     push ebx
     push eax
-    mov ax, KERNEL_DATA_SEL
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
+    mov dx, KERNEL_DATA_SEL
+    mov ds, dx
+    mov es, dx
+    mov fs, dx
+    mov gs, dx
+    cmp eax, 1 ; check if read
+    je _isr_syscall
     sti
+_isr_syscall:
     call isr_syscall
     cli
     add esp, 28

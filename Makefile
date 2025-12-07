@@ -57,7 +57,9 @@ CSRC		= main/src/kernel.c \
 			  interrupts/src/isr_syscall_read.c \
 			  interrupts/src/isr_syscall_commread.c \
 			  user/src/user_sysread.c \
-			  user/src/user_sysecommread.c \
+			  user/src/user_syscommread.c \
+			  user/src/user_syswrite.c \
+			  user/src/nanoshell_gnl.c \
 
 
 
@@ -124,7 +126,7 @@ create_image: check_bin
 run: all create_image
 				echo "Launching QEMU..."
 				mkdir -p ./logs
-				sudo qemu-system-i386 -d int,cpu_reset,invalid_mem -D ./logs/qemu_run_$(shell date +%Y%m%d_%H%M%S).log -drive file=./boot/bootdisk.img,format=raw -m $(QEMU_MEMORY)
+				sudo qemu-system-i386 -d cpu_reset,invalid_mem -D ./logs/qemu_run_$(shell date +%Y%m%d_%H%M%S).log -drive file=./boot/bootdisk.img,format=raw -m $(QEMU_MEMORY)
 #
 debug: fclean all create_image
 				echo "Launching QEMU with GDB server on port 1234..."
