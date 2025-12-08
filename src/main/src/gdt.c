@@ -162,7 +162,7 @@ void init_gdt(void)
     const gdt_segment_data_t data_seg_pl0 = {0x00000000, (uint32_t)_kernel_data_end/GRANULARITY_PAGE_DIV, GDT_DATA_PL0};
     const gdt_segment_data_t stack_seg_pl0 = {0x00000000, (uint32_t)_kernel_stack_end/GRANULARITY_PAGE_DIV, GDT_BSS_PL0};
     const gdt_segment_data_t code_seg_pl3 = {0x00000000, (uint32_t)_user_text_end/GRANULARITY_PAGE_DIV, GDT_CODE_PL3};
-    const gdt_segment_data_t data_seg_pl3 = {0x00000000, (uint32_t)_kernel_data_end/GRANULARITY_PAGE_DIV, GDT_DATA_PL3};
+    const gdt_segment_data_t data_seg_pl3 = {0x00000000, (uint32_t)_user_data_end/GRANULARITY_PAGE_DIV, GDT_DATA_PL3};
     const gdt_segment_data_t stack_seg_pl3 = {0x00000000, (uint32_t)_user_stack_end/GRANULARITY_PAGE_DIV, GDT_BSS_PL3};
     // TSS segment
     const gdt_segment_data_t tss_seg = {(uint32_t)&tss, 0x00000067, GDT_TSS};
