@@ -13,11 +13,15 @@ uint8_t nanoshell_echo(char* str)
     if ((len == 0) || (str == NULL))
     {
         return 1; // Nothing to write
-    }  
+    }
+    if (str[0] == '\n')
+    {
+        return 1; // Nothing to write
+    }
     if (len > ECHO_LIMIT)
     {
         len = ECHO_LIMIT; // Truncate to limit
     }   
-    user_syswrite(str, len); // Exclude null terminator
-    return 0; // Return success
+    user_syswrite(str, len);
+    return 0;
 }

@@ -5,6 +5,7 @@
 #include "user_syscall.h"
 #include "errlog.h"
 #include "user_str_utils.h"
+#include "nanoshell_utils.h"
 
 #define SHELL_NAME "nanoshell> "
 
@@ -12,7 +13,7 @@ USER_TEXT
 static unsigned char wrong_comm(char *str)
 {
     str = str; // Suppress unused variable warning
-    nanoshell_echo("Unknown command\n");
+    user_syswrite("Unknown command\n", user_strlen("Unknown command\n"));
     user_syserrwrite("Unknown command\n", user_strlen("Unknown command\n"), (uint32_t)ERRLOG_LVL_WARNING);
     return (0);
 }
@@ -33,7 +34,7 @@ unsigned char find_comm(char **str, const char *command_list[], unsigned char li
     char *itr_comm, *itr_str;
     unsigned char comm_idx = 0;
 
-    while ((**str != '\0') && ((**str != ' ')))
+    while ((**str != '\0') && ((**str != ' ')) && (**str != '\n'))
     {
         (*str)++;
     }
@@ -75,16 +76,17 @@ void nanoshell_run()
                                     "errlog", \
                                     "screen", \
                                     "color", \
-                                    "hexdump"}; // hexdump 0x0003005E1 102
-                                    //"print-kernel-stack-thingy"};
-                                    //"exit"};
+                                    "hexdump", \
+                                    "print-kernel-stack-thingy"};
+                                    //"exit"}; // hexdump 0x0003005E1 102
     uint8_t (*command_funcs[])(char *) =    {wrong_comm, \
                                             nanoshell_echo, \
                                             nanoshell_errlog_write, \
                                             nanoshell_errlog_print, \
                                             nanoshell_screen_switch, \
                                             nanoshell_color_switch, \
-                                            nanoshell_hexdump};//, exit_to_kernel};
+                                            nanoshell_hexdump, \
+                                            nanoshell_kernel_stack_print};
     const uint8_t comm_list_len = sizeof(command_list)/sizeof(char *);
     char line_buff[81] = {0};
     uint8_t comm = 0;
@@ -105,13 +107,13 @@ void nanoshell_run()
 
         if (nanoshell_gnc(&comm))
         {
-            if (comm == 0x01u)
+            if (comm == KEYBOARD_COMM_SCROLL_UP)
             {
-                user_syswrite("scroll up", user_strlen("scroll up"));
+                nanoshell_scroll(SYS_SCROLL_UP);
             }
-            else if (comm == 0x02u)
+            else if (comm == KEYBOARD_COMM_SCROLL_DOWN)
             {
-                user_syswrite("scroll down", user_strlen("scroll down"));
+                nanoshell_scroll(SYS_SCROLL_DOWN);
             }
             else
             {

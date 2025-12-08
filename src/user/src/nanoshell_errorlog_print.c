@@ -14,7 +14,7 @@ uint8_t nanoshell_errlog_print(char *lvl_str)
     }
 
     uint32_t lvl = 0;
-    if (user_strlen(lvl_str) == 0u)
+    if (user_strlen(lvl_str) == 0u || (lvl_str[0] == '\n'))
     {
         return 1; // Invalid argument
     }

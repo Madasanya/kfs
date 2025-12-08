@@ -68,6 +68,9 @@ CSRC		= main/src/kernel.c \
 			  user/src/nanoshell_hexdump.c \
 			  user/src/nanoshell_gnl.c \
 			  user/src/nanoshell_gnc.c \
+			  user/src/nanoshell_scroll.c \
+			  user/src/user_sysscroll.c \
+			  user/src/nanoshell_kernel_stack_print.c
 
 LDSRC		= kernel.ld
 

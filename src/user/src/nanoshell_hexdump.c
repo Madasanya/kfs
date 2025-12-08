@@ -14,6 +14,10 @@ uint8_t nanoshell_hexdump(char *arg_str)
     {
         return 1;
     }
+    if (arg_str[0] == '\n')
+    {
+        return 1;
+    }
 
     char *addr_str = arg_str;
     char *len_str = NULL;

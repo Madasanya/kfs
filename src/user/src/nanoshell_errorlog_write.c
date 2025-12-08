@@ -14,7 +14,12 @@ uint8_t nanoshell_errlog_write(char* str)
     if ((len == 0) || (str == NULL))
     {
         return 1; // Nothing to write
-    }  
+    }
+    if (str[0] == '\n')
+    {
+        return 1; // Nothing to write
+    }
+    
     if (len > ERRLOG_LIMIT)
     {
         len = ERRLOG_LIMIT; // Truncate to limit

@@ -15,6 +15,11 @@ uint8_t nanoshell_color_switch(char *num_str)
         return 1; // Invalid argument
     }
 
+    if (num_str[0] == '\n')
+    {
+        return 1; // Invalid argument
+    }
+
     uint8_t num = 0;
     if (user_strlen(num_str) == 0u)
     {
@@ -31,10 +36,10 @@ uint8_t nanoshell_color_switch(char *num_str)
         num = (num * 10u) + (uint32_t)(num_str[i] - '0');
     }
 
-    if (num >= NUM_COLORS)
+    if (num < 1 || num > NUM_COLORS)
     {
         return 1; // Invalid color number
     }
-    user_syscolorset(USER_COLOR_MODE_SET, num);
+    user_syscolorset(USER_COLOR_MODE_SET, num - 1);
     return 0; // Return success
 }

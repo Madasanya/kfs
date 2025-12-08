@@ -46,8 +46,8 @@ void kernel(void)
     for (uint8_t i = 0; i < NUM_SCREENS; i++)
     {
         md_vsnprintf(header_buf, sizeof(header_buf), "42 - Screen %d", i + 1);
-        screen_init(&(screens[i]), &(history_buffers[i]), SCREEN_COLOR_PROFILES[4 - i], header_buf);
-        g_current_color_index[i] = 4 - i;
+        screen_init(&(screens[i]), &(history_buffers[i]), SCREEN_COLOR_PROFILES[i], header_buf);
+        g_current_color_index[i] = i;
     }
 
     g_active_screen = &(screens[g_current_screen_index]);

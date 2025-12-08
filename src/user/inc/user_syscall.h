@@ -12,7 +12,6 @@ uint32_t user_sysscreenset(uint8_t mode, uint8_t num);
 uint32_t user_syscolorset(uint8_t mode, uint8_t num);
 uint32_t user_syshexdump(void *start_addr, uint32_t len);
 
-
 uint32_t user_syserrwrite(char *arr, uint32_t len, uint32_t lvl);
 uint32_t user_syserrprint(uint32_t lvl);
 
