@@ -60,6 +60,11 @@
                     SEG_LONG(0u)     | SEG_SIZE(0u) | SEG_GRAN(0u) | \
                     SEG_PRIV(0u)     | SEG_TSS_AVAIL
 
+                    
+                    
+#define GRANULARITY_PAGE_DIV 4096u
+#define GRANULARITY_BYTE_DIV 1u  
+
 typedef struct {
     uint16_t limit;
     uint32_t base;
@@ -114,6 +119,23 @@ typedef struct {
 
 gdt_reg_t gdt_reg = {0};
 
+tss_entry_t tss __attribute__((section(".tss")));
+
+extern uint32_t _user_stack_start[];
+extern uint32_t _user_stack_end[];
+extern uint32_t _user_data_start[];
+extern uint32_t _user_data_end[];
+extern uint32_t _user_text_start[];
+extern uint32_t _user_text_end[];
+extern uint32_t _kernel_stack_start[];
+extern uint32_t _kernel_stack_end[];
+extern uint32_t _kernel_data_start[];
+extern uint32_t _kernel_data_end[];
+extern uint32_t _kernel_text_start[];
+extern uint32_t _kernel_text_end[];
+
+extern uint32_t stack_top[];
+
 extern void gdt_flush(gdt_reg_t *gdt);
 extern void gdt_save(gdt_reg_t *gdt);
 
@@ -136,29 +158,22 @@ void init_gdt(void)
     gdt_entry_t* gdt = (gdt_entry_t*)GDTBASE;
 
     const gdt_segment_data_t null_seg = {0, 0, 0};
-    // Flat memory layout - base=0, covering 2MB per segment
-    // Kernel code: base=0, limit=0x7FF (with granularity=1 => 8MB)
-    const gdt_segment_data_t code_seg_pl0 = {0x00000000, 0x000007FF, GDT_CODE_PL0};
-    // Kernel data: base=0, limit=0x5FF (with granularity=1 => 6MB)
-    const gdt_segment_data_t data_seg_pl0 = {0x00000000, 0x000005FF, GDT_DATA_PL0};
-    // Kernel BSS: base=0, limit=0x4FF (with granularity=1 => 5MB)
-    const gdt_segment_data_t bss_seg_pl0 = {0x00000000, 0x000004FF, GDT_BSS_PL0};
-    // User code: base=0, limit=0x3FF (with granularity=1 => 4MB)
-    const gdt_segment_data_t code_seg_pl3 = {0x00000000, 0x000003FF, GDT_CODE_PL3};
-    // User data: base=0, limit=0x2FF (with granularity=1 => 3MB)
-    const gdt_segment_data_t data_seg_pl3 = {0x00000000, 0x000002FF, GDT_DATA_PL3};
-    // User BSS: base=0, limit=0x1FF (with granularity=1 => 2MB)
-    const gdt_segment_data_t bss_seg_pl3 = {0x00000000, 0x000001FF, GDT_BSS_PL3};
+    const gdt_segment_data_t code_seg_pl0 = {0x00000000, (uint32_t)_kernel_text_end/GRANULARITY_PAGE_DIV, GDT_CODE_PL0};
+    const gdt_segment_data_t data_seg_pl0 = {0x00000000, (uint32_t)_kernel_data_end/GRANULARITY_PAGE_DIV, GDT_DATA_PL0};
+    const gdt_segment_data_t stack_seg_pl0 = {0x00000000, (uint32_t)_kernel_stack_end/GRANULARITY_PAGE_DIV, GDT_BSS_PL0};
+    const gdt_segment_data_t code_seg_pl3 = {0x00000000, (uint32_t)_user_text_end/GRANULARITY_PAGE_DIV, GDT_CODE_PL3};
+    const gdt_segment_data_t data_seg_pl3 = {0x00000000, (uint32_t)_kernel_data_end/GRANULARITY_PAGE_DIV, GDT_DATA_PL3};
+    const gdt_segment_data_t stack_seg_pl3 = {0x00000000, (uint32_t)_user_stack_end/GRANULARITY_PAGE_DIV, GDT_BSS_PL3};
     // TSS segment
-    const gdt_segment_data_t tss_seg = {0x00700000, 0x00000067, GDT_TSS};
+    const gdt_segment_data_t tss_seg = {(uint32_t)&tss, 0x00000067, GDT_TSS};
     
     gdt_entry_create(&gdt[0], &null_seg);
     gdt_entry_create(&gdt[1], &code_seg_pl0);
     gdt_entry_create(&gdt[2], &data_seg_pl0);
-    gdt_entry_create(&gdt[3], &bss_seg_pl0);
+    gdt_entry_create(&gdt[3], &stack_seg_pl0);
     gdt_entry_create(&gdt[4], &code_seg_pl3);
     gdt_entry_create(&gdt[5], &data_seg_pl3);
-    gdt_entry_create(&gdt[6], &bss_seg_pl3);
+    gdt_entry_create(&gdt[6], &stack_seg_pl3);
     gdt_entry_create(&gdt[7], &tss_seg);
     
     gdt_save(&gdt_reg);
@@ -168,19 +183,19 @@ void init_gdt(void)
 
     gdt_reg.limit = (NUM_GDT_ENTRIES * sizeof(gdt_entry_t)) - 1;
     gdt_reg.base  = GDTBASE;
-    
+
     // Load the new GDT FIRST
     gdt_flush(&gdt_reg);
     
 
     //Initialize TSS
-    tss_entry_t* tss = (tss_entry_t*)0x00700000;
+    tss_entry_t* tss_ptr = &tss;
     for (uint32_t i = 0; i < sizeof(tss_entry_t); i++)
     {
-        ((uint8_t*)tss)[i] = 0; // Zero out the TSS
+        ((uint8_t*)tss_ptr)[i] = 0; // Zero out the TSS
     }
-    tss->ss0 = 0x18; // Kernel data segment selector
-    tss->esp0 = 0x007FFFFC; // Stack pointer for kernel mode
+    tss_ptr->ss0 = 0x18; // Kernel data segment selector
+    tss_ptr->esp0 = (uint32_t)stack_top; // Stack pointer for kernel mode
     tss_flush();
 
     

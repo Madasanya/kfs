@@ -6,6 +6,7 @@
 #include "errlog.h"
 #include "user_str_utils.h"
 #include "nanoshell_utils.h"
+#include "hexdump.h"
 
 #define SHELL_NAME "nanoshell> "
 
@@ -118,6 +119,7 @@ void nanoshell_run()
             else
             {
                 user_syswrite("yeah right", user_strlen("yeah right"));
+                md_hexdump_print((void *)0x100000, 16);
             }
         }
     }

@@ -8,9 +8,10 @@ global user_enter
 %define USER_DATA_SEL 0x2B
 %define USER_BSS_SEL  0x33
 
+extern user_stack_top
+
 section .text
 align 16
-
 user_enter:
     ; Save kernel state (we never return here)
     push ebp
@@ -24,7 +25,10 @@ user_enter:
     ;    Order: SS, ESP, EFLAGS, CS, EIP
     ; ------------------------------------------------------------------
     push USER_BSS_SEL            ; User SS
-    push 0x001FFFE0              ; User ESP (top of BSS - 32 bytes)
+
+    
+
+    push user_stack_top              ; User ESP (top of BSS - 32 bytes)
 
     pushfd                        ; EFLAGS last d -makes sure that 32bit flags are pushed
     pop  ecx

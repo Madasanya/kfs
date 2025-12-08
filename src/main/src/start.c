@@ -6,6 +6,7 @@
 #include "isr_stub.h"
 #include "pic.h"
 #include "io.h"
+#include "kernel.h"
 
 kernel_ver_t version __attribute__((section(".kernel_info"))) = \
 {

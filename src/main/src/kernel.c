@@ -14,9 +14,14 @@
 
 #define SCREEN_HEADER_BUF_LEN 15u
 
+screen_t screens[NUM_SCREENS];
+history_buffer_t history_buffers[NUM_SCREENS];
+char header_buf[SCREEN_HEADER_BUF_LEN];
+
 screen_t *g_active_screen = NULL;
 uint8_t g_current_screen_index = 0;
 uint8_t g_current_color_index[NUM_SCREENS] = {0};
+uint32_t g_super_important_global_var = 42;
 
 // Global keyboard instance (accessed by IRQ handler)
 keyboard_t g_keyboard = {0};
@@ -37,10 +42,6 @@ keyboard_t g_keyboard = {0};
  */
 void kernel(void)
 {
-    screen_t screens[NUM_SCREENS];
-    history_buffer_t history_buffers[NUM_SCREENS];
-    char header_buf[SCREEN_HEADER_BUF_LEN];
-    
     /* KERNEL INITIALIZATION */
     md_printk("Kernel inititalization\n");
     for (uint8_t i = 0; i < NUM_SCREENS; i++)
@@ -56,14 +57,5 @@ void kernel(void)
     /* KERNEL RUN */
     md_printk("Kernel running...\n");
     md_printk("Interrupts enabled. Press any key to test...\n");
-    //__asm__ volatile("sti");
-    while (1)
-    {
-        // Keyboard handled by interrupt, but we still process commands
-        //ascii_handler(&g_keyboard, g_active_screen);
-        //command_handler(&g_keyboard, g_active_screen, &g_current_screen_index, screens, &(g_current_color_index[g_current_screen_index]));
-        // Enter user mode
-        user_enter((void*)user_main);
-        //__asm__ volatile("hlt");
-    }
+    user_enter((void*)user_main);
 }

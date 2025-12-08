@@ -27,13 +27,25 @@ align 4
 ; stack is properly aligned and failure to align the stack will result in
 ; undefined behavior.
 ; Stack size configuration
-STACK_SIZE equ 131072  ; 128 KiB reserved for stack
 
-section .bss
+global stack_top
+global user_stack_top
+
+STACK_SIZE equ 1024 ; 1 KiB reserved for stack
+
+section .stack
 align 16
 stack_bottom:
 resb STACK_SIZE
 stack_top:
+
+USER_STACK_SIZE equ 65536 ; 16 KiB reserved for user stack
+
+section .user_stack
+align 16
+user_stack_bottom:
+resb USER_STACK_SIZE
+user_stack_top:
 
 ; The linker script specifies _start as the entry point to the kernel and the
 ; bootloader will jump to this position once the kernel has been loaded. It

@@ -4,45 +4,61 @@ SECTIONS
 {
     /* User BSS at 1 MB */
     . = 1M;
-    .user_bss BLOCK(4K) : ALIGN(4K)
+    .multiboot1 BLOCK(4K) : ALIGN(4K)
     {
         *(.multiboot1)
+    }
+    .user_bss BLOCK(4K) : ALIGN(4K)
+    {
+        PROVIDE(_user_stack_start = .);
+        *(.user_stack)
+        . = ALIGN(4K);
+        PROVIDE(_user_stack_end = .);
+        PROVIDE(_user_data_start = .);
         *(.user_bss)
     }
-
-    /* User DATA at 2 MB */
-    . = 2M;
+    
     .user_data BLOCK(4K) : ALIGN(4K)
     {
         *(.user_data)
+        . = ALIGN(4K);
+        PROVIDE(_user_data_end = .);
     }
 
-    /* User CODE at 3 MB */
-    . = 3M;
     .user_text BLOCK(4K) : ALIGN(4K)
     {
+        PROVIDE(_user_text_start = .);
         *(.user_text)
+        . = ALIGN(4K);
+        PROVIDE(_user_text_end = .);
     }
-    /* Kernel BSS at 4 MB */
-    . = 4M;
+    
     .bss BLOCK(4K) : ALIGN(4K)
     {
-        *(COMMON)
+        PROVIDE(_kernel_stack_start = .);
+        *(.stack)
+        . = ALIGN(4K);
+        PROVIDE(_kernel_stack_end = .);
+        PROVIDE(_kernel_data_start = .);
         *(.bss)
+        *(COMMON)
     }
-
-    /* Kernel DATA at 5 MB */
-    . = 5M;
+    
     .data BLOCK(4K) : ALIGN(4K)
     {
         *(.data)
+        *(.tss)
+        . = ALIGN(4K);
+        PROVIDE(_kernel_data_end = .);
     }
-
-    /* Kernel CODE at 6 MB */
-    . = 6M;
     .text BLOCK(4K) : ALIGN(4K)
     {
+        PROVIDE(_kernel_text_start = .);
         *(.kernel_info)
         *(.text)
+        . = ALIGN(4K);
+        PROVIDE(_kernel_text_end = .);
     }
+
+
 }
