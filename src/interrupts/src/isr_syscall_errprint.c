@@ -4,6 +4,7 @@
 #include "history.h"
 #include "start.h"
 #include "str_utils.h"
+#include "printk.h"
 
 /**
  * @brief Assembles an error log screen display from the kernel error log, filtered by severity level.
@@ -30,21 +31,29 @@ uint32_t isr_syscall_errprint(uint32_t lvl)
     errlog_entry_t err;
     char err_tag;
     const char *err_tags = " Eacewnid";
+    uint32_t ret = 0;
 
-    errlog_read_init(&errlog, lvl);
-    while (errlog_read(&errlog, &err) == ERRLOG_RET_OK)
+    if (lvl < ERRLOG_LVL_LEN)
     {
-        err_tag = err_tags[err.lvl];
-        int len = md_vsnprintf(entry_str, HISTORY_WIDTH, "%c: %s", err_tag, err.message_str);
-        screen_put_str(g_active_screen, entry_str);
-        if (len > 0)
+        errlog_read_init(&errlog, lvl);
+        while (errlog_read(&errlog, &err) == ERRLOG_RET_OK)
         {
-            if (entry_str[len - 1] != '\n')
+            err_tag = err_tags[err.lvl];
+            int len = md_vsnprintf(entry_str, HISTORY_WIDTH, "%c: %s", err_tag, err.message_str);
+            screen_put_str(g_active_screen, entry_str);
+            if (len > 0)
             {
-                screen_put_char(g_active_screen, '\n');
+                if (entry_str[len - 1] != '\n')
+                {
+                    screen_put_char(g_active_screen, '\n');
+                }
             }
         }
-        
     }
-    return 0;
+    else
+    {
+        md_printk(KERN_CRIT "SYSCALL ErrPrint: Unknown lvl %lu.", lvl);
+        ret = 1;
+    }
+    return (ret);
 }

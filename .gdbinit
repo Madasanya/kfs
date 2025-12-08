@@ -5,6 +5,6 @@ target remote localhost:1234
 disconnect
 set architecture i386
 target remote localhost:1234
-break nanoshell_errlog_print
+break isr_syscall_write
 c
 layout regs

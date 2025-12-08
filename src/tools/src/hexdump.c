@@ -2,6 +2,7 @@
 #include "screen.h"
 #include "kernel.h"
 #include "str_utils.h"
+#include "printk.h"
 
 #define MAX_ADDR 0x800000 // 8MiB
 #define ALIGMENT 16u
@@ -87,6 +88,7 @@ uint32_t md_hexdump_print(const void *start_addr, uint32_t len)
     len = input_chk(start_addr, len);
     if(len == 0 || start_addr == NULL)
     {
+        md_printk(KERN_ERR "Hexdump: Bad input");
         return(1);
     }
     screen_put_str(g_active_screen, "\nAddress \\ Offset     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f\n");

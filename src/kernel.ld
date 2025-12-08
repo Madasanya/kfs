@@ -22,7 +22,6 @@ SECTIONS
     .user_text BLOCK(4K) : ALIGN(4K)
     {
         *(.user_text)
-        *(.user_rodata)
     }
     /* Kernel BSS at 4 MB */
     . = 4M;
@@ -45,6 +44,5 @@ SECTIONS
     {
         *(.kernel_info)
         *(.text)
-        *(.rodata)
     }
 }

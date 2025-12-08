@@ -22,10 +22,7 @@ isr_stub80:
     mov es, dx
     mov fs, dx
     mov gs, dx
-    cmp eax, 1 ; check if read
-    je _isr_syscall
     sti
-_isr_syscall:
     call isr_syscall
     cli
     add esp, 28

@@ -2,6 +2,7 @@
 #include "str_utils.h"
 #include "kernel.h"
 #include "isr_syscall.h"
+#include "printk.h"
 
 uint32_t isr_syscall_screenset(uint8_t mode, uint8_t num)
 {
@@ -35,6 +36,10 @@ uint32_t isr_syscall_screenset(uint8_t mode, uint8_t num)
         }
 
         ret = g_current_screen_index;
+    }
+        else
+    {
+        md_printk(KERN_CRIT "SYSCALL ColorSet: Bad input.");
     }
 
     return (ret);

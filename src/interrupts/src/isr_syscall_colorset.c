@@ -3,6 +3,7 @@
 #include "kernel.h"
 #include "colors.h"
 #include "isr_syscall.h"
+#include "printk.h"
 
 uint32_t isr_syscall_colorset(uint8_t mode, uint8_t num)
 {
@@ -26,6 +27,10 @@ uint32_t isr_syscall_colorset(uint8_t mode, uint8_t num)
         screen_set_color(g_active_screen, SCREEN_COLOR_PROFILES[ g_current_color_index[g_current_screen_index]]);
 
         ret =  g_current_color_index[g_current_screen_index];
+    }
+    else
+    {
+        md_printk(KERN_CRIT "SYSCALL ColorSet: Bad input.");
     }
 
     return (ret);

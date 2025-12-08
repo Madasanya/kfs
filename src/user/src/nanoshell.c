@@ -58,7 +58,7 @@ unsigned char find_comm(char **str, const char *command_list[], unsigned char li
             itr_str++;
             itr_comm++;
         }
-        if (itr_str == comm_end)
+        if ((itr_str == comm_end) && (*itr_comm == '\0'))
         {
             break;
         }   
