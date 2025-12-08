@@ -63,6 +63,5 @@ uint8_t nanoshell_hexdump(char *arg_str)
         user_atoi_base(&len, len_str, DECIMAL_BASE);
     }
     
-    user_syshexdump((void *)addr, len);
-    return 0;
+    return (user_syshexdump((void *)addr, len));
 }

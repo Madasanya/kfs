@@ -36,5 +36,5 @@ uint8_t nanoshell_screen_switch(char *num_str)
         return 1; // Invalid screen number
     }
     user_sysscreenset(USER_SCREEN_MODE_SET, num);
-    return 0; // Return success
+    return 0;
 }

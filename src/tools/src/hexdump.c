@@ -85,7 +85,7 @@ uint32_t md_hexdump_print(const void *start_addr, uint32_t len)
     char addr_line[] = "0x        :         ";
 
     len = input_chk(start_addr, len);
-    if(len == 0)
+    if(len == 0 || start_addr == NULL)
     {
         return(1);
     }
