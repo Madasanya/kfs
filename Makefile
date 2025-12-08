@@ -67,6 +67,7 @@ CSRC		= main/src/kernel.c \
 			  user/src/user_syscolorset.c \
 			  user/src/nanoshell_hexdump.c \
 			  user/src/nanoshell_gnl.c \
+			  user/src/nanoshell_gnc.c \
 
 LDSRC		= kernel.ld
 

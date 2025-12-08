@@ -87,6 +87,8 @@ void nanoshell_run()
                                             nanoshell_hexdump};//, exit_to_kernel};
     const uint8_t comm_list_len = sizeof(command_list)/sizeof(char *);
     char line_buff[81] = {0};
+    uint8_t comm = 0;
+
     user_syswrite(SHELL_NAME, user_strlen(SHELL_NAME));
     while (1)
     {
@@ -101,10 +103,20 @@ void nanoshell_run()
             user_syswrite(SHELL_NAME, user_strlen(SHELL_NAME));
         }
 
-        // if (nanoshell_gnc(comm) != 0)
-        // {
-            
-        // }
-
+        if (nanoshell_gnc(&comm))
+        {
+            if (comm == 0x01u)
+            {
+                user_syswrite("scroll up", user_strlen("scroll up"));
+            }
+            else if (comm == 0x02u)
+            {
+                user_syswrite("scroll down", user_strlen("scroll down"));
+            }
+            else
+            {
+                user_syswrite("yeah right", user_strlen("yeah right"));
+            }
+        }
     }
 }
