@@ -60,6 +60,7 @@ CSRC		= main/src/kernel.c \
 			  user/src/user_syscommread.c \
 			  user/src/user_syswrite.c \
 			  user/src/nanoshell_gnl.c \
+			  user/src/nanoshell_gnc.c \
 
 
 
