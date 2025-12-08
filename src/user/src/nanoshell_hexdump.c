@@ -54,10 +54,12 @@ uint8_t nanoshell_hexdump(char *arg_str)
     uint32_t len = 0;
     if (len_str != NULL)
     {
-        if (user_strlen(len_str) > MAX_LEN_STR_LEN) // Arbitrary limit to prevent history overflow
+        uint32_t len_str_len = user_strlen(len_str);
+        if ((len_str_len -1) > MAX_LEN_STR_LEN) // Arbitrary limit to prevent history overflow
         {
             return 1;
         }
+        len_str[len_str_len - 1] = '\0'; // Remove newline if present
         user_atoi_base(&len, len_str, DECIMAL_BASE);
     }
     

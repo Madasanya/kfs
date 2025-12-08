@@ -20,7 +20,7 @@ uint8_t nanoshell_errlog_print(char *lvl_str)
     }
 
     // Convert string to integer level
-    for (uint16_t i = 0; lvl_str[i] != '\0'; i++)
+    for (uint16_t i = 0; lvl_str[i] != '\n' && lvl_str[i] != '\0'; i++)
     {
         if ((lvl_str[i] < '0') || (lvl_str[i] > '9'))
         {

@@ -18,6 +18,6 @@ uint8_t nanoshell_echo(char* str)
     {
         len = ECHO_LIMIT; // Truncate to limit
     }   
-    user_syswrite(str, len); // Skip "echo "
+    user_syswrite(str, len); // Exclude null terminator
     return 0; // Return success
 }

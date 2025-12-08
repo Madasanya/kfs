@@ -22,7 +22,7 @@ uint8_t nanoshell_screen_switch(char *num_str)
     }
 
     // Convert string to integer level
-    for (uint16_t i = 0; num_str[i] != '\0'; i++)
+    for (uint16_t i = 0; num_str[i] != '\0' && num_str[i] != '\n'; i++)
     {
         if ((num_str[i] < '0') || (num_str[i] > '9'))
         {
