@@ -8,21 +8,22 @@ QEMU_MEMORY	= 128M
 
 ASFLAGS		= -felf32 -g3 -F dwarf
 CFLAGS		= -std=gnu99 -ffreestanding -fno-builtin -fno-stack-protector -nostdlib -nodefaultlibs -Wall -Wextra -Werror -g3
+CFLAGS_USER	= $(CFLAGS) -fPIC
 LDFLAGS		= -ffreestanding -nostdlib -nodefaultlibs -static -lgcc
 INCFLAG		= -I
 
-ASSRC		= boot.asm \
+ASSRCK		= boot.asm \
 			  drivers/src/io.asm \
 			  main/src/gdt_flush.asm \
 			  main/src/usermode.asm \
 			  interrupts/src/isr_dummy.asm \
 			  main/src/idt_flush.asm \
-			  user/src/user_syscall.asm \
 			  interrupts/src/isr_stub80.asm \
 			  interrupts/src/isr_stub21.asm
 
+ASSRCU		= src/user_syscall.asm \
 
-CSRC		= main/src/kernel.c \
+CSRCK		= main/src/kernel.c \
 			  main/src/start.c \
 			  tools/src/str_utils.c \
 			  drivers/src/keyboard.c \
@@ -35,65 +36,79 @@ CSRC		= main/src/kernel.c \
 			  tools/src/vsnprintf.c \
 			  drivers/src/cursor.c \
 			  main/src/gdt.c \
-			  user/src/user_main.c \
 			  main/src/idt.c \
 			  interrupts/src/isr_syscall.c \
 			  interrupts/src/isr_syscall_errprint.c \
-			  user/src/user_syserrprint.c \
 			  interrupts/src/isr_syscall_errwrite.c \
-			  user/src/user_syserrwrite.c \
 			  interrupts/src/isr_syscall_write.c \
 			  interrupts/src/isr_syscall_scroll.c \
 			  interrupts/src/isr_syscall_screenset.c \
 			  interrupts/src/isr_syscall_hexdump.c \
-			  user/src/user_syshexdump.c \
 			  tools/src/hexdump.c \
 			  interrupts/src/isr_syscall_colorset.c \
 			  interrupts/src/irq1_keyboard_handler.c \
 			  drivers/src/pic.c \
-			  user/src/nanoshell.c \
-			  user/src/nanoshell_echo.c \
-			  user/src/user_str_utils.c \
 			  interrupts/src/isr_syscall_read.c \
 			  interrupts/src/isr_syscall_commread.c \
-			  user/src/user_sysread.c \
-			  user/src/user_syscommread.c \
-			  user/src/user_syswrite.c \
-			  user/src/nanoshell_errorlog_write.c \
-			  user/src/nanoshell_errorlog_print.c \
-			  user/src/nanoshell_screen_switch.c \
-			  user/src/user_sysscreenset.c \
-			  user/src/nanoshell_color_switch.c \
-			  user/src/user_syscolorset.c \
-			  user/src/nanoshell_hexdump.c \
-			  user/src/nanoshell_gnl.c \
-			  user/src/nanoshell_gnc.c \
-			  user/src/nanoshell_scroll.c \
-			  user/src/user_sysscroll.c \
-			  user/src/nanoshell_kernel_stack_print.c
+
+CSRCU		= src/user_main.c \
+			  src/user_syserrprint.c \
+			  src/user_syserrwrite.c \
+			  src/user_syshexdump.c \
+			  src/nanoshell.c \
+			  src/nanoshell_echo.c \
+			  src/user_str_utils.c \
+			  src/user_sysread.c \
+			  src/user_syscommread.c \
+			  src/user_syswrite.c \
+			  src/nanoshell_errorlog_write.c \
+			  src/nanoshell_errorlog_print.c \
+			  src/nanoshell_screen_switch.c \
+			  src/user_sysscreenset.c \
+			  src/nanoshell_color_switch.c \
+			  src/user_syscolorset.c \
+			  src/nanoshell_hexdump.c \
+			  src/nanoshell_gnl.c \
+			  src/nanoshell_gnc.c \
+			  src/nanoshell_scroll.c \
+			  src/user_sysscroll.c \
+			  src/nanoshell_kernel_stack_print.c
 
 LDSRC		= kernel.ld
 
 SRCD		= ./src/
+SRCDK		= ./src/kernel/
+SRCDU		= ./src/user/
+
 OBJD		= ./obj/
 BUILTD		= ./build/
-INCD		= main/inc tools/inc drivers/inc user/inc interrupts/inc
+INCD		= kernel/main/inc kernel/tools/inc kernel/drivers/inc user/inc kernel/interrupts/inc
 
 INCPATH		:= $(addprefix $(INCFLAG)src/,$(INCD))
 
-ASOBJS 		:= $(ASSRC:%.asm=$(OBJD)%.o)
-COBJS  		:= $(CSRC:%.c=$(OBJD)%.o)
-OBJS   		:= $(ASOBJS) $(COBJS)
+ASOBJSK 		:= $(ASSRCK:%.asm=$(OBJD)%.o)
+ASOBJSU 		:= $(ASSRCU:%.asm=$(OBJD)%.o)
+COBJSU  		:= $(CSRCU:%.c=$(OBJD)%.o)
+COBJSK  		:= $(CSRCK:%.c=$(OBJD)%.o)
+OBJS   		:= $(ASOBJSK) $(ASOBJSU) $(COBJSK) $(COBJSU)
 
 NAME		:= $(BUILTD)md_kernel.bin
 
-$(OBJD)%.o: $(SRCD)%.asm 
+$(ASOBJSK): $(OBJD)%.o: $(SRCDK)%.asm 
 			@mkdir -p $(@D)
 			${AS} ${ASFLAGS} $< -o $@
 
-$(OBJD)%.o: $(SRCD)%.c
+$(ASOBJSU): $(OBJD)%.o: $(SRCDU)%.asm 
+			@mkdir -p $(@D)
+			${AS} ${ASFLAGS} $< -o $@
+
+$(COBJSK): $(OBJD)%.o: $(SRCDK)%.c
 			@mkdir -p $(@D)
 			${CC} ${CFLAGS} $(INCPATH) -c $< -o $@
+
+$(COBJSU): $(OBJD)%.o: $(SRCDU)%.c
+			@mkdir -p $(@D)
+			${CC} ${CFLAGS_USER} $(INCPATH) -c $< -o $@
 
 $(NAME): $(OBJS)
 			@mkdir -p $(@D)
