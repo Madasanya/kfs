@@ -45,4 +45,6 @@ uint16_t pic_get_irr(void);
  */
 uint16_t pic_get_isr(void);
 
+void pic_init(void);
+
 #endif /* _PIC_H_ */

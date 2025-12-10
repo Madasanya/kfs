@@ -126,3 +126,29 @@ uint16_t pic_get_isr(void)
 {
     return __pic_get_irq_reg(PIC_READ_ISR);
 }
+
+void pic_init(void)
+{  
+        // Remap PIC to use interrupts 0x20-0x2F (32-47)
+        // This avoids conflicts with CPU exceptions (0-31)
+        PIC_remap(0x20, 0x28);
+
+        // Enable IRQ1 (keyboard) by unmasking it in PIC
+        IRQ_clear_mask(1);
+        
+        // Simple keyboard initialization - just reset it
+        // Flush any existing data
+        while (md_inb(0x64) & 0x01) {
+            md_inb(0x60);
+        }
+        
+        // Reset keyboard
+        md_outb(0x60, 0xFF);  // Reset command to keyboard
+        // Wait a bit for reset
+        for (volatile int i = 0; i < 100000; i++);
+        
+        // Drain buffer after reset
+        while (md_inb(0x64) & 0x01) {
+            md_inb(0x60);
+        }
+}

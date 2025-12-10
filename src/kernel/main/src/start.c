@@ -30,10 +30,6 @@ void start_multiboot1(uint32_t magic)
             .attributes = IDT_ATTR_SYSCALL
         });
         
-        // Remap PIC to use interrupts 0x20-0x2F (32-47)
-        // This avoids conflicts with CPU exceptions (0-31)
-        PIC_remap(0x20, 0x28);
-        
         // Set up keyboard interrupt (IRQ1 -> interrupt 0x21)
         idt_interrupt_set(0x21, &(idt_entry_data_t){
             .isr        = (uint32_t)isr_stub21,
@@ -41,28 +37,7 @@ void start_multiboot1(uint32_t magic)
         });
         
         idt_save();
-        //PIC_disable();
-        // Enable IRQ1 (keyboard) by unmasking it in PIC
-        IRQ_clear_mask(1);
-        
-        // Simple keyboard initialization - just reset it
-        // Flush any existing data
-        while (md_inb(0x64) & 0x01) {
-            md_inb(0x60);
-        }
-        
-        // Reset keyboard
-        md_outb(0x60, 0xFF);  // Reset command to keyboard
-        // Wait a bit for reset
-        for (volatile int i = 0; i < 100000; i++);
-        
-        // Drain buffer after reset
-        while (md_inb(0x64) & 0x01) {
-            md_inb(0x60);
-        }
-        
-        // // Enable interrupts
-        // __asm__ volatile("sti");
+        pic_init();
         
         kernel();
 
