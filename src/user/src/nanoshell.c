@@ -9,6 +9,7 @@
 #include "hexdump.h"
 
 #define SHELL_NAME "nanoshell> "
+#define USER_SEGMENT_BASE 0x200000
 
 USER_TEXT
 static unsigned char wrong_comm(char *str)
@@ -18,6 +19,28 @@ static unsigned char wrong_comm(char *str)
     user_syserrwrite("Unknown command\n", user_strlen("Unknown command\n"), (uint32_t)ERRLOG_LVL_WARNING);
     return (0);
 }
+
+USER_DATA static const char *command_list[8] = {
+    (const char *)((uint32_t)"_" - USER_SEGMENT_BASE),
+    (const char *)((uint32_t)"echo" - USER_SEGMENT_BASE),
+    (const char *)((uint32_t)"report" - USER_SEGMENT_BASE),
+    (const char *)((uint32_t)"errlog" - USER_SEGMENT_BASE),
+    (const char *)((uint32_t)"screen" - USER_SEGMENT_BASE),
+    (const char *)((uint32_t)"color" - USER_SEGMENT_BASE),
+    (const char *)((uint32_t)"hexdump" - USER_SEGMENT_BASE),
+    (const char *)((uint32_t)"print-kernel-stack-thingy" - USER_SEGMENT_BASE)
+};
+
+USER_DATA static uint8_t (*command_funcs[8])(char *) = {
+    (uint8_t (*)(char *))((uint32_t)wrong_comm - USER_SEGMENT_BASE),
+    (uint8_t (*)(char *))((uint32_t)nanoshell_echo - USER_SEGMENT_BASE),
+    (uint8_t (*)(char *))((uint32_t)nanoshell_errlog_write - USER_SEGMENT_BASE),
+    (uint8_t (*)(char *))((uint32_t)nanoshell_errlog_print - USER_SEGMENT_BASE),
+    (uint8_t (*)(char *))((uint32_t)nanoshell_screen_switch - USER_SEGMENT_BASE),
+    (uint8_t (*)(char *))((uint32_t)nanoshell_color_switch - USER_SEGMENT_BASE),
+    (uint8_t (*)(char *))((uint32_t)nanoshell_hexdump - USER_SEGMENT_BASE),
+    (uint8_t (*)(char *))((uint32_t)nanoshell_kernel_stack_print - USER_SEGMENT_BASE)
+};
 
 USER_TEXT
 unsigned char find_comm(char **str, const char *command_list[], unsigned char list_len)
@@ -71,24 +94,7 @@ unsigned char find_comm(char **str, const char *command_list[], unsigned char li
 USER_TEXT
 void nanoshell_run()
 {
-    const char *command_list[] =    {"_", \
-                                    "echo", \
-                                    "report", \
-                                    "errlog", \
-                                    "screen", \
-                                    "color", \
-                                    "hexdump", \
-                                    "print-kernel-stack-thingy"};
-                                    //"exit"}; // hexdump 0x0003005E1 102
-    uint8_t (*command_funcs[])(char *) =    {wrong_comm, \
-                                            nanoshell_echo, \
-                                            nanoshell_errlog_write, \
-                                            nanoshell_errlog_print, \
-                                            nanoshell_screen_switch, \
-                                            nanoshell_color_switch, \
-                                            nanoshell_hexdump, \
-                                            nanoshell_kernel_stack_print};
-    const uint8_t comm_list_len = sizeof(command_list)/sizeof(char *);
+    uint8_t comm_list_len = 8;
     char line_buff[81] = {0};
     uint8_t comm = 0;
 
@@ -119,7 +125,7 @@ void nanoshell_run()
             else
             {
                 user_syswrite("yeah right", user_strlen("yeah right"));
-                md_hexdump_print((void *)0x100000, 16);
+                user_syshexdump((void *)0x100000, 16);
             }
         }
     }

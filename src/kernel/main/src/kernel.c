@@ -14,6 +14,8 @@
 
 #define SCREEN_HEADER_BUF_LEN 15u
 
+extern uint32_t user_main_phys[];
+
 screen_t screens[NUM_SCREENS];
 history_buffer_t history_buffers[NUM_SCREENS];
 char header_buf[SCREEN_HEADER_BUF_LEN];
@@ -57,5 +59,5 @@ void kernel(void)
     /* KERNEL RUN */
     md_printk("Kernel running...\n");
     md_printk("Interrupts enabled. Press any key to test...\n");
-    user_enter((void*)user_main);
+    user_enter((void*)user_main_phys);
 }

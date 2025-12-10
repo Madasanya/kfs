@@ -1,4 +1,5 @@
 ENTRY(_start)
+EXTERN(user_main)
 
 SECTIONS
 {
@@ -6,24 +7,37 @@ SECTIONS
     . = 1M;
     .multiboot1 BLOCK(4K) : ALIGN(4K)
     {
-        *(.multiboot1)
-    }
-    .user_bss BLOCK(4K) : ALIGN(4K)
-    {
-        PROVIDE(_user_stack_start = .);
-        *(.user_stack)
-        . = ALIGN(4K);
-        PROVIDE(_user_stack_end = .);
-        PROVIDE(_user_data_start = .);
-        *(.user_bss)
+        kernel/*(.multiboot1)
     }
     
-    .user_data BLOCK(4K) : ALIGN(4K)
+    .text BLOCK(4K) : ALIGN(4K)
     {
-        *(.user_data)
+        PROVIDE(_kernel_text_start = .);
+        kernel/*(.kernel_info)
+        kernel/*(.text)
         . = ALIGN(4K);
-        PROVIDE(_user_data_end = .);
+        PROVIDE(_kernel_text_end = .);
     }
+    
+    .data BLOCK(4K) : ALIGN(4K)
+    {
+        kernel/*(.data)
+        kernel/*(.tss)
+        . = ALIGN(4K);
+        PROVIDE(_kernel_data_end = .);
+    }
+
+    .bss BLOCK(4K) : ALIGN(4K)
+    {
+        PROVIDE(_kernel_data_start = .);
+        kernel/*(.bss)
+        kernel/*(COMMON)
+        PROVIDE(_kernel_stack_start = .);
+        *(.kernel_stack)
+        PROVIDE(_kernel_stack_end = .);
+    }
+
+    . = 2M;
 
     .user_text BLOCK(4K) : ALIGN(4K)
     {
@@ -32,33 +46,24 @@ SECTIONS
         . = ALIGN(4K);
         PROVIDE(_user_text_end = .);
     }
-    
-    .bss BLOCK(4K) : ALIGN(4K)
+
+    .user_data BLOCK(4K) : ALIGN(4K)
     {
-        PROVIDE(_kernel_stack_start = .);
-        *(.stack)
+        *(.user_data)
         . = ALIGN(4K);
-        PROVIDE(_kernel_stack_end = .);
-        PROVIDE(_kernel_data_start = .);
-        *(.bss)
-        *(COMMON)
-    }
-    
-    .data BLOCK(4K) : ALIGN(4K)
-    {
-        *(.data)
-        *(.tss)
-        . = ALIGN(4K);
-        PROVIDE(_kernel_data_end = .);
-    }
-    .text BLOCK(4K) : ALIGN(4K)
-    {
-        PROVIDE(_kernel_text_start = .);
-        *(.kernel_info)
-        *(.text)
-        . = ALIGN(4K);
-        PROVIDE(_kernel_text_end = .);
+        PROVIDE(_user_data_end = .);
     }
 
+        .user_bss BLOCK(4K) : ALIGN(4K)
+    {
+        PROVIDE(_user_data_start = .);
+        PROVIDE(_user_stack_start = .);
+        *(.user_bss)
+        PROVIDE(_user_stack_end = .);
+        *(.user_stack)
+    }
+
+    
+    user_main_phys = user_main;
 
 }

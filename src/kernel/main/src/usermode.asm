@@ -9,6 +9,7 @@ global user_enter
 %define USER_BSS_SEL  0x33
 
 extern user_stack_top
+extern user_main_phys
 
 section .text
 align 16
@@ -18,8 +19,8 @@ user_enter:
     mov  ebp, esp
 
     ; Parameters
-    mov  eax, [ebp + 8]          ; user_eip (first argument)
-
+    mov  eax, [esp + 8]           ; user_eip (first argument)
+    sub eax, 0x00200000        ; Convert to linear address (user code segment base)
     ; ------------------------------------------------------------------
     ; 1. Build the IRET frame on the KERNEL stack first
     ;    Order: SS, ESP, EFLAGS, CS, EIP
@@ -28,7 +29,7 @@ user_enter:
 
     
 
-    push user_stack_top              ; User ESP (top of BSS - 32 bytes)
+    push user_stack_top - 0x200000             ; User ESP (top of BSS - 32 bytes)
 
     pushfd                        ; EFLAGS last d -makes sure that 32bit flags are pushed
     pop  ecx

@@ -5,7 +5,8 @@ target remote localhost:1234
 disconnect
 set architecture i386
 target remote localhost:1234
-b gdt_init
-b nanoshell.c:120
+b init_gdt
+c
+b isr_stub80
 c
 layout regs

@@ -134,7 +134,7 @@ extern uint32_t _kernel_data_end[];
 extern uint32_t _kernel_text_start[];
 extern uint32_t _kernel_text_end[];
 
-extern uint32_t stack_top[];
+extern uint32_t kernel_stack_top[];
 
 extern void gdt_flush(gdt_reg_t *gdt);
 extern void gdt_save(gdt_reg_t *gdt);
@@ -158,12 +158,12 @@ void init_gdt(void)
     gdt_entry_t* gdt = (gdt_entry_t*)GDTBASE;
 
     const gdt_segment_data_t null_seg = {0, 0, 0};
-    const gdt_segment_data_t code_seg_pl0 = {0x00000000, (uint32_t)_kernel_text_end/GRANULARITY_PAGE_DIV, GDT_CODE_PL0};
-    const gdt_segment_data_t data_seg_pl0 = {0x00000000, (uint32_t)_kernel_data_end/GRANULARITY_PAGE_DIV, GDT_DATA_PL0};
-    const gdt_segment_data_t stack_seg_pl0 = {0x00000000, (uint32_t)_kernel_stack_end/GRANULARITY_PAGE_DIV, GDT_BSS_PL0};
-    const gdt_segment_data_t code_seg_pl3 = {0x00000000, (uint32_t)_user_text_end/GRANULARITY_PAGE_DIV, GDT_CODE_PL3};
-    const gdt_segment_data_t data_seg_pl3 = {0x00000000, (uint32_t)_user_data_end/GRANULARITY_PAGE_DIV, GDT_DATA_PL3};
-    const gdt_segment_data_t stack_seg_pl3 = {0x00000000, (uint32_t)_user_stack_end/GRANULARITY_PAGE_DIV, GDT_BSS_PL3};
+    const gdt_segment_data_t code_seg_pl0 = {0x00000000, 0xFFFFF, GDT_CODE_PL0};
+    const gdt_segment_data_t data_seg_pl0 = {0x00000000, 0xFFFFF, GDT_DATA_PL0};
+    const gdt_segment_data_t stack_seg_pl0 = {0x00000000, 0xFFFFF, GDT_BSS_PL0};
+    const gdt_segment_data_t code_seg_pl3 = {0x00200000, 0xFFFFF, GDT_CODE_PL3};
+    const gdt_segment_data_t data_seg_pl3 = {0x00200000, 0xFFFFF, GDT_DATA_PL3};
+    const gdt_segment_data_t stack_seg_pl3 = {0x00200000, 0xFFFFF, GDT_BSS_PL3};
     // TSS segment
     const gdt_segment_data_t tss_seg = {(uint32_t)&tss, 0x00000067, GDT_TSS};
     
@@ -195,7 +195,7 @@ void init_gdt(void)
         ((uint8_t*)tss_ptr)[i] = 0; // Zero out the TSS
     }
     tss_ptr->ss0 = 0x18; // Kernel data segment selector
-    tss_ptr->esp0 = (uint32_t)stack_top; // Stack pointer for kernel mode
+    tss_ptr->esp0 = (uint32_t)kernel_stack_top; // Stack pointer for kernel mode
     tss_flush();
 
     

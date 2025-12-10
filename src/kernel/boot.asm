@@ -28,18 +28,18 @@ align 4
 ; undefined behavior.
 ; Stack size configuration
 
-global stack_top
+global kernel_stack_top
 global user_stack_top
 
-STACK_SIZE equ 1024 ; 1 KiB reserved for stack
+KERNEL_STACK_SIZE equ 1024 ; 1 KiB reserved for kernel stack
 
-section .stack
+section .kernel_stack
 align 16
-stack_bottom:
-resb STACK_SIZE
-stack_top:
+kernel_stack_bottom:
+resb KERNEL_STACK_SIZE
+kernel_stack_top:
 
-USER_STACK_SIZE equ 65536 ; 16 KiB reserved for user stack
+USER_STACK_SIZE equ 65536 ; 64 KiB reserved for user stack
 
 section .user_stack
 align 16
@@ -68,7 +68,7 @@ _start:
 	; To set up a stack, we set the esp register to point to the top of our
 	; stack (as it grows downwards on x86 systems). This is necessarily done
 	; in assembly as languages such as C cannot function without a stack.
-	mov esp, stack_top
+	mov esp, kernel_stack_top
 
 	; This is a good place to initialize crucial processor state before the
 	; high-level kernel is entered. It's best to minimize the early

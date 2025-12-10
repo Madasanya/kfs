@@ -155,7 +155,7 @@ run: all create_image
 debug: fclean all create_image
 				echo "Launching QEMU with GDB server on port 1234..."
 				mkdir -p ./logs
-				sudo qemu-system-i386 -d cpu_reset,invalid_mem -D ./logs/qemu_debug_$(shell date +%Y%m%d_%H%M%S).log -drive file=./boot/bootdisk.img,format=raw -m $(QEMU_MEMORY) -s -S -cpu 486
+				sudo qemu-system-i386 -d cpu_reset -D ./logs/qemu_debug_$(shell date +%Y%m%d_%H%M%S).log -drive file=./boot/bootdisk.img,format=raw -m $(QEMU_MEMORY) -s -S -cpu 486
 # -nographic -monitor none -serial none
 
 .PHONY:		all clean fclean re build_gcc build_as build_tools check_bin create_image run debug
