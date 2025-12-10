@@ -142,6 +142,16 @@ extern void gdt_save(gdt_reg_t *gdt);
 extern void tss_flush(void);
 
 
+/**
+ * @brief Create a GDT entry from segment data.
+ *
+ * @details Populates a gdt_entry_t structure with base address, limit, and
+ *          access flags from the provided segment data. Splits the 32-bit base
+ *          and 20-bit limit across multiple fields as required by the GDT format.
+ *
+ * @param[out] entry    Pointer to the GDT entry structure to populate.
+ * @param[in]  seg_data Pointer to the segment configuration data.
+ */
 static void gdt_entry_create(gdt_entry_t* entry, const gdt_segment_data_t *seg_data)
 {
     entry->lim0_15      = (seg_data->limit & 0xFFFF);
@@ -153,7 +163,7 @@ static void gdt_entry_create(gdt_entry_t* entry, const gdt_segment_data_t *seg_d
     entry->base24_31    = (seg_data->base >> 24) & 0xFF;
 }
 
-void init_gdt(void)
+void gdt_init(void)
 {
     gdt_entry_t* gdt = (gdt_entry_t*)GDTBASE;
 

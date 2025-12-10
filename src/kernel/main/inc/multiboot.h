@@ -4,7 +4,8 @@
 /** 
  * @brief Main kernel function.
  * 
- * @details Currntly only prints 42 to terminal.
+ * @details Entry point called by the bootloader. Initializes kernel
+ *          subsystems and starts the main kernel loop.
  */
 void kernel(void);
 

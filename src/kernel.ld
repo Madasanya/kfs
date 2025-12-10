@@ -42,6 +42,7 @@ SECTIONS
     .user_text BLOCK(4K) : ALIGN(4K)
     {
         PROVIDE(_user_text_start = .);
+        user/*(.text)
         *(.user_text)
         . = ALIGN(4K);
         PROVIDE(_user_text_end = .);
@@ -50,6 +51,7 @@ SECTIONS
     .user_data BLOCK(4K) : ALIGN(4K)
     {
         *(.user_data)
+        user/*(.data)
         . = ALIGN(4K);
         PROVIDE(_user_data_end = .);
     }
@@ -59,6 +61,8 @@ SECTIONS
         PROVIDE(_user_data_start = .);
         PROVIDE(_user_stack_start = .);
         *(.user_bss)
+        user/*(.bss)
+        user/*(COMMON)
         PROVIDE(_user_stack_end = .);
         *(.user_stack)
     }

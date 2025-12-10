@@ -19,15 +19,43 @@
 #define IDT_ATTR_INTERRUPTS KERNEL_INT_GATE
 #define IDT_ATTR_SYSCALL    USER_TRAP_GATE
 
+/**
+ * @brief IDT entry configuration data.
+ *
+ * @details Simplified structure used to configure an IDT entry,
+ *          containing the interrupt service routine address and attributes.
+ */
 typedef struct {
-    uint32_t isr;
-    uint8_t  attributes;
+    uint32_t isr;        /**< Address of the interrupt service routine. */
+    uint8_t  attributes; /**< Gate type and privilege level attributes. */
 } idt_entry_data_t;
 
 
+/**
+ * @brief Save the current IDT pointer.
+ *
+ * @details Stores the current IDT register using the SIDT instruction.
+ *          Used for debugging or state preservation.
+ */
 void idt_save(void);
 
+/**
+ * @brief Initialize the Interrupt Descriptor Table.
+ *
+ * @details Sets up the IDT with default handlers and loads it into the CPU
+ *          using the LIDT instruction.
+ */
 void idt_init(void);
+
+/**
+ * @brief Set an interrupt handler in the IDT.
+ *
+ * @details Configures the specified interrupt vector with the given handler
+ *          address and attributes.
+ *
+ * @param[in] num      Interrupt vector number (0-255).
+ * @param[in] isr_data Pointer to the ISR configuration data.
+ */
 void idt_interrupt_set(uint8_t num, const idt_entry_data_t *isr_data);
 
 #endif

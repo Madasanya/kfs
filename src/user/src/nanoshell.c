@@ -11,6 +11,15 @@
 #define SHELL_NAME "nanoshell> "
 #define USER_SEGMENT_BASE 0x200000
 
+/**
+ * @brief Handle unknown command input.
+ *
+ * @details Displays "Unknown command" message to both the screen and error log
+ *          when the user enters an unrecognized command.
+ *
+ * @param[in] str Command string (unused, kept for consistency).
+ * @return Always returns 0.
+ */
 USER_TEXT
 static unsigned char wrong_comm(char *str)
 {

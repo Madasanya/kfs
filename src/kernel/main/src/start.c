@@ -21,7 +21,7 @@ void start_multiboot1(uint32_t magic)
     errlog_init(&errlog, ERRLOG_LVL_DEFAULT);
     if (magic == 0x2BADB002)
     {
-        init_gdt();
+        gdt_init();
         idt_init();
         
         // Set up syscall interrupt (int 0x80)

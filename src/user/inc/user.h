@@ -9,6 +9,12 @@
     #define USER_DATA
 #endif
 
-void user_main(void) USER_TEXT;          // prototype stays clean
+/**
+ * @brief Main entry point for user mode program.
+ *
+ * @details Called after transitioning to user mode (ring 3).
+ *          Implements the main user space application logic.
+ */
+void user_main(void) USER_TEXT;
 
 #endif /* _USER_H_ */

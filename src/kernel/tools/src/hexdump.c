@@ -8,6 +8,17 @@
 #define ALIGMENT 16u
 #define NUM_BASE "0123456789abcdef"
 
+/**
+ * @brief Validate and bound-check the hexdump parameters.
+ *
+ * @details Ensures the memory range specified by start_addr and len does not
+ *          exceed MAX_ADDR (8MiB). If start_addr is beyond MAX_ADDR, returns 0.
+ *          Otherwise, clamps len to fit within the valid address range.
+ *
+ * @param[in] start_addr Starting address to validate.
+ * @param[in] len        Number of bytes to dump.
+ * @return Adjusted length that fits within valid address range.
+ */
 static uint32_t input_chk(const void * start_addr, uint32_t len)
 {
     uint32_t temp = MAX_ADDR;
@@ -28,6 +39,16 @@ static uint32_t input_chk(const void * start_addr, uint32_t len)
     return (len);
 }
 
+/**
+ * @brief Format memory address as hexadecimal string.
+ *
+ * @details Converts the address to a hexadecimal string with leading zeros,
+ *          formatted as "XXXXXXXX:" where X represents hex digits. The string
+ *          is written to addr_line starting at position 2.
+ *
+ * @param[in]  addr      Address to format.
+ * @param[out] addr_line Buffer to store formatted address string (minimum 11 bytes).
+ */
 static void addr_str_set(const void *addr, char *addr_line)
 {
     uint32_t test = 0xf << 28;

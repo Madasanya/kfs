@@ -19,6 +19,17 @@ uint16_t user_strlen(const char* str)
     return(ret);
 }
 
+/**
+ * @brief Convert hexadecimal string to unsigned integer.
+ *
+ * @details Parses a hexadecimal string (starting with "0x") and converts it
+ *          to a 32-bit unsigned integer. Accepts both uppercase and lowercase
+ *          hex digits (0-9, a-f, A-F).
+ *
+ * @param[out] val Pointer to store the converted value.
+ * @param[in]  str Hexadecimal string to parse (must start with "0x").
+ * @return 0 on success, 1 on invalid character.
+ */
 USER_TEXT
 static uint8_t hexstr_to_val(uint32_t *val, const char* str)
 {
@@ -43,6 +54,16 @@ static uint8_t hexstr_to_val(uint32_t *val, const char* str)
     return 0;
 }
 
+/**
+ * @brief Convert decimal string to unsigned integer.
+ *
+ * @details Parses a decimal string and converts it to a 32-bit unsigned integer.
+ *          Only accepts characters '0' through '9'.
+ *
+ * @param[out] val Pointer to store the converted value.
+ * @param[in]  str Decimal string to parse.
+ * @return 0 on success, 1 on invalid character.
+ */
 USER_TEXT
 static uint8_t decstr_to_val(uint32_t *val, const char* str)
 {

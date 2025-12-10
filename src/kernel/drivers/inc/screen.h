@@ -9,6 +9,13 @@
 /* Forward declaration */
 typedef struct history_buffer_s history_buffer_t; 
 
+/**
+ * @brief Screen state structure.
+ *
+ * @details Maintains all state information for a virtual screen including
+ *          buffer pointers, cursor position, colors, header text, and
+ *          associated history buffer for scrollback functionality.
+ */
 typedef struct screen_s{
     uint16_t *screen_buffer;
     uint16_t start_row;

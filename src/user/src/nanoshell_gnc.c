@@ -5,6 +5,14 @@
 
 #define GNC_SIZE 8
 
+/**
+ * @brief Increment circular buffer pointer.
+ *
+ * @details Increments the buffer pointer and wraps around to 0 when reaching
+ *          GNC_SIZE, implementing circular buffer behavior.
+ *
+ * @param[in,out] ptr Pointer to the buffer index to increment.
+ */
 USER_TEXT
 static void ptr_inc(uint8_t *ptr)
 {

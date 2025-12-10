@@ -10,6 +10,5 @@ extern uint8_t g_current_screen_index;
 extern uint8_t g_current_color_index[NUM_SCREENS];
 extern screen_t *g_active_screen;
 extern keyboard_t g_keyboard;
-extern uint32_t g_super_important_global_var;
 
 #endif /* _KERNEL_H_ */

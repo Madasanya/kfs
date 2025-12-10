@@ -6,7 +6,6 @@
 #define SYS_COMMREAD    2u
 #define SYS_ERRWRITE    3u
 #define SYS_ERRPRINT    4u
-
 #define SYS_SCROLL 10u
 #define SYS_SCREENSET 11u
 #define SYS_COLORSET 12u
