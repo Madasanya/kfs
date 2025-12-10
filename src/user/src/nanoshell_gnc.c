@@ -26,9 +26,9 @@ static void ptr_inc(uint8_t *ptr)
 USER_TEXT
 uint32_t nanoshell_gnc(uint8_t *comm)
 {
-    static uint8_t buffer[GNC_SIZE] = {0u};
-    static uint8_t w_ptr = 0u;
-    static uint8_t r_ptr = 0u;
+    static uint8_t buffer[GNC_SIZE] USER_DATA = {0u};
+    static uint8_t w_ptr USER_DATA = 0u;
+    static uint8_t r_ptr USER_DATA = 0u;
 
     uint32_t ret = 0;
 

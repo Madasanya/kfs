@@ -5,8 +5,6 @@ target remote localhost:1234
 disconnect
 set architecture i386
 target remote localhost:1234
-b init_gdt
-c
-b isr_stub80
+hb isr_syscall.c:24
 c
 layout regs

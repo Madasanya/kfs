@@ -12,11 +12,11 @@ uint32_t nanoshell_gnl(char *arr, uint32_t size)
 {
     if (size == 0) return 0;
 
-    static char  remainder[REMAINDER_SIZE];
-    static uint32_t rem_len = 0;
+    static char  remainder[REMAINDER_SIZE] USER_DATA;
+    static uint32_t rem_len USER_DATA = 0;
 
-    static uint32_t pos = 0;
-    static uint32_t max_pos = 0;
+    static uint32_t pos USER_DATA = 0;
+    static uint32_t max_pos USER_DATA = 0;
 
     uint32_t ret;
     char buf[READ_SIZE];
