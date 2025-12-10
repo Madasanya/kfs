@@ -23,25 +23,10 @@ char header_buf[SCREEN_HEADER_BUF_LEN];
 screen_t *g_active_screen = NULL;
 uint8_t g_current_screen_index = 0;
 uint8_t g_current_color_index[NUM_SCREENS] = {0};
-uint32_t g_super_important_global_var = 42;
 
 // Global keyboard instance (accessed by IRQ handler)
 keyboard_t g_keyboard = {0};
 
-/**
- * @brief Main kernel entry point and execution loop.
- *
- * @details
- * This function initializes the kernel subsystems and enters the main kernel loop.
- * It sets up multiple virtual screens with history buffers, initializes the keyboard
- * driver, and continuously processes keyboard input to handle both ASCII character
- * display and special commands (screen switching, scrolling, color changes, error logs).
- *
- * The kernel manages NUM_SCREENS virtual screens, each with its own history buffer
- * and color profile, allowing users to switch between different terminal views.
- *
- * @note This function never returns - it runs in an infinite loop processing keyboard events.
- */
 void kernel(void)
 {
     /* KERNEL INITIALIZATION */

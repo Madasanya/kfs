@@ -88,8 +88,26 @@ uint32_t isr_syscall_read(char* data_arr, uint8_t len);
  */
 uint32_t isr_syscall_commread(uint8_t* data_arr, uint8_t len);
 
+/**
+ * @brief Halt the CPU.
+ *
+ * @details Executes the HLT instruction, putting the CPU in a low-power
+ *          halted state until the next interrupt occurs. This is typically
+ *          used for system shutdown or idle loops.
+ *
+ * @return Always returns 0 (function typically does not return).
+ */
 uint32_t isr_syscall_halt(void);
 
+/**
+ * @brief Print kernel stack contents as hexadecimal dump.
+ *
+ * @details Displays the entire kernel stack memory region from
+ *          kernel_stack_bottom to kernel_stack_top in hexadecimal format.
+ *          Useful for debugging stack corruption or analyzing stack usage.
+ *
+ * @return Number of bytes dumped from the stack.
+ */
 uint32_t isr_syscall_stackprint(void);
 
 

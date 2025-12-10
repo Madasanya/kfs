@@ -37,6 +37,9 @@ void start_multiboot1(uint32_t magic)
         });
         
         idt_save();
+        
+        // Initialize PIC after IDT is fully configured
+        // This remaps PIC vectors and unmasks IRQ1 (keyboard)
         pic_init();
         
         kernel();

@@ -21,9 +21,8 @@
  * @return Always returns 0.
  */
 USER_TEXT
-static unsigned char wrong_comm(char *str)
+static unsigned char wrong_comm(char *str __attribute__((unused)))
 {
-    str = str; // Suppress unused variable warning
     user_syswrite("Unknown command\n", user_strlen("Unknown command\n"));
     user_syserrwrite("Unknown command\n", user_strlen("Unknown command\n"), (uint32_t)ERRLOG_LVL_WARNING);
     return (0);

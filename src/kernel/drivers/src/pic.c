@@ -13,7 +13,7 @@
 
 #define PIC_EOI		    0x20		/* End-of-interrupt command code */
 
-void PIC_sendEOI(uint8_t irq)
+void pic_sendEOI(uint8_t irq)
 {
 	if(irq >= 8)
 		md_outb(PIC2_COMMAND,PIC_EOI);
@@ -44,7 +44,7 @@ arguments:
 		vectors on the master become offset1..offset1+7
 	offset2 - same for slave PIC: offset2..offset2+7
 */
-void PIC_remap(int offset1, int offset2)
+void pic_remap(int offset1, int offset2)
 {
 	md_outb(PIC1_COMMAND, ICW1_INIT | ICW1_ICW4);  // starts the initialization sequence (in cascade mode)
 	md_io_wait();
@@ -71,12 +71,12 @@ void PIC_remap(int offset1, int offset2)
 
 }
 
-void PIC_disable(void) {
+void pic_disable(void) {
     md_outb(PIC1_DATA, 0xff);
     md_outb(PIC2_DATA, 0xff);
 }
 
-void IRQ_set_mask(uint8_t IRQline) {
+void irq_set_mask(uint8_t IRQline) {
     uint16_t port;
     uint8_t value;
 
@@ -90,7 +90,7 @@ void IRQ_set_mask(uint8_t IRQline) {
     md_outb(port, value);        
 }
 
-void IRQ_clear_mask(uint8_t IRQline) {
+void irq_clear_mask(uint8_t IRQline) {
     uint16_t port;
     uint8_t value;
 
@@ -104,9 +104,18 @@ void IRQ_clear_mask(uint8_t IRQline) {
     md_outb(port, value);        
 }
 
-
-/* Helper func */
-static uint16_t __pic_get_irq_reg(int ocw3)
+/**
+ * @brief Read IRQ register from cascaded PICs.
+ *
+ * @details Helper function that reads either the Interrupt Request Register (IRR)
+ *          or In-Service Register (ISR) from both PICs. The PICs are cascaded,
+ *          with PIC2 handling IRQs 8-15 and PIC1 handling IRQs 0-7 (with IRQ2
+ *          being the cascade connection).
+ *
+ * @param[in] ocw3 Operation Control Word 3 value (PIC_READ_IRR or PIC_READ_ISR).
+ * @return Combined 16-bit value: upper 8 bits from PIC2, lower 8 bits from PIC1.
+ */
+static uint16_t pic_get_irq_reg(int ocw3)
 {
     /* OCW3 to PIC CMD to get the register values.  PIC2 is chained, and
      * represents IRQs 8-15.  PIC1 is IRQs 0-7, with 2 being the chain */
@@ -118,23 +127,23 @@ static uint16_t __pic_get_irq_reg(int ocw3)
 /* Returns the combined value of the cascaded PICs irq request register */
 uint16_t pic_get_irr(void)
 {
-    return __pic_get_irq_reg(PIC_READ_IRR);
+    return pic_get_irq_reg(PIC_READ_IRR);
 }
 
 /* Returns the combined value of the cascaded PICs in-service register */
 uint16_t pic_get_isr(void)
 {
-    return __pic_get_irq_reg(PIC_READ_ISR);
+    return pic_get_irq_reg(PIC_READ_ISR);
 }
 
 void pic_init(void)
 {  
         // Remap PIC to use interrupts 0x20-0x2F (32-47)
         // This avoids conflicts with CPU exceptions (0-31)
-        PIC_remap(0x20, 0x28);
+        pic_remap(0x20, 0x28);
 
         // Enable IRQ1 (keyboard) by unmasking it in PIC
-        IRQ_clear_mask(1);
+        irq_clear_mask(1);
         
         // Simple keyboard initialization - just reset it
         // Flush any existing data

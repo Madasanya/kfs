@@ -84,8 +84,22 @@ uint32_t user_syserrwrite(char *arr, uint32_t len, uint32_t lvl);
  */
 uint32_t user_syserrprint(uint32_t lvl);
 
+/**
+ * @brief Halt the CPU via system call.
+ *
+ * @details Issues a system call to halt the processor. This puts the CPU
+ *          in a low-power halted state. Typically does not return.
+ */
 void user_syshalt(void);
 
+/**
+ * @brief Print kernel stack contents via system call.
+ *
+ * @details Requests the kernel to display the entire kernel stack memory
+ *          region in hexadecimal format. Useful for debugging and analysis.
+ *
+ * @return Number of bytes dumped from the kernel stack.
+ */
 uint32_t user_stackprint(void);
 
 

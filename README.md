@@ -88,27 +88,33 @@ A minimal x86 kernel implementation featuring interrupt-driven architecture with
 - Special command mapping for F-keys and arrows
 - Separated configuration: `keyboard_settings.c` for easy layout customization
 
-**7. Error Logging System**
+**7. PIC Management**
+- Proper initialization sequence after IDT setup
+- IRQ masking and unmasking support
+- EOI (End-Of-Interrupt) signaling
+- Cascaded master/slave PIC configuration
+
+**8. Error Logging System**
 - 8-level severity (Emergency to Debug)
 - Non-destructive circular buffer reads
 - Kernel-style log level prefixes (KERN_ERR, etc.)
 - Per-level filtering for display
 
-**8. System Call Interface**
+**9. System Call Interface**
 - INT 0x80 software interrupt
-- 10+ system calls: write, read, scroll, screen/color control, hexdump, error logging
+- 11 system calls: write, read, scroll, screen/color control, hexdump, error logging, halt, stack debug
 - User space wrappers for easy access
 - Pointer validation for security
 
 ## Keyboard Shortcuts
 
-### Screen Management
+### Screen Management (only v1.1)
 - **Tab** - Switch to next virtual screen (cycles through 5 screens)
 - **Right Alt** - Change color scheme for current screen
 - **Up Arrow** - Scroll up through history
 - **Down Arrow** - Scroll down through history
 
-### Error Log Display
+### Error Log Display (only v1.1)
 - **F1** - Display Emergency level errors (most critical)
 - **F2** - Display Alert level errors
 - **F3** - Display Critical level errors
@@ -122,6 +128,15 @@ A minimal x86 kernel implementation featuring interrupt-driven architecture with
 - **Enter** - New line
 - **Shift + Key** - Uppercase/symbols (standard layout)
 - **All printable keys** - ASCII input with echo
+
+### Nanoshell Commands
+- **echo** - Display text on screen
+- **report** - Write message to error log
+- **errlog** - Display error log entries (usage: `errlog <level>`)
+- **screen** - Switch to specific virtual screen (usage: `screen <num>`)
+- **color** - Change color scheme (usage: `color <num>`)
+- **hexdump** - Display memory dump (usage: `hexdump <addr> <len>`)
+- **print-kernel-stack-thingy** - Display kernel stack contents for debugging
 
 ### Visual Feedback
 - **Thin cursor** (underscore) - Active input mode
@@ -300,10 +315,12 @@ kfs/
 - **SYS_COMMREAD (2)**: Read keyboard commands
 - **SYS_ERRWRITE (3)**: Write to error log
 - **SYS_ERRPRINT (4)**: Display error log
+- **SYS_HALT (5)**: Halt the CPU (low-power state)
 - **SYS_SCROLL (10)**: Scroll screen
 - **SYS_SCREENSET (11)**: Switch virtual screen
 - **SYS_COLORSET (12)**: Change color scheme
 - **SYS_HEXDUMP (13)**: Display memory dump
+- **SYS_STACKPRINT (14)**: Print kernel stack contents
 
 ### Compilation Flags
 - **Assembly**: `-felf32` (32-bit ELF format)

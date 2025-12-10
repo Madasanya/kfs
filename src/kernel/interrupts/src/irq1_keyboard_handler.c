@@ -22,5 +22,5 @@ void irq1_keyboard_handler(void)
     keyboard_run(&g_keyboard);
     
     // Send EOI to PIC1 (master PIC)
-    PIC_sendEOI(1);
+    pic_sendEOI(1);
 }

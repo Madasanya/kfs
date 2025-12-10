@@ -56,6 +56,6 @@ uint8_t nanoshell_hexdump(char *hex_str);
  *
  * @return Status code (0 on success).
  */
-uint8_t nanoshell_kernel_stack_print();
+uint8_t nanoshell_kernel_stack_print(void);
 
 #endif /* _NANOSHELL_BUILTINS_H_ */
