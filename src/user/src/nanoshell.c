@@ -103,13 +103,13 @@ USER_TEXT
 void nanoshell_run()
 {
     uint8_t comm_list_len = 8;
-    char line_buff[81] = {0};
+    char line_buff[70] = {0};
     uint8_t comm = 0;
 
     user_syswrite(SHELL_NAME, user_strlen(SHELL_NAME));
     while (1)
     {
-        if (nanoshell_gnl(line_buff, 81) != 0u)
+        if (nanoshell_gnl(line_buff, 70) != 0u)
         {
             char *line_ptr = line_buff;
             if (command_funcs[find_comm(&line_ptr, command_list, comm_list_len)](line_ptr) != 0u)

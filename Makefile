@@ -165,6 +165,6 @@ debug: fclean all create_image
 # -nographic -monitor none -serial none
 
 eval:
-	sudo qemu-system-i386 -drive file=./boot/bootdisk.img,format=raw -m $(QEMU_MEMORY)
+	qemu-system-i386 -drive file=./boot/bootdisk.img,format=raw -m $(QEMU_MEMORY)
 
-.PHONY:		all clean fclean re build_gcc build_as build_tools check_bin create_image run debug
+.PHONY:		all clean fclean re build_gcc build_as build_tools check_bin create_image run debug eval
