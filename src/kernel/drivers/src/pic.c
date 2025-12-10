@@ -154,7 +154,7 @@ void pic_init(void)
         // Reset keyboard
         md_outb(0x60, 0xFF);  // Reset command to keyboard
         // Wait a bit for reset
-        for (volatile int i = 0; i < 100000; i++);
+        md_io_wait();
         
         // Drain buffer after reset
         while (md_inb(0x64) & 0x01) {
