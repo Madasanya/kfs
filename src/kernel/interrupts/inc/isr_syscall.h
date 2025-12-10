@@ -5,7 +5,7 @@
 #include "syscall.h"
 
 #define MAX_USER_ADDR (void *)0x400000
-#define MIN_USER_ADDR (void *)0x100000
+#define MIN_USER_ADDR (void *)0x200000
 
 /**
  * @brief Print error log entries.
@@ -87,6 +87,10 @@ uint32_t isr_syscall_read(char* data_arr, uint8_t len);
  * @return Number of commands read.
  */
 uint32_t isr_syscall_commread(uint8_t* data_arr, uint8_t len);
+
+uint32_t isr_syscall_halt(void);
+
+uint32_t isr_syscall_stackprint(void);
 
 
 #endif /* _ISR_SYSCALL_H_ */

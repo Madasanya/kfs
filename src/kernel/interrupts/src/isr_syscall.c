@@ -40,7 +40,12 @@ uint32_t isr_syscall(uint32_t num, uint32_t arg0, uint32_t arg1, uint32_t arg2, 
             break;
         case SYS_HEXDUMP:
             ret = isr_syscall_hexdump((void *)arg0, arg1);
-    
+            break;
+        case SYS_HALT:
+            ret = isr_syscall_halt();
+            break;
+        case SYS_STACKPRINT:
+            ret = isr_syscall_stackprint();
         default:
             break;
     }

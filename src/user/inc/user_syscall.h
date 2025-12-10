@@ -84,4 +84,9 @@ uint32_t user_syserrwrite(char *arr, uint32_t len, uint32_t lvl);
  */
 uint32_t user_syserrprint(uint32_t lvl);
 
+void user_syshalt(void);
+
+uint32_t user_stackprint(void);
+
+
 #endif /* _USER_SYSCALL_H_ */

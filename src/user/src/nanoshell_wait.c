@@ -4,7 +4,7 @@
 #include "user_syscall.h"
 
 USER_TEXT
-uint8_t nanoshell_kernel_stack_print()
+void nanoshell_wait(void)
 {
-    return ((uint8_t)user_stackprint());
+    user_syshalt();
 }

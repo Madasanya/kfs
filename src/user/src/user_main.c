@@ -8,6 +8,6 @@ uint32_t var USER_DATA = 42;
 USER_TEXT
 void user_main(void)
 {
- nanoshell_run();
+    nanoshell_run();
 }
 

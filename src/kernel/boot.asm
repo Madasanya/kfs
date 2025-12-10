@@ -30,6 +30,7 @@ align 4
 
 global kernel_stack_top
 global user_stack_top
+global kernel_stack_bottom
 
 KERNEL_STACK_SIZE equ 1024 ; 1 KiB reserved for kernel stack
 
@@ -51,7 +52,7 @@ user_stack_top:
 ; bootloader will jump to this position once the kernel has been loaded. It
 ; doesn't make sense to return from this function as the bootloader is gone.
 ; Declare _start as a function symbol with the given symbol size.
-section .text
+section .boot_text
 global _start:function (_start.end - _start)
 _start:
 	; The bootloader has loaded us into 32-bit protected mode on a x86

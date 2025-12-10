@@ -6,10 +6,13 @@
 #define SYS_COMMREAD    2u
 #define SYS_ERRWRITE    3u
 #define SYS_ERRPRINT    4u
-#define SYS_SCROLL 10u
-#define SYS_SCREENSET 11u
-#define SYS_COLORSET 12u
-#define SYS_HEXDUMP 13u
+#define SYS_HALT        5u
+#define SYS_SCROLL      10u
+#define SYS_SCREENSET   11u
+#define SYS_COLORSET    12u
+#define SYS_HEXDUMP     13u
+#define SYS_STACKPRINT  14u
+
 
 #define SYS_SCREENSET_MODE_ABSOLUTE 0u
 #define SYS_SCREENSET_MODE_INCREASE 1u

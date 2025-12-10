@@ -131,11 +131,7 @@ void nanoshell_run()
             {
                 nanoshell_scroll(SYS_SCROLL_DOWN);
             }
-            else
-            {
-                user_syswrite("yeah right", user_strlen("yeah right"));
-                user_syshexdump((void *)0x100000, 16);
-            }
         }
+        nanoshell_wait();
     }
 }

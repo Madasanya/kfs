@@ -39,4 +39,7 @@ uint32_t nanoshell_gnl(char *arr, uint32_t size);
  */
 uint32_t nanoshell_gnc(uint8_t *comm);
 
+void nanoshell_wait(void);
+
+
 #endif /* _NANOSHELL_UTILS_H_ */

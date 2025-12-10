@@ -25,6 +25,7 @@
  * @note @c err_tags string maps @c err.lvl indices to display tag: " Eacewnid"
  *   (index 0: space (none), 1: 'E', 2: 'a', 3: 'c', 4: 'e', 5: 'w', 6: 'n', 7: 'i', 8: 'd')
  */
+
 uint32_t isr_syscall_errprint(uint32_t lvl)
 {
     char entry_str[HISTORY_WIDTH];

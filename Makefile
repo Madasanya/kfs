@@ -50,6 +50,9 @@ CSRCK		= main/src/kernel.c \
 			  drivers/src/pic.c \
 			  interrupts/src/isr_syscall_read.c \
 			  interrupts/src/isr_syscall_commread.c \
+			  interrupts/src/isr_syscall_halt.c \
+			  interrupts/src/isr_syscall_stackprint.c \
+
 
 CSRCU		= src/user_main.c \
 			  src/user_syserrprint.c \
@@ -72,7 +75,10 @@ CSRCU		= src/user_main.c \
 			  src/nanoshell_gnc.c \
 			  src/nanoshell_scroll.c \
 			  src/user_sysscroll.c \
-			  src/nanoshell_kernel_stack_print.c
+			  src/nanoshell_kernel_stack_print.c \
+			  src/user_syshalt.c \
+			  src/nanoshell_wait.c \
+			  src/user_sysstackprint.c \
 
 LDSRC		= kernel.ld
 
@@ -150,7 +156,7 @@ create_image: check_bin
 run: all create_image
 				echo "Launching QEMU..."
 				mkdir -p ./logs
-				sudo qemu-system-i386 -d cpu_reset,invalid_mem -D ./logs/qemu_run_$(shell date +%Y%m%d_%H%M%S).log -drive file=./boot/bootdisk.img,format=raw -m $(QEMU_MEMORY)
+				sudo qemu-system-i386 -d cpu_reset -D ./logs/qemu_run_$(shell date +%Y%m%d_%H%M%S).log -drive file=./boot/bootdisk.img,format=raw -m $(QEMU_MEMORY)
 #
 debug: fclean all create_image
 				echo "Launching QEMU with GDB server on port 1234..."
